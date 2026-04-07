@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Burrows & Co. — Growth Engine v2</title>
+<title>Burrows & Co. — Growth Engine</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+
 *{box-sizing:border-box;margin:0;padding:0;}
 /* AUTH GATE */
 #auth-gate{position:fixed;inset:0;background:#0e0f0d;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
@@ -192,77 +193,48 @@ input[type=range]{width:100%;accent-color:var(--accent);}
 .empty-title{font-family:var(--serif);font-size:18px;font-weight:300;margin-bottom:8px;color:var(--text);}
 .empty-sub{font-family:var(--mono);font-size:11px;color:var(--muted);}
 .error-banner{padding:12px 16px;background:rgba(240,90,90,0.1);border:1px solid rgba(240,90,90,0.2);border-radius:7px;font-family:var(--mono);font-size:11px;color:var(--red);margin-bottom:16px;}
+
 </style>
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<!-- EmailJS -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-<script>
-firebase.initializeApp({
-  apiKey: "AIzaSyAgSLxhOP1-2XFA-7GUEpDz9duDBkxB8iQ",
-  authDomain: "burrows-cfo.firebaseapp.com",
-  projectId: "burrows-cfo",
-  appId: "1:466879182304:web:a4a703af3a72cd55106785"
-});
-</script>
 </head>
 <body>
 
 <!-- AUTH GATE -->
-<div id="auth-gate">
-  <div class="auth-gate-logo">Burrows &amp; Co. — <em>Growth Engine</em></div>
-  <div class="auth-gate-sub">Private · Sign in required</div>
-  <button class="auth-gate-btn" onclick="signInWithGoogle()">Sign in with Google</button>
-  <div class="auth-gate-msg" id="authMsg"></div>
+<div id="auth-gate" style="position:fixed;inset:0;background:#0e0f0d;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;">
+  <div style="font-family:'Fraunces',serif;font-size:32px;font-weight:300;color:#e8e6df;">Burrows &amp; Co. &mdash; <em style="font-style:italic;color:#c8f05a;">Growth Engine</em></div>
+  <div style="font-family:'DM Mono',monospace;font-size:11px;color:#7a7870;letter-spacing:.14em;text-transform:uppercase;">Private &middot; Sign in required</div>
+  <button id="signInBtn" style="margin-top:12px;padding:13px 32px;background:#c8f05a;border:none;border-radius:8px;font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:#0e0f0d;cursor:pointer;">Sign in with Google</button>
+  <div id="authMsg" style="font-family:'DM Mono',monospace;font-size:10px;color:#f05a5a;margin-top:4px;"></div>
 </div>
 
 <!-- APP -->
-<div class="app-shell" id="appShell">
+<div id="appShell" style="display:none;flex-direction:column;min-height:100vh;">
 
 <div class="topbar">
   <div class="logo-area">
     <div>
-      <div class="logo-name">Burrows &amp; Co. — <em>Growth Engine</em></div>
-      <div class="logo-sub">Revenue Intelligence · Signal-Powered · April 2026</div>
+      <div class="logo-name">Burrows &amp; Co. &mdash; <em>Growth Engine</em></div>
+      <div class="logo-sub">Revenue Intelligence &middot; Signal-Powered &middot; April 2026</div>
     </div>
   </div>
   <div class="topbar-right">
     <div class="status-dot" id="statusDot"></div>
     <div class="status-lbl" id="statusLbl">Ready</div>
-    <button class="refresh-btn" id="refreshBtn" onclick="runSignalPull()">⟳ Pull Signals</button>
-    <button class="refresh-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:var(--muted);" onclick="firebase.auth().signOut().then(()=>{document.getElementById('auth-gate').style.display='flex';document.getElementById('appShell').style.display='none'})">Sign out</button>
+    <button id="refreshBtn" class="refresh-btn">&#x27F3; Pull Signals</button>
+    <button id="signOutBtn" class="refresh-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.12);color:var(--muted);">Sign out</button>
   </div>
 </div>
 
 <div class="nav-tabs">
-  <div class="nav-tab active" onclick="switchPanel('signals',this)">Signal Feed <span class="badge" id="signalCount">0</span></div>
-  <div class="nav-tab" onclick="switchPanel('briefing',this)" id="briefingTab">Lead Briefing</div>
-  <div class="nav-tab" onclick="switchPanel('outreach',this)" id="outreachTab">Outreach</div>
-  <div class="nav-tab" onclick="switchPanel('events',this)">Events &amp; Conferences</div>
-  <div class="nav-tab" onclick="switchPanel('scheduler',this)">📅 Scheduler</div>
-  <div class="nav-tab" onclick="switchPanel('tips',this)">📖 Playbook</div>
-  <div class="nav-tab" onclick="switchPanel('settings',this)">⚙ ICP Settings</div>
-</div>
-
-
-<!-- COMMAND BAR -->
-<div class="cmd-bar" id="geBar">
-  <div class="cmd-bar-label">⌘ Command — research leads · pull signals · navigate · request new features · link to guide or Claude</div>
-  <div class="cmd-bar-row">
-    <span class="cmd-bar-icon">⌘</span>
-    <input class="cmd-bar-inp" id="geInp" placeholder='Ask anything · "Find leads in healthcare" · "Add signal for Series B companies" · "How do I use this?" · "Build me a new view"' />
-    <button class="cmd-bar-btn" id="geBtn" onclick="geRun()">Ask</button>
-  </div>
-  <div class="cmd-bar-resp" id="geResp">
-    <button class="cmd-xbtn" onclick="geClose()">×</button>
-    <div id="geRespBody"></div>
-  </div>
+  <div class="nav-tab active" data-panel="signals">Signal Feed <span class="badge" id="signalCount">0</span></div>
+  <div class="nav-tab" data-panel="briefing" id="briefingTab">Lead Briefing</div>
+  <div class="nav-tab" data-panel="outreach" id="outreachTab">Outreach</div>
+  <div class="nav-tab" data-panel="events">Events &amp; Conferences</div>
+  <div class="nav-tab" data-panel="tips">&#x1F4D6; Playbook</div>
+  <div class="nav-tab" data-panel="settings">&#x2699; ICP Settings</div>
 </div>
 
 <div class="main">
 
-  <!-- SIGNALS PANEL -->
   <div class="panel active" id="panel-signals">
     <div class="signals-header">
       <div>
@@ -272,259 +244,121 @@ firebase.initializeApp({
     </div>
     <div id="signalsContainer">
       <div class="empty-state">
-        <div class="empty-icon">⚡</div>
+        <div class="empty-icon">&#x26A1;</div>
         <div class="empty-title">Ready to pull signals</div>
         <div class="empty-sub">Click "Pull Signals" above to scan your target market for live opportunities</div>
       </div>
     </div>
   </div>
 
-  <!-- BRIEFING PANEL -->
   <div class="panel" id="panel-briefing">
-    <div class="back-btn" onclick="switchPanel('signals',document.querySelector('.nav-tab'))">← Back to signals</div>
+    <div class="back-btn" id="backToSignals">&#8592; Back to signals</div>
     <div id="briefingContainer">
       <div class="empty-state">
-        <div class="empty-icon">📋</div>
+        <div class="empty-icon">&#x1F4CB;</div>
         <div class="empty-title">Select a signal to generate a briefing</div>
         <div class="empty-sub">Click any signal card in the feed to get a full lead package</div>
       </div>
     </div>
   </div>
 
-  <!-- OUTREACH PANEL -->
   <div class="panel" id="panel-outreach">
-    <div class="back-btn" onclick="switchPanel('briefing',document.getElementById('briefingTab'))">← Back to briefing</div>
+    <div class="back-btn" id="backToBriefing">&#8592; Back to briefing</div>
     <div id="outreachContainer">
       <div class="empty-state">
-        <div class="empty-icon">✉️</div>
+        <div class="empty-icon">&#x2709;&#xFE0F;</div>
         <div class="empty-title">No outreach generated yet</div>
         <div class="empty-sub">Generate a lead briefing first, then click "Generate Outreach"</div>
       </div>
     </div>
   </div>
 
-  <!-- EVENTS PANEL -->
   <div class="panel" id="panel-events">
     <div class="signals-header">
       <div>
         <div class="signals-title">Events &amp; <em>Conferences</em></div>
-        <div class="signals-meta">Where your buyers are — attend, speak, or sponsor</div>
+        <div class="signals-meta">Where your buyers are &mdash; attend, speak, or sponsor</div>
       </div>
-      <button class="refresh-btn" onclick="loadEvents()">⟳ Refresh</button>
+      <button id="refreshEventsBtn" class="refresh-btn">&#x27F3; Refresh</button>
     </div>
-    <div id="eventsContainer">
-      <div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading events...</div></div>
-    </div>
+    <div id="eventsContainer"><div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading events...</div></div></div>
   </div>
 
-  <!-- SCHEDULER PANEL -->
-  <div class="panel" id="panel-scheduler">
-    <div class="signals-header">
-      <div>
-        <div class="signals-title">Outreach <em>Scheduler</em></div>
-        <div class="signals-meta">Queue emails and follow-ups connected to your Burrows Advisory Gmail accounts</div>
-      </div>
-      <button class="refresh-btn" onclick="connectGmail()" id="gmailBtn">Connect Gmail</button>
-    </div>
-
-    <div id="gmailStatus" style="margin-bottom:20px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:space-between;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div class="status-dot" id="gmailDot"></div>
-        <div>
-          <div style="font-size:13px;font-weight:500;" id="gmailStatusText">Gmail not connected</div>
-          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);" id="gmailAccount">Connect to send scheduled outreach from your Burrows Advisory account</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section-card" style="margin-bottom:16px;">
-      <div class="section-label">Compose & Schedule</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-        <div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em;">To</div>
-          <input id="sch-to" class="tag-input" placeholder="recipient@company.com" style="width:100%;">
-        </div>
-        <div>
-          <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em;">Send At</div>
-          <input id="sch-time" type="datetime-local" class="tag-input" style="width:100%;">
-        </div>
-      </div>
-      <div style="margin-bottom:12px;">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em;">Subject</div>
-        <input id="sch-subject" class="tag-input" placeholder="Subject line..." style="width:100%;">
-      </div>
-      <div style="margin-bottom:12px;">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em;">Body</div>
-        <textarea id="sch-body" class="tag-input" rows="6" style="resize:vertical;width:100%;line-height:1.6;"></textarea>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-        <select id="sch-from" class="tag-input" style="flex:1;min-width:200px;">
-          <option value="phil">From: Phil Burrows (<template class="__cf_email__" data-cfemail="ee9e8687828c9b9c9c81999dae8c9b9c9c81999d8f8a98879d819c97c08d8183">[email&#160;protected]</template>)</option>
-          <option value="mindy">From: Mindy Stotz (<template class="__cf_email__" data-cfemail="93fefafdf7eae0e7fce7e9d3f1e6e1e1fce4e0f2f7e5fae0fce1eabdf0fcfe">[email&#160;protected]</template>)</option>
-        </select>
-        <button class="action-btn primary" onclick="scheduleEmail()" style="flex-shrink:0;">Schedule</button>
-        <button class="action-btn" onclick="sendNow()" style="flex-shrink:0;">Send Now</button>
-        <button class="action-btn" onclick="clearCompose()" style="flex-shrink:0;">Clear</button>
-      </div>
-    </div>
-
-    <div class="section-card" style="margin-bottom:16px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-        <div class="section-label" style="margin-bottom:0;">Scheduled Queue</div>
-        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);" id="queueCount">0 queued</div>
-      </div>
-      <div id="scheduledQueue">
-        <div style="text-align:center;padding:24px;font-family:var(--mono);font-size:11px;color:var(--muted);">No emails scheduled. Compose above or click Schedule Outreach from any lead briefing.</div>
-      </div>
-    </div>
-
-    <div class="section-card">
-      <div class="section-label">Follow-up Sequences</div>
-      <div style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-        <div><div style="font-size:13px;font-weight:500;">Cold outreach 3-touch</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;">Day 1: email · Day 4: LinkedIn · Day 10: final nudge</div></div>
-        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-      </div>
-      <div style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
-        <div><div style="font-size:13px;font-weight:500;">Post-meeting follow-up</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;">24hr recap · 1 week proposal nudge</div></div>
-        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-      </div>
-      <div style="padding:12px 0;display:flex;align-items:center;justify-content:space-between;">
-        <div><div style="font-size:13px;font-weight:500;">Signal-triggered outreach</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;">Auto-draft on hot signal — requires your approval before sending</div></div>
-        <div class="toggle" onclick="this.classList.toggle('on')"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PLAYBOOK PANEL -->
   <div class="panel" id="panel-tips">
-    <div class="signals-header">
-      <div>
-        <div class="signals-title">Prospecting <em>Playbook</em></div>
-        <div class="signals-meta">B2B best practices baked into every signal, briefing, and outreach the engine generates</div>
-      </div>
-    </div>
+    <div class="signals-header"><div><div class="signals-title">Prospecting <em>Playbook</em></div><div class="signals-meta">B2B best practices baked into every signal, briefing, and outreach</div></div></div>
     <div style="display:grid;gap:12px;">
-
-      <div class="section-card">
-        <div class="section-label">The Core Framework — Trigger, Window, Multi-Thread</div>
-        <div class="section-body">
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Trigger-Based Only</strong> — Only reach out when something happened. A trigger creates urgency and gives you a natural, non-generic reason to reach out. No trigger = no signal worth pursuing.</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">The 90-Day Window</strong> — New executives have 90 days to prove themselves. They buy external advisory fastest in the first 60 days. An exec hire is your single best signal. Act within 1 week of the announcement.</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Multi-Thread Always</strong> — Never rely on one contact. Identify the economic buyer (approves budget), the champion (uses the service), and the potential blocker (usually the CFO or legal). Reach all three independently.</div>
-          <div style="padding:8px 0;"><strong style="color:var(--accent);">Pain + Budget + Authority</strong> — A lead only converts when all three exist. No budget = waste of time. No authority = long sales cycle. No pain = no urgency. Score signals on all three, not just fit.</div>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">Outreach Rules That Actually Work</div>
-        <div class="section-body">
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Pattern Interrupt</strong> — Your first sentence must break the pattern of every other email they get. Start with an insight, an observation, or a provocative question. Never: "I hope this finds you well." Never: "I came across your profile."</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Give Before You Ask</strong> — Every first touch should include a gift: a relevant insight, a benchmark, a framework, a stat they haven't seen. You get a response by being useful, not by being clever.</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">One Ask Per Touch</strong> — Never ask for a meeting AND a response AND a call. One ask. The lower the friction, the higher the response rate. "Worth a conversation?" beats "Can we schedule 30 minutes?"</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">LinkedIn DM Under 150 Words</strong> — People read DMs on mobile. Every sentence must earn its place. If you can't say it in 150 words, you don't know what you're selling yet.</div>
-          <div style="padding:8px 0;"><strong style="color:var(--accent);">Follow-Ups Add Value</strong> — Never say "following up" or "circling back." Every follow-up touch adds a new piece of value — a case study, an insight, a relevant article. Earn the next reply.</div>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">The Challenger Sale — How to Frame Your Pitch</div>
-        <div class="section-body">
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);">The highest-converting B2B sales approach is not to reflect the client's problem back to them — it is to teach them something about their problem they didn't already know. Reframe their situation. Show them a gap they can't see from inside.</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Teach:</strong> Share an insight about their industry or situation that surprises them. "Companies that hire a new CDO without an external audit in the first 60 days typically spend 18 months undoing the first roadmap they built."</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Tailor:</strong> Connect that insight to their specific trigger. Make it feel like you built this observation specifically for them.</div>
-          <div style="padding:8px 0;"><strong style="color:var(--accent);">Take Control:</strong> Recommend the entry point confidently. Don't ask what they want — tell them what they need and why. Confidence closes.</div>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">Entry Point Strategy — Start Small, Expand Fast</div>
-        <div class="section-body">
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);">Never lead with your largest retainer. Lead with the lowest-risk, fastest-value engagement and let the work sell the expansion.</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Executive Workshop ($18-30k)</strong> — Best cold entry. 1-2 days, fixed scope, clear deliverable. Easy to approve. Creates dependency for the roadmap.</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Discovery Sprint ($15-20k)</strong> — Best for companies mid-transition. 30-45 days, audit + roadmap + investment case. Sells itself into a retainer.</div>
-          <div style="padding:8px 0;"><strong style="color:var(--accent);">Retainer (any tier)</strong> — Best sold after a Sprint or Workshop proves the value. Never cold. Always earned.</div>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">Signals That Predict Fast Closes</div>
-        <div class="section-body">
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">New executive + hiring surge together</strong> — New leader building their team. Needs strategic direction before the team runs in 10 directions. 30-day close window.</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Bad quarter + board pressure</strong> — Budget unlocked by pain. Decision maker needs to show action fast. Fastest close cycle in B2B.</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">PE-backed + acquisition</strong> — PE partner is the real buyer. They want 90-day proof points. Entry via the operating partner relationship if possible.</div>
-          <div style="padding:8px 0;"><strong style="color:var(--accent);">Funding + DTC/digital pivot</strong> — Budget to spend, direction unclear, no internal expertise. Easiest Discovery Sprint pitch.</div>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <div class="section-label">What to Avoid</div>
-        <div class="section-body">
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--red);">Companies mid-layoff</strong> — No budget, survival mode. Wait 6 months.</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--red);">Major consulting firm already engaged</strong> — If Deloitte, McKinsey, or Accenture is on record, the decision is made. Don't compete — wait for the contract to end.</div>
-          <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--red);">No identifiable decision maker</strong> — If you can't find who owns digital/commercial strategy, the org is too opaque to sell into cold.</div>
-          <div style="padding:8px 0;"><strong style="color:var(--red);">Companies in legal or regulatory trouble</strong> — Budget goes to lawyers. Not the time.</div>
-        </div>
-      </div>
-
+      <div class="section-card"><div class="section-label">The Core Framework</div><div class="section-body">
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Trigger-Based Only</strong> &mdash; Only reach out when something happened. No trigger = no signal worth pursuing.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">The 90-Day Window</strong> &mdash; New executives have 90 days to prove themselves. Act within 1 week of the announcement.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Multi-Thread Always</strong> &mdash; Identify economic buyer, champion, and potential blocker. Reach all three independently.</div>
+        <div style="padding:8px 0;"><strong style="color:var(--accent);">Pain + Budget + Authority</strong> &mdash; A lead only converts when all three exist.</div>
+      </div></div>
+      <div class="section-card"><div class="section-label">Outreach Rules That Work</div><div class="section-body">
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Pattern Interrupt</strong> &mdash; First line must break the pattern. Never: "I hope this finds you well."</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Give Before You Ask</strong> &mdash; Every first touch includes a gift: insight, benchmark, or framework.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">One Ask Per Touch</strong> &mdash; Never ask for a meeting AND a call. One ask only.</div>
+        <div style="padding:8px 0;"><strong style="color:var(--accent);">Follow-Ups Add Value</strong> &mdash; Never say "following up." Every touch adds new value.</div>
+      </div></div>
+      <div class="section-card"><div class="section-label">Entry Point Strategy</div><div class="section-body">
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Executive Workshop ($18-30k)</strong> &mdash; Best cold entry. Fixed scope, clear deliverable.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Discovery Sprint ($15-20k)</strong> &mdash; Best for companies mid-transition. Sells itself into a retainer.</div>
+        <div style="padding:8px 0;"><strong style="color:var(--accent);">Retainer (any tier)</strong> &mdash; Best sold after Sprint or Workshop proves value. Never cold.</div>
+      </div></div>
     </div>
   </div>
 
-  <!-- SETTINGS PANEL -->
   <div class="panel" id="panel-settings">
-    <div class="signals-header">
-      <div>
-        <div class="signals-title">ICP &amp; <em>Settings</em></div>
-        <div class="signals-meta">Tune your targeting — changes apply to all signal scoring instantly</div>
-      </div>
-    </div>
+    <div class="signals-header"><div><div class="signals-title">ICP &amp; <em>Settings</em></div><div class="signals-meta">Tune your targeting &mdash; changes apply to all signal scoring instantly</div></div></div>
     <div class="settings-grid">
-
+      <div class="settings-card"><div class="settings-card-title">Target Titles</div><div class="tag-list" id="titleTags"></div><input class="tag-input" id="titleInput" placeholder="Add a title and press Enter..."></div>
+      <div class="settings-card"><div class="settings-card-title">Target Industries</div><div class="tag-list" id="industryTags"></div><input class="tag-input" id="industryInput" placeholder="Add an industry (blank = all)..."></div>
+      <div class="settings-card"><div class="settings-card-title">Signal Triggers</div><div id="signalToggles"></div></div>
       <div class="settings-card">
-        <div class="settings-card-title">Target Titles</div>
-        <div class="tag-list" id="titleTags"></div>
-        <input class="tag-input" id="titleInput" placeholder="Add a title and press Enter..." onkeydown="addTag('titles',this)">
-      </div>
-
-      <div class="settings-card">
-        <div class="settings-card-title">Target Industries</div>
-        <div class="tag-list" id="industryTags"></div>
-        <input class="tag-input" id="industryInput" placeholder="Add an industry and press Enter...  (blank = all)" onkeydown="addTag('industries',this)">
-      </div>
-
-      <div class="settings-card">
-        <div class="settings-card-title">Signal Triggers</div>
-        <div id="signalToggles"></div>
-      </div>
-
-      <div class="settings-card">
-        <div class="settings-card-title">Geography</div>
-        <div id="geoToggles"></div>
-        <div style="margin-top:16px;">
-          <div class="settings-card-title" style="margin-top:0;">Company Size</div>
-          <div class="range-wrap">
-            <div class="range-label"><span>Min employees</span><span id="minEmpVal">100</span></div>
-            <input type="range" min="50" max="5000" step="50" value="100" oninput="document.getElementById('minEmpVal').textContent=this.value;S.icp.minEmp=+this.value;">
-          </div>
-          <div class="range-wrap">
-            <div class="range-label"><span>Max employees</span><span id="maxEmpVal">10000</span></div>
-            <input type="range" min="500" max="50000" step="500" value="10000" oninput="document.getElementById('maxEmpVal').textContent=this.value;S.icp.maxEmp=+this.value;">
-          </div>
+        <div class="settings-card-title">Geography</div><div id="geoToggles"></div>
+        <div style="margin-top:16px;"><div class="settings-card-title">Company Size</div>
+          <div class="range-wrap"><div class="range-label"><span>Min employees</span><span id="minEmpVal">100</span></div><input type="range" id="minEmpRange" min="50" max="5000" step="50" value="100"></div>
+          <div class="range-wrap"><div class="range-label"><span>Max employees</span><span id="maxEmpVal">10000</span></div><input type="range" id="maxEmpRange" min="500" max="50000" step="500" value="10000"></div>
         </div>
       </div>
-
+      <div class="settings-card full-settings">
+        <div class="settings-card-title">Email Alerts</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;">Get emailed when hot signals come in. Powered by EmailJS (free). <a href="https://www.emailjs.com" target="_blank" style="color:var(--accent);">Set up at emailjs.com</a></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div><div class="settings-card-title" style="margin-bottom:6px;">EmailJS Service ID</div><input class="tag-input" id="ejsService" placeholder="service_xxxxxxx"></div>
+          <div><div class="settings-card-title" style="margin-bottom:6px;">EmailJS Template ID</div><input class="tag-input" id="ejsTemplate" placeholder="template_xxxxxxx"></div>
+          <div><div class="settings-card-title" style="margin-bottom:6px;">EmailJS Public Key</div><input class="tag-input" id="ejsKey" placeholder="your_public_key"></div>
+          <div><div class="settings-card-title" style="margin-bottom:6px;">Alert Email(s)</div><input class="tag-input" id="alertEmails" placeholder="phil@burrowsadvisory.com, mindy@..."></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div><div class="settings-card-title" style="margin-bottom:6px;">Min ICP Score</div>
+            <div style="display:flex;align-items:center;gap:10px;"><input type="range" id="alertThreshold" min="5" max="10" step="1" value="8" style="flex:1;accent-color:var(--accent);"><span id="alertThresholdVal" style="font-family:var(--mono);font-size:13px;color:var(--accent);">8</span></div>
+          </div>
+          <div><div class="settings-card-title" style="margin-bottom:6px;">Alert Cadence</div>
+            <select id="alertCadence" class="tag-input"><option value="manual">Manual only</option><option value="daily" selected>Daily digest</option><option value="weekly">Weekly digest</option></select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button id="saveAlertBtn" class="save-btn" style="flex:1;">Save Alert Settings</button>
+          <button id="testAlertBtn" class="save-btn" style="flex:0 0 auto;background:var(--surface2);color:var(--text);border:1px solid var(--border);">Send Test Alert</button>
+        </div>
+        <div id="alertStatus" style="margin-top:8px;font-family:var(--mono);font-size:10px;color:var(--muted);"></div>
+      </div>
       <div class="settings-card full-settings">
         <div class="settings-card-title">Custom Signal Keywords</div>
-        <div class="toggle-sub" style="margin-bottom:10px;color:var(--muted);font-size:12px;">Flag any company mentioning these terms in news or job postings</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Flag any company mentioning these terms in news or job postings</div>
         <textarea class="tag-input" id="customKeywords" rows="3" style="resize:vertical;" placeholder="e.g. digital transformation, growth strategy, ecommerce relaunch, AI adoption..."></textarea>
-        <button class="save-btn" onclick="saveSettings()">Save Settings & Re-score</button>
+        <button id="saveSettingsBtn" class="save-btn" style="margin-top:12px;">Save Settings &amp; Re-score</button>
       </div>
-
     </div>
   </div>
 
 </div>
+</div><!-- end appShell -->
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
 // ── Auth ──────────────────────────────────────────────────────
 const ALLOWED_DOMAIN = 'burrowsadvisory.com';
 
@@ -1458,7 +1292,131 @@ async window.geResearch = function(company) {
 // Init
 renderSettings();
 loadEvents();
+
+
+// ── Wire all event listeners (no onclick attributes) ────────────
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Auth
+  document.getElementById('signInBtn').addEventListener('click', function() {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({hd: 'burrowsadvisory.com'});
+    firebase.auth().signInWithPopup(provider)
+      .then(function(result) {
+        var email = result.user.email || '';
+        if(!email.endsWith('@burrowsadvisory.com')) {
+          document.getElementById('authMsg').textContent = 'Access restricted to @burrowsadvisory.com';
+          firebase.auth().signOut();
+          return;
+        }
+        document.getElementById('auth-gate').style.display = 'none';
+        document.getElementById('appShell').style.display = 'flex';
+        document.getElementById('statusLbl').textContent = result.user.displayName || email;
+        document.getElementById('statusDot').className = 'status-dot live';
+        loadEvents();
+      })
+      .catch(function(err) {
+        document.getElementById('authMsg').textContent = 'Error: ' + err.code;
+        if(err.code === 'auth/popup-blocked') {
+          firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+        }
+      });
+  });
+
+  firebase.auth().onAuthStateChanged(function(user) {
+    if(user && user.email && user.email.endsWith('@burrowsadvisory.com')) {
+      document.getElementById('auth-gate').style.display = 'none';
+      document.getElementById('appShell').style.display = 'flex';
+      document.getElementById('statusLbl').textContent = user.displayName || user.email;
+      document.getElementById('statusDot').className = 'status-dot live';
+      loadEvents();
+    }
+  });
+
+  document.getElementById('signOutBtn').addEventListener('click', function() {
+    firebase.auth().signOut().then(function() {
+      document.getElementById('auth-gate').style.display = 'flex';
+      document.getElementById('appShell').style.display = 'none';
+    });
+  });
+
+  // Nav tabs
+  document.querySelectorAll('.nav-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var panelId = tab.getAttribute('data-panel');
+      document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
+      document.getElementById('panel-' + panelId).classList.add('active');
+      tab.classList.add('active');
+    });
+  });
+
+  // Pull signals button
+  document.getElementById('refreshBtn').addEventListener('click', runSignalPull);
+
+  // Events refresh
+  document.getElementById('refreshEventsBtn').addEventListener('click', loadEvents);
+
+  // Back buttons
+  document.getElementById('backToSignals').addEventListener('click', function() {
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+    document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+    document.getElementById('panel-signals').classList.add('active');
+    document.querySelector('[data-panel="signals"]').classList.add('active');
+  });
+  document.getElementById('backToBriefing').addEventListener('click', function() {
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+    document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+    document.getElementById('panel-briefing').classList.add('active');
+    document.getElementById('briefingTab').classList.add('active');
+  });
+
+  // Settings sliders
+  document.getElementById('minEmpRange').addEventListener('input', function() {
+    document.getElementById('minEmpVal').textContent = this.value;
+    S.icp.minEmp = +this.value;
+  });
+  document.getElementById('maxEmpRange').addEventListener('input', function() {
+    document.getElementById('maxEmpVal').textContent = this.value;
+    S.icp.maxEmp = +this.value;
+  });
+  document.getElementById('alertThreshold').addEventListener('input', function() {
+    document.getElementById('alertThresholdVal').textContent = this.value;
+  });
+
+  // Title/industry tag inputs
+  document.getElementById('titleInput').addEventListener('keydown', function(e) {
+    if(e.key !== 'Enter') return;
+    var val = this.value.trim();
+    if(!val) return;
+    S.icp.titles.push(val);
+    this.value = '';
+    renderSettings();
+  });
+  document.getElementById('industryInput').addEventListener('keydown', function(e) {
+    if(e.key !== 'Enter') return;
+    var val = this.value.trim();
+    if(!val) return;
+    S.icp.industries.push(val);
+    this.value = '';
+    renderSettings();
+  });
+
+  // Save settings
+  document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+    S.icp.customKeywords = document.getElementById('customKeywords').value;
+    this.textContent = 'Saved ✓';
+    setTimeout(function() { document.getElementById('saveSettingsBtn').textContent = 'Save Settings & Re-score'; }, 1500);
+  });
+
+  // Alert buttons
+  document.getElementById('saveAlertBtn').addEventListener('click', saveAlertSettings);
+  document.getElementById('testAlertBtn').addEventListener('click', testAlert);
+
+  // Init settings render
+  renderSettings();
+  loadAlertSettings();
+});
 </script>
-</div><!-- end app-shell -->
 </body>
 </html>
