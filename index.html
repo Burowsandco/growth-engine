@@ -24,43 +24,71 @@ firebase.initializeApp({
   --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--serif:'Fraunces',serif;
 }
 body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
-/* AUTH GATE */
 #authGate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
-.auth-logo{font-family:var(--serif);font-size:32px;font-weight:300;}
-.auth-logo em{font-style:italic;color:var(--accent);}
+.auth-logo{font-family:var(--serif);font-size:32px;font-weight:300;}.auth-logo em{font-style:italic;color:var(--accent);}
 .auth-sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;}
 #signInBtn{margin-top:12px;padding:14px 36px;background:var(--accent);border:none;border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:500;color:#0e0f0d;cursor:pointer;}
 #authMsg{font-family:var(--mono);font-size:10px;color:var(--red);margin-top:4px;min-height:16px;}
-/* APP */
 #app{display:none;flex-direction:column;min-height:100vh;}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;border-bottom:1px solid var(--border);background:rgba(14,15,13,0.95);position:sticky;top:0;z-index:100;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;border-bottom:1px solid var(--border);background:rgba(14,15,13,0.95);position:sticky;top:0;z-index:100;}
 .logo-name{font-family:var(--serif);font-size:18px;font-weight:300;}.logo-name em{font-style:italic;color:var(--accent);}
 .logo-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;}
 .topbar-right{display:flex;align-items:center;gap:10px;}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px rgba(200,240,90,.5);}
 .sync-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);}
-.tbtn{padding:7px 16px;border:none;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;}
+.tbtn{padding:7px 16px;border:none;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;transition:opacity .15s;}
+.tbtn:hover{opacity:.85;}
 .tbtn-accent{background:var(--accent);color:#0e0f0d;}
 .tbtn-ghost{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--muted);}
+/* COMMAND BAR */
+.cmd-bar{padding:10px 32px 12px;background:#0e0f0d;border-bottom:2px solid var(--accent);}
+.cmd-label{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:7px;}
+.cmd-row{display:flex;align-items:center;gap:10px;background:rgba(200,240,90,0.05);border:1.5px solid var(--accent);border-radius:8px;padding:9px 14px;width:100%;box-sizing:border-box;}
+.cmd-row:focus-within{box-shadow:0 0 0 3px rgba(200,240,90,.1);}
+.cmd-inp{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:12px;}
+.cmd-inp::placeholder{color:var(--muted);}
+.cmd-ask{padding:7px 18px;background:var(--accent);border:none;border-radius:6px;color:#0e0f0d;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;flex-shrink:0;}
+.cmd-resp{margin-top:10px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:7px;font-family:var(--mono);font-size:12px;color:var(--text);line-height:1.7;display:none;}
+.cmd-resp.open{display:block;}
+.cmd-tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;margin-right:8px;font-weight:500;}
+.cmd-tag.ans{background:rgba(200,240,90,.15);color:var(--accent);}
+.cmd-tag.nav{background:rgba(90,180,240,.15);color:var(--blue);}
+.cmd-tag.code{background:rgba(180,90,240,.15);color:var(--purple);}
+.cmd-acts{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap;}
+.cmd-act{padding:5px 12px;border-radius:4px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text);}
+.cmd-act.p{background:rgba(200,240,90,.12);border-color:rgba(200,240,90,.3);color:var(--accent);}
+/* TABS */
 .tabs{display:flex;gap:2px;padding:0 32px;border-bottom:1px solid var(--border);background:var(--surface);}
 .tab{padding:12px 20px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
 .tab:hover{color:var(--text);}
 .tab.on{color:var(--accent);border-bottom-color:var(--accent);}
 .tab .badge{display:inline-block;margin-left:6px;padding:1px 6px;background:rgba(200,240,90,.15);color:var(--accent);border-radius:10px;font-size:9px;}
 .main{flex:1;overflow-y:auto;}
-.panel{display:none;padding:28px 32px;}
+.panel{display:none;padding:24px 32px;}
 .panel.on{display:block;}
-/* CARDS */
-.signals-grid{display:grid;gap:12px;}
-.sig-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;cursor:pointer;transition:all .2s;}
-.sig-card:hover{border-color:rgba(200,240,90,.3);background:var(--surface2);}
+/* SIGNALS */
+.signals-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.signals-toolbar-left{display:flex;flex-direction:column;gap:4px;}
+.signals-title{font-family:var(--serif);font-size:22px;font-weight:300;}
+.signals-title em{font-style:italic;color:var(--accent);}
+.signals-meta{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.signals-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.ctrl-select{background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;outline:none;}
+.ctrl-select:focus{border-color:var(--accent);}
+.filter-btn{padding:5px 12px;border-radius:5px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--muted);}
+.filter-btn.on{background:rgba(200,240,90,.12);border-color:rgba(200,240,90,.3);color:var(--accent);}
+/* SIGNAL CARDS */
+.signals-grid{display:grid;gap:10px;}
+.sig-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;cursor:pointer;transition:all .15s;position:relative;}
+.sig-card:hover{border-color:rgba(200,240,90,.25);background:var(--surface2);}
 .sig-card.hot{border-left:3px solid var(--red);}
 .sig-card.warm{border-left:3px solid var(--amber);}
 .sig-card.new{border-left:3px solid var(--blue);}
-.sig-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px;}
-.sig-co{font-family:var(--serif);font-size:16px;font-weight:600;}
+.sig-card.watched{border-color:rgba(200,240,90,.3);}
+.sig-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
+.sig-co{font-family:var(--serif);font-size:15px;font-weight:600;}
 .sig-ind{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
-.sig-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;}
+.sig-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
 .score{padding:3px 10px;border-radius:20px;font-family:var(--mono);font-size:11px;font-weight:500;}
 .score.hi{background:rgba(90,240,180,.15);color:var(--green);}
 .score.mid{background:rgba(240,180,90,.15);color:var(--amber);}
@@ -69,23 +97,29 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .urg.hot{background:rgba(240,90,90,.15);color:var(--red);}
 .urg.warm{background:rgba(240,180,90,.15);color:var(--amber);}
 .urg.new{background:rgba(90,180,240,.15);color:var(--blue);}
-.sig-trigger{font-size:13px;line-height:1.5;margin-bottom:10px;}
+.sig-trigger{font-size:13px;line-height:1.5;margin-bottom:10px;color:var(--text);}
 .sig-trigger strong{color:var(--accent);}
-.sig-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.sig-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.sig-tags{display:flex;gap:5px;flex-wrap:wrap;}
 .sig-tag{padding:2px 8px;background:rgba(255,255,255,.05);border-radius:4px;font-family:var(--mono);font-size:9px;color:var(--muted);}
+.sig-actions{display:flex;gap:6px;}
+.sig-btn{padding:3px 10px;border-radius:4px;font-family:var(--mono);font-size:9px;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);transition:all .15s;}
+.sig-btn:hover{color:var(--text);}
+.sig-btn.watch.on{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.3);color:var(--accent);}
+.sig-btn.brief{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.2);color:var(--accent);}
+.sig-btn.dismiss{color:var(--muted);}
 /* SECTION CARDS */
 .sc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}
 .sc-label{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;}
 .sc-body{font-size:13px;color:var(--text);line-height:1.7;}
 .hero{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:16px;}
-.hero-co{font-family:var(--serif);font-size:28px;font-weight:300;margin-bottom:4px;}
+.hero-co{font-family:var(--serif);font-size:26px;font-weight:300;margin-bottom:4px;}
 .hero-co em{font-style:italic;color:var(--accent);}
 .hero-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:16px;}
 .hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
 .hero-stat{background:var(--surface2);border-radius:8px;padding:14px 16px;}
 .stat-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
-.stat-val{font-size:15px;font-weight:500;}
-.stat-val.ac{color:var(--accent);}
+.stat-val{font-size:15px;font-weight:500;}.stat-val.ac{color:var(--accent);}
 .svc-match{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border-radius:7px;margin-bottom:8px;}
 .svc-name{font-size:13px;font-weight:500;}
 .svc-range{font-family:var(--mono);font-size:11px;color:var(--accent);}
@@ -93,13 +127,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 /* OUTREACH */
 .out-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
 .out-tab{padding:7px 14px;border-radius:6px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid var(--border);color:var(--muted);}
-.out-tab:hover{color:var(--text);}
 .out-tab.on{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.3);color:var(--accent);}
 .out-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
 .out-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .out-title{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
 .copy-btn{padding:5px 12px;background:rgba(200,240,90,.1);border:1px solid rgba(200,240,90,.2);border-radius:4px;font-family:var(--mono);font-size:10px;color:var(--accent);cursor:pointer;}
-.out-content{padding:18px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;min-height:140px;}
+.out-content{padding:18px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;min-height:120px;}
 /* EVENTS */
 .events-grid{display:grid;gap:12px;}
 .ev-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
@@ -131,14 +164,13 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .tag-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-family:var(--mono);font-size:11px;outline:none;}
 .tag-input:focus{border-color:var(--accent);}
 .save-btn{margin-top:12px;padding:8px 18px;background:var(--accent);border:none;border-radius:6px;color:#0e0f0d;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;width:100%;}
-.range-wrap{padding:8px 0;}
-.range-label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:8px;}
 input[type=range]{width:100%;accent-color:var(--accent);}
+.range-label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:8px;}
 /* UTILS */
 .action-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
 .abtn{padding:9px 18px;border-radius:7px;font-family:var(--mono);font-size:11px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);}
 .abtn.primary{background:var(--accent);color:#0e0f0d;border-color:var(--accent);}
-.back{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;margin-bottom:20px;width:fit-content;}
+.back{font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;margin-bottom:20px;display:inline-block;}
 .back:hover{color:var(--accent);}
 .empty-state{padding:80px 40px;text-align:center;}
 .empty-icon{font-size:32px;margin-bottom:12px;}
@@ -148,15 +180,11 @@ input[type=range]{width:100%;accent-color:var(--accent);}
 .loading-spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .loading-text{font-family:var(--mono);font-size:11px;color:var(--muted);}
-.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-.section-title{font-family:var(--serif);font-size:22px;font-weight:300;}
-.section-title em{font-style:italic;color:var(--accent);}
-.section-meta{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.showing-label{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:12px;}
 </style>
 </head>
 <body>
 
-<!-- AUTH GATE -->
 <div id="authGate">
   <div class="auth-logo">Burrows &amp; Co. &mdash; <em>Growth Engine</em></div>
   <div class="auth-sub">Private &middot; Sign in required</div>
@@ -164,7 +192,6 @@ input[type=range]{width:100%;accent-color:var(--accent);}
   <div id="authMsg"></div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <div class="topbar">
     <div>
@@ -179,8 +206,20 @@ input[type=range]{width:100%;accent-color:var(--accent);}
     </div>
   </div>
 
+  <!-- COMMAND BAR -->
+  <div class="cmd-bar">
+    <div class="cmd-label">&#x2318; Command &mdash; ask for insights &middot; pull signals &middot; navigate &middot; request new features &middot; link to Claude</div>
+    <div class="cmd-row">
+      <span style="font-size:14px;color:var(--accent);flex-shrink:0;">&#x2318;</span>
+      <input id="cmdInput" class="cmd-inp" placeholder='Ask anything &middot; "Find PE-backed companies in Texas hiring a VP Digital" &middot; "What makes a hot signal?" &middot; "Add invoicing tab"'>
+      <button id="cmdAskBtn" class="cmd-ask">Ask</button>
+    </div>
+    <div id="cmdResp" class="cmd-resp"></div>
+  </div>
+
   <div class="tabs">
     <div class="tab on" data-panel="signals">Signal Feed <span class="badge" id="sigCount">0</span></div>
+    <div class="tab" data-panel="watchlist" id="watchlistTab">Watchlist <span class="badge" id="watchCount">0</span></div>
     <div class="tab" data-panel="briefing" id="briefingTab">Lead Briefing</div>
     <div class="tab" data-panel="outreach" id="outreachTab">Outreach</div>
     <div class="tab" data-panel="events">Events &amp; Conferences</div>
@@ -190,68 +229,116 @@ input[type=range]{width:100%;accent-color:var(--accent);}
 
   <div class="main">
 
+    <!-- SIGNALS -->
     <div class="panel on" id="panel-signals">
-      <div class="section-hdr">
-        <div><div class="section-title">Live <em>Signal Feed</em></div><div class="section-meta" id="sigMeta">Pull signals to see live intelligence</div></div>
+      <div class="signals-toolbar">
+        <div class="signals-toolbar-left">
+          <div class="signals-title">Live <em>Signal Feed</em></div>
+          <div class="signals-meta" id="sigMeta">Pull signals to see live intelligence from your target market</div>
+        </div>
+        <div class="signals-controls">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">Show</span>
+          <select id="sigLimit" class="ctrl-select">
+            <option value="10">10 signals</option>
+            <option value="25">25 signals</option>
+            <option value="50">50 signals</option>
+            <option value="100">100 signals</option>
+          </select>
+          <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">Sort by</span>
+          <select id="sigSort" class="ctrl-select">
+            <option value="date">Latest first</option>
+            <option value="score">ICP Score</option>
+            <option value="urgency">Urgency</option>
+          </select>
+          <button class="filter-btn on" id="filterAll">All</button>
+          <button class="filter-btn" id="filterHot">&#x1F525; Hot</button>
+          <button class="filter-btn" id="filterWarm">&#x26A1; Warm</button>
+        </div>
       </div>
-      <div id="sigContainer"><div class="empty-state"><div class="empty-icon">&#x26A1;</div><div class="empty-title">Ready to pull signals</div><div class="empty-sub">Click "Pull Signals" to scan your target market</div></div></div>
+      <div id="sigContainer"><div class="empty-state"><div class="empty-icon">&#x26A1;</div><div class="empty-title">Ready to pull signals</div><div class="empty-sub">Click "Pull Signals" to scan your target market for live opportunities</div></div></div>
     </div>
 
+    <!-- WATCHLIST -->
+    <div class="panel" id="panel-watchlist">
+      <div class="signals-toolbar">
+        <div><div class="signals-title">&#x2605; <em>Watchlist</em></div><div class="signals-meta">Companies you're tracking — click any to generate a briefing</div></div>
+      </div>
+      <div id="watchContainer"><div class="empty-state"><div class="empty-icon">&#x2605;</div><div class="empty-title">No companies watched yet</div><div class="empty-sub">Click "Watch" on any signal card to add it here</div></div></div>
+    </div>
+
+    <!-- BRIEFING -->
     <div class="panel" id="panel-briefing">
       <div class="back" id="backToSig">&#8592; Back to signals</div>
-      <div id="briefContainer"><div class="empty-state"><div class="empty-icon">&#x1F4CB;</div><div class="empty-title">Select a signal first</div></div></div>
+      <div id="briefContainer"><div class="empty-state"><div class="empty-icon">&#x1F4CB;</div><div class="empty-title">Select a signal first</div><div class="empty-sub">Click any signal card to generate a full lead briefing</div></div></div>
     </div>
 
+    <!-- OUTREACH -->
     <div class="panel" id="panel-outreach">
       <div class="back" id="backToBrief">&#8592; Back to briefing</div>
-      <div id="outContainer"><div class="empty-state"><div class="empty-icon">&#x2709;</div><div class="empty-title">Generate a briefing first</div></div></div>
+      <div id="outContainer"><div class="empty-state"><div class="empty-icon">&#x2709;</div><div class="empty-title">Generate a briefing first</div><div class="empty-sub">Then click "Generate Outreach" to get personalized messages</div></div></div>
     </div>
 
+    <!-- EVENTS -->
     <div class="panel" id="panel-events">
-      <div class="section-hdr">
-        <div><div class="section-title">Events &amp; <em>Conferences</em></div><div class="section-meta">Where your buyers are</div></div>
+      <div class="signals-toolbar">
+        <div><div class="signals-title">Events &amp; <em>Conferences</em></div><div class="signals-meta">Where your buyers are &mdash; attend, speak, or sponsor</div></div>
         <button class="tbtn tbtn-ghost" id="refreshEventsBtn">&#x27F3; Refresh</button>
       </div>
-      <div id="evContainer"><div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading...</div></div></div>
+      <div id="evContainer"><div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading conferences...</div></div></div>
     </div>
 
+    <!-- PLAYBOOK -->
     <div class="panel" id="panel-playbook">
-      <div class="section-hdr"><div><div class="section-title">Prospecting <em>Playbook</em></div><div class="section-meta">B2B best practices baked into every signal and outreach</div></div></div>
+      <div class="signals-toolbar"><div><div class="signals-title">Prospecting <em>Playbook</em></div><div class="signals-meta">B2B best practices baked into every signal, briefing, and outreach</div></div></div>
       <div class="sc"><div class="sc-label">The Core Framework</div><div class="sc-body">
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Trigger-Based Only</strong> &mdash; Only reach out when something happened. No trigger = no signal worth pursuing.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">The 90-Day Window</strong> &mdash; New executives have 90 days to prove themselves. Act within 1 week of the announcement.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Multi-Thread Always</strong> &mdash; Economic buyer + champion + blocker. Reach all three independently.</div>
-        <div style="padding:8px 0;"><strong style="color:var(--accent);">Pain + Budget + Authority</strong> &mdash; A lead only converts when all three exist.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Trigger-Based Only</strong> &mdash; Only reach out when something happened. No trigger = no signal worth pursuing. The trigger is your reason to exist in their inbox.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">The 90-Day Window</strong> &mdash; New executives have 90 days to prove themselves. They buy external advisory fastest in the first 60 days. An exec hire is your single best signal. Act within 1 week.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Multi-Thread Always</strong> &mdash; Never rely on one contact. Identify the economic buyer (approves budget), the champion (uses the service), and the potential blocker. Reach all three independently.</div>
+        <div style="padding:8px 0;"><strong style="color:var(--accent);">Pain + Budget + Authority</strong> &mdash; A lead only converts when all three exist. No budget = waste of time. No authority = long cycle. No pain = no urgency.</div>
       </div></div>
-      <div class="sc"><div class="sc-label">Outreach Rules</div><div class="sc-body">
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Pattern Interrupt</strong> &mdash; Never start with "I hope this finds you well." Start with an insight or observation.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Give Before You Ask</strong> &mdash; Every first touch includes a gift: insight, benchmark, or data point.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">One Ask Per Touch</strong> &mdash; Never ask for a meeting AND a response. One ask only.</div>
-        <div style="padding:8px 0;"><strong style="color:var(--accent);">Follow-Ups Add Value</strong> &mdash; Never say "following up." Every touch adds something new.</div>
+      <div class="sc"><div class="sc-label">Outreach Rules That Work</div><div class="sc-body">
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Pattern Interrupt</strong> &mdash; First line must break the pattern. Never: "I hope this finds you well." Never: "I came across your profile." Start with an insight or a specific observation about their situation.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Give Before You Ask</strong> &mdash; Every first touch includes a gift: a relevant insight, a benchmark, a framework, a stat they haven't seen. You get a response by being useful.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">One Ask Per Touch</strong> &mdash; Never ask for a meeting AND a response AND a call. Pick one. "Worth a conversation?" beats "Can we schedule 30 minutes next week?"</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">LinkedIn DM Under 150 Words</strong> &mdash; People read DMs on mobile. Every sentence must earn its place.</div>
+        <div style="padding:8px 0;"><strong style="color:var(--accent);">Follow-Ups Add Value</strong> &mdash; Never say "following up" or "circling back." Every follow-up touch adds a new piece of value — a case study, an insight, a relevant stat.</div>
       </div></div>
       <div class="sc"><div class="sc-label">Entry Point Strategy</div><div class="sc-body">
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Executive Workshop ($18-30k)</strong> &mdash; Best cold entry. Fixed scope, clear deliverable. Easy to approve.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Discovery Sprint ($15-20k)</strong> &mdash; Best for companies mid-transition. Sells itself into a retainer.</div>
-        <div style="padding:8px 0;"><strong style="color:var(--accent);">Retainer</strong> &mdash; Best sold after Sprint or Workshop proves value. Never cold. Always earned.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Executive Workshop ($18-30k)</strong> &mdash; Best cold entry. 1-2 days, fixed scope, clear deliverable. Easy to approve. Creates dependency for the next engagement.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Discovery Sprint ($15-20k)</strong> &mdash; Best for companies mid-transition. 30-45 days, audit + roadmap + investment case. Almost always sells itself into a retainer.</div>
+        <div style="padding:8px 0;"><strong style="color:var(--accent);">Retainer (any tier)</strong> &mdash; Best sold after a Sprint or Workshop proves value. Never cold. Always earned.</div>
+      </div></div>
+      <div class="sc"><div class="sc-label">Signals That Predict Fast Closes</div><div class="sc-body">
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">New exec + hiring surge together</strong> &mdash; New leader building their team. Needs strategic direction before the team runs in 10 directions. 30-day close window.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Bad quarter + board pressure</strong> &mdash; Budget unlocked by pain. Decision maker needs to show action fast. Fastest close cycle in B2B advisory.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">PE-backed + acquisition</strong> &mdash; PE partner is the real buyer. Entry via the operating partner relationship if possible. One relationship = multiple portfolio companies.</div>
+        <div style="padding:8px 0;"><strong style="color:var(--accent);">Funding + DTC/digital pivot</strong> &mdash; Budget to spend, direction unclear, no internal expertise. Easiest Discovery Sprint pitch.</div>
+      </div></div>
+      <div class="sc"><div class="sc-label">What to Avoid</div><div class="sc-body">
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--red);">Companies mid-layoff</strong> &mdash; No budget, survival mode. Wait 6 months.</div>
+        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--red);">Major consulting firm already engaged</strong> &mdash; If Deloitte, McKinsey, or Accenture is on record, the decision is made. Don't compete — wait for the contract to end.</div>
+        <div style="padding:8px 0;"><strong style="color:var(--red);">No identifiable decision maker</strong> &mdash; If you can't find who owns digital/commercial strategy, the org is too opaque to sell into cold.</div>
       </div></div>
     </div>
 
+    <!-- SETTINGS -->
     <div class="panel" id="panel-settings">
-      <div class="section-hdr"><div><div class="section-title">ICP &amp; <em>Settings</em></div><div class="section-meta">Tune your targeting</div></div></div>
+      <div class="signals-toolbar"><div><div class="signals-title">ICP &amp; <em>Settings</em></div><div class="signals-meta">Tune your targeting &mdash; changes apply to all signal scoring instantly</div></div></div>
       <div class="settings-grid">
-        <div class="settings-card"><div class="settings-title">Target Titles</div><div class="tag-list" id="titleTags"></div><input class="tag-input" id="titleInput" placeholder="Add title + Enter..."></div>
-        <div class="settings-card"><div class="settings-title">Target Industries</div><div class="tag-list" id="indTags"></div><input class="tag-input" id="indInput" placeholder="Add industry + Enter... (blank = all)"></div>
+        <div class="settings-card"><div class="settings-title">Target Titles</div><div class="tag-list" id="titleTags"></div><input class="tag-input" id="titleInput" placeholder="Add title and press Enter..."></div>
+        <div class="settings-card"><div class="settings-title">Target Industries</div><div class="tag-list" id="indTags"></div><input class="tag-input" id="indInput" placeholder="Add industry and press Enter... (blank = all)"></div>
         <div class="settings-card"><div class="settings-title">Signal Triggers</div><div id="sigToggles"></div></div>
         <div class="settings-card">
           <div class="settings-title">Geography</div><div id="geoToggles"></div>
           <div style="margin-top:16px;"><div class="settings-title">Company Size</div>
-            <div class="range-wrap"><div class="range-label"><span>Min employees</span><span id="minV">100</span></div><input type="range" id="minR" min="50" max="5000" step="50" value="100"></div>
-            <div class="range-wrap"><div class="range-label"><span>Max employees</span><span id="maxV">10000</span></div><input type="range" id="maxR" min="500" max="50000" step="500" value="10000"></div>
+            <div style="padding:8px 0;"><div class="range-label"><span>Min employees</span><span id="minV">100</span></div><input type="range" id="minR" min="50" max="5000" step="50" value="100"></div>
+            <div style="padding:8px 0;"><div class="range-label"><span>Max employees</span><span id="maxV">10000</span></div><input type="range" id="maxR" min="500" max="50000" step="500" value="10000"></div>
           </div>
         </div>
         <div class="settings-card full"><div class="settings-title">Custom Signal Keywords</div>
-          <textarea class="tag-input" id="keywords" rows="3" style="resize:vertical;" placeholder="e.g. digital transformation, AI adoption, ecommerce relaunch..."></textarea>
-          <button class="save-btn" id="saveSettingsBtn">Save Settings</button>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Flag any company mentioning these terms in news or job postings</div>
+          <textarea class="tag-input" id="keywords" rows="3" style="resize:vertical;" placeholder="e.g. digital transformation, AI adoption, ecommerce relaunch, growth strategy..."></textarea>
+          <button class="save-btn" id="saveSettingsBtn">Save Settings &amp; Re-score</button>
         </div>
       </div>
     </div>
@@ -260,20 +347,15 @@ input[type=range]{width:100%;accent-color:var(--accent);}
 </div>
 
 <script>
-// ── ALL CODE IN ONE SCRIPT BLOCK ─────────────────────────────
-// No inline onclick anywhere. Everything wired via addEventListener.
-
+// ── STATE ─────────────────────────────────────────────────────
+var URGENCY_RANK = {hot:0,warm:1,new:2};
 var S = {
   signals:[],
+  watchlist:[],
+  dismissed:[],
   selected:null,
   briefing:null,
-  icp:{
-    titles:['VP Digital','VP Growth','CMO','Chief Digital Officer','Chief Growth Officer','VP Marketing','VP Customer Experience','Head of Digital'],
-    industries:[],
-    geos:['NJ/NYC Metro','Texas (Dallas/Austin)','Remote-First'],
-    signals:{exec_hire:true,hiring_surge:true,bad_quarter:true,funding:true,expansion:true,restructure:true,acquisition:true,new_product:true},
-    minEmp:100,maxEmp:10000,keywords:'digital transformation, growth strategy, AI adoption'
-  },
+  activeFilter:'all',
   services:[
     {name:'Light Advisory Retainer',range:'$8k-$12k/mo',fit:'Executive advisory, AI decision framing'},
     {name:'Core Leadership Retainer',range:'$20k-$30k/mo',fit:'Transformation leadership, roadmap ownership'},
@@ -281,214 +363,336 @@ var S = {
     {name:'Discovery & Strategy Sprint',range:'$15k-$20k fixed',fit:'Assessment, roadmap, investment case'},
     {name:'Executive Workshop / Offsite',range:'$18k-$30k/session',fit:'Alignment, decision acceleration, AI strategy'},
     {name:'Project-Based Acceleration',range:'$10k-$100k+',fit:'Defined delivery, partner execution'}
-  ]
+  ],
+  icp:{
+    titles:['VP Digital','VP Growth','CMO','Chief Digital Officer','Chief Growth Officer','VP Marketing','VP Customer Experience','Head of Digital','SVP Marketing','CEO'],
+    industries:[],
+    geos:['NJ/NYC Metro','Texas (Dallas/Austin)','Remote-First'],
+    signals:{exec_hire:true,hiring_surge:true,bad_quarter:true,funding:true,expansion:true,restructure:true,acquisition:true,new_product:true},
+    minEmp:100,maxEmp:10000,keywords:'digital transformation, growth strategy, AI adoption, ecommerce'
+  }
 };
 
-// ── HELPERS ──────────────────────────────────────────────────
-function showPanel(id) {
+// ── HELPERS ───────────────────────────────────────────────────
+function setHtml(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;}
+function showPanel(id){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
   document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
-  var p = document.getElementById('panel-'+id);
-  if(p) p.classList.add('on');
-  var t = document.querySelector('[data-panel="'+id+'"]');
-  if(t) t.classList.add('on');
+  var p=document.getElementById('panel-'+id);if(p)p.classList.add('on');
+  var t=document.querySelector('[data-panel="'+id+'"]');if(t)t.classList.add('on');
 }
+function loading(id){setHtml(id,'<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading...</div></div>');}
 
-function setHtml(id, html) { var el=document.getElementById(id); if(el) el.innerHTML=html; }
-
-function loading(id) { setHtml(id,'<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading...</div></div>'); }
-
-// ── AUTH ─────────────────────────────────────────────────────
-document.getElementById('signInBtn').addEventListener('click', function() {
-  var btn = document.getElementById('signInBtn');
-  btn.textContent = 'Opening Google...';
-  var provider = new firebase.auth.GoogleAuthProvider();
+// ── AUTH ──────────────────────────────────────────────────────
+document.getElementById('signInBtn').addEventListener('click',function(){
+  var btn=document.getElementById('signInBtn');
+  btn.textContent='Opening Google...';
+  var provider=new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({hd:'burrowsadvisory.com'});
   firebase.auth().signInWithPopup(provider)
-    .then(function(r) {
-      var email = r.user.email||'';
-      if(!email.endsWith('@burrowsadvisory.com')) {
-        firebase.auth().signOut();
-        btn.textContent='Sign in with Google';
-        document.getElementById('authMsg').textContent='Restricted to @burrowsadvisory.com accounts.';
-        return;
-      }
+    .then(function(r){
+      var email=r.user.email||'';
+      if(!email.endsWith('@burrowsadvisory.com')){firebase.auth().signOut();btn.textContent='Sign in with Google';document.getElementById('authMsg').textContent='Restricted to @burrowsadvisory.com';return;}
       onSignedIn(r.user);
     })
-    .catch(function(e) {
+    .catch(function(e){
       btn.textContent='Sign in with Google';
-      document.getElementById('authMsg').textContent = e.code==='auth/popup-blocked' ? 'Allow popups for this site then try again.' : 'Error: '+e.code;
+      document.getElementById('authMsg').textContent=e.code==='auth/popup-blocked'?'Allow popups for this site then try again.':'Error: '+e.code;
     });
 });
 
-firebase.auth().onAuthStateChanged(function(user) {
-  if(user && user.email && user.email.endsWith('@burrowsadvisory.com')) {
-    onSignedIn(user);
-  }
+firebase.auth().onAuthStateChanged(function(user){
+  if(user&&user.email&&user.email.endsWith('@burrowsadvisory.com'))onSignedIn(user);
 });
 
-function onSignedIn(user) {
+function onSignedIn(user){
   document.getElementById('authGate').style.display='none';
   document.getElementById('app').style.display='flex';
-  document.getElementById('userLbl').textContent = user.displayName || user.email;
+  document.getElementById('userLbl').textContent=user.displayName||user.email;
   loadEvents();
   renderSettings();
 }
 
-document.getElementById('signOutBtn').addEventListener('click', function() {
-  firebase.auth().signOut().then(function(){ location.reload(); });
+document.getElementById('signOutBtn').addEventListener('click',function(){
+  firebase.auth().signOut().then(function(){location.reload();});
 });
 
-// ── NAV ──────────────────────────────────────────────────────
-document.querySelectorAll('.tab').forEach(function(t) {
-  t.addEventListener('click', function() { showPanel(t.getAttribute('data-panel')); });
+// ── NAV ───────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){showPanel(t.getAttribute('data-panel'));});
 });
+document.getElementById('backToSig').addEventListener('click',function(){showPanel('signals');});
+document.getElementById('backToBrief').addEventListener('click',function(){showPanel('briefing');});
 
-document.getElementById('backToSig').addEventListener('click', function(){ showPanel('signals'); });
-document.getElementById('backToBrief').addEventListener('click', function(){ showPanel('briefing'); });
+// ── FILTER + SORT ─────────────────────────────────────────────
+document.getElementById('filterAll').addEventListener('click',function(){setFilter('all');});
+document.getElementById('filterHot').addEventListener('click',function(){setFilter('hot');});
+document.getElementById('filterWarm').addEventListener('click',function(){setFilter('warm');});
+document.getElementById('sigSort').addEventListener('change',renderSignals);
+document.getElementById('sigLimit').addEventListener('change',renderSignals);
 
-// ── SIGNALS ──────────────────────────────────────────────────
-document.getElementById('pullBtn').addEventListener('click', pullSignals);
-document.getElementById('refreshEventsBtn').addEventListener('click', loadEvents);
+function setFilter(f){
+  S.activeFilter=f;
+  document.getElementById('filterAll').classList.toggle('on',f==='all');
+  document.getElementById('filterHot').classList.toggle('on',f==='hot');
+  document.getElementById('filterWarm').classList.toggle('on',f==='warm');
+  renderSignals();
+}
 
-async function pullSignals() {
-  var btn = document.getElementById('pullBtn');
-  btn.disabled=true; btn.textContent='Scanning...';
+function getSortedFiltered(){
+  var limit=parseInt(document.getElementById('sigLimit').value)||10;
+  var sort=document.getElementById('sigSort').value||'date';
+  var sigs=S.signals.filter(function(s){return S.dismissed.indexOf(s.company)<0;});
+  if(S.activeFilter==='hot')sigs=sigs.filter(function(s){return s.urgency==='hot';});
+  if(S.activeFilter==='warm')sigs=sigs.filter(function(s){return s.urgency==='hot'||s.urgency==='warm';});
+  if(sort==='score')sigs.sort(function(a,b){return b.icpScore-a.icpScore;});
+  else if(sort==='urgency')sigs.sort(function(a,b){return (URGENCY_RANK[a.urgency]||2)-(URGENCY_RANK[b.urgency]||2);});
+  else sigs.sort(function(a,b){return (b.signalDate||0)-(a.signalDate||0);});
+  return sigs.slice(0,limit);
+}
+
+// ── PULL SIGNALS ──────────────────────────────────────────────
+document.getElementById('pullBtn').addEventListener('click',pullSignals);
+document.getElementById('refreshEventsBtn').addEventListener('click',loadEvents);
+
+async function pullSignals(){
+  var btn=document.getElementById('pullBtn');
+  btn.disabled=true;btn.textContent='Scanning...';
   loading('sigContainer');
-  document.getElementById('sigMeta').textContent='Scanning market...';
-  var icp='Titles: '+S.icp.titles.join(', ')+'. Industries: '+(S.icp.industries.length?S.icp.industries.join(', '):'all')+'. Geo: '+S.icp.geos.join(', ')+'. Size: '+S.icp.minEmp+'-'+S.icp.maxEmp+'.';
-  try {
-    var resp = await fetch('https://api.anthropic.com/v1/messages',{
+  document.getElementById('sigMeta').textContent='Scanning market with live web search...';
+  var limit=parseInt(document.getElementById('sigLimit').value)||10;
+  var icpDesc='Titles: '+S.icp.titles.join(', ')+'. Industries: '+(S.icp.industries.length?S.icp.industries.join(', '):'all industries')+'. Geo: '+S.icp.geos.join(', ')+'. Size: '+S.icp.minEmp+'-'+S.icp.maxEmp+' employees.';
+  try{
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        model:'claude-sonnet-4-20250514',max_tokens:4000,
         tools:[{type:'web_search_20250305',name:'web_search'}],
-        system:'Revenue intelligence analyst for Burrows & Co. Digital Advisory. ICP: '+icp+' Find 6 real current signals (2025-2026): exec hires, funding, bad quarters, hiring surges, expansions. NJ/NYC, Texas, or remote-first companies. All industries. Respond ONLY with JSON: {"signals":[{"company":"","industry":"","location":"","size":"","trigger":"","triggerType":"exec_hire","why":"","urgency":"hot","icpScore":8,"decisionMaker":"","decisionMakerTitle":"","source":""}]}',
-        messages:[{role:'user',content:'Find 6 current high-value business development signals. Use web search for real 2025-2026 executive moves and company news.'}]
+        system:'You are a revenue intelligence analyst for Burrows & Co. Digital Advisory. ICP: '+icpDesc+' Services: Light Advisory ($8-12k/mo), Core Leadership ($20-30k/mo), Deep Embed ($35-55k/mo), Discovery Sprint ($15-20k fixed), Executive Workshops ($18-30k/session). Search for '+limit+' real current signals (2025-2026): executive hires (VP Digital, CMO, VP Growth, CDO), funding rounds, bad quarters, hiring surges, acquisitions, new product launches, market expansions. Focus on NJ/NYC, Texas (Dallas/Austin), remote-first companies. All industries welcome. For each signal assign a signalDate as a Unix timestamp (milliseconds) based on when the event happened. Respond ONLY with valid JSON: {"signals":[{"company":"","industry":"","location":"","size":"","trigger":"","triggerType":"exec_hire","why":"","urgency":"hot","icpScore":8,"decisionMaker":"","decisionMakerTitle":"","source":"","signalDate":1234567890000,"dateLabel":"Apr 5, 2026"}]}',
+        messages:[{role:'user',content:'Search for '+limit+' current high-value business development signals for Burrows & Co. Use web search to find real 2025-2026 company news, executive moves, and growth signals.'}]
       })
     });
     var data=await resp.json();
     var txt=data.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
     var m=txt.match(/\{[\s\S]*\}/);
-    if(!m) throw new Error('no json');
-    S.signals=JSON.parse(m[0]).signals||[];
+    if(!m)throw new Error('no json');
+    var parsed=JSON.parse(m[0]).signals||[];
+    // Ensure all have signalDate
+    var now=Date.now();
+    S.signals=parsed.map(function(s,i){if(!s.signalDate)s.signalDate=now-(i*6*3600000);if(!s.dateLabel)s.dateLabel=new Date(s.signalDate).toLocaleDateString('en-US',{month:'short',day:'numeric'});return s;});
     renderSignals();
-    document.getElementById('sigMeta').textContent='Last scanned: '+new Date().toLocaleTimeString()+' · '+S.signals.length+' signals · Click any to generate briefing';
-  } catch(e) { loadFallbackSignals(); }
-  btn.disabled=false; btn.textContent='⟳ Pull Signals';
+    document.getElementById('sigMeta').textContent='Last scanned: '+new Date().toLocaleTimeString()+' · '+S.signals.length+' signals found · Click any to generate briefing';
+  }catch(e){console.log('pull error:',e);loadFallbackSignals();}
+  btn.disabled=false;btn.textContent='⟳ Pull Signals';
 }
 
-function loadFallbackSignals() {
+function loadFallbackSignals(){
+  var now=Date.now();
   S.signals=[
-    {company:'Momentum Health',industry:'Healthcare / Wellness',location:'Austin, TX',size:'800 employees',trigger:'New Chief Digital Officer hired from Amazon — digital overhaul expected Q1 2026',triggerType:'exec_hire',why:'New CDO from tech background drives external advisory need in first 90 days',urgency:'hot',icpScore:9,decisionMaker:'Sarah Chen',decisionMakerTitle:'Chief Digital Officer',source:'LinkedIn'},
-    {company:'Vantage Brands',industry:'Consumer Goods / DTC',location:'NYC, NY',size:'1,200 employees',trigger:'Q3 miss — revenue down 18% YoY, board announced "digital acceleration" mandate',triggerType:'bad_quarter',why:'Public pressure + board mandate creates immediate budget for transformation advisory',urgency:'hot',icpScore:9,decisionMaker:'Marcus Reid',decisionMakerTitle:'CMO',source:'Press release'},
-    {company:'Atlas Fitness',industry:'Fitness / PE-backed Rollup',location:'Dallas, TX',size:'2,400 employees',trigger:'3 acquisitions in 12 months — needs unified digital and commercial infrastructure',triggerType:'acquisition',why:'PE-backed rollup with fragmented digital stack is core ICP — Core Leadership or Deep Embed',urgency:'hot',icpScore:9,decisionMaker:'Jennifer Torres',decisionMakerTitle:'VP Growth',source:'PitchBook'},
-    {company:'Meridian Financial',industry:'Financial Services',location:'Hoboken, NJ',size:'600 employees',trigger:'Raised $45M Series C, actively hiring VP Digital and 8 marketing roles',triggerType:'funding',why:'Post-funding hiring surge in digital signals need for senior strategic guidance while team builds',urgency:'warm',icpScore:8,decisionMaker:'David Park',decisionMakerTitle:'VP Digital',source:'LinkedIn'},
-    {company:'Clearwater Foods',industry:'CPG / Food & Beverage',location:'Remote-first (NJ HQ)',size:'450 employees',trigger:'Launching DTC channel for first time after 20 years of wholesale-only distribution',triggerType:'new_product',why:'DTC launch requires digital strategy, conversion optimization, and lifecycle expertise',urgency:'warm',icpScore:7,decisionMaker:'Allison Wright',decisionMakerTitle:'VP Marketing',source:'Company blog'},
-    {company:'Summit Medical Group',industry:'Healthcare / Multi-location',location:'NJ/NY Metro',size:'5,000 employees',trigger:'New VP Customer Experience hired, 12 digital roles posted, restructuring patient digital journey',triggerType:'hiring_surge',why:'Large healthcare group restructuring digital patient experience — Core Leadership opportunity',urgency:'new',icpScore:7,decisionMaker:'Robert Kim',decisionMakerTitle:'VP Customer Experience',source:'LinkedIn'}
+    {company:'Momentum Health',industry:'Healthcare / Wellness',location:'Austin, TX',size:'800 employees',trigger:'New Chief Digital Officer hired from Amazon — digital overhaul expected Q2 2026',triggerType:'exec_hire',why:'New CDO from tech drives external advisory need in first 90 days',urgency:'hot',icpScore:9,decisionMaker:'Sarah Chen',decisionMakerTitle:'Chief Digital Officer',source:'LinkedIn',signalDate:now-1*86400000,dateLabel:'Apr 6, 2026'},
+    {company:'Vantage Brands',industry:'Consumer Goods / DTC',location:'NYC, NY',size:'1,200 employees',trigger:'Q3 miss — revenue down 18% YoY, board announced digital acceleration mandate',triggerType:'bad_quarter',why:'Board pressure + public miss creates immediate budget for transformation advisory',urgency:'hot',icpScore:9,decisionMaker:'Marcus Reid',decisionMakerTitle:'CMO',source:'Press release',signalDate:now-2*86400000,dateLabel:'Apr 5, 2026'},
+    {company:'Atlas Fitness',industry:'Fitness / PE-backed Rollup',location:'Dallas, TX',size:'2,400 employees',trigger:'3 acquisitions in 12 months — fragmented digital infrastructure across all brands',triggerType:'acquisition',why:'PE-backed rollup with fragmented digital stack — Core Leadership or Deep Embed',urgency:'hot',icpScore:9,decisionMaker:'Jennifer Torres',decisionMakerTitle:'VP Growth',source:'PitchBook',signalDate:now-3*86400000,dateLabel:'Apr 4, 2026'},
+    {company:'Meridian Financial',industry:'Financial Services',location:'Hoboken, NJ',size:'600 employees',trigger:'Raised $45M Series C, hiring VP Digital and 8 marketing roles simultaneously',triggerType:'funding',why:'Post-funding surge signals need for senior strategic guidance while team builds',urgency:'warm',icpScore:8,decisionMaker:'David Park',decisionMakerTitle:'VP Digital',source:'LinkedIn',signalDate:now-4*86400000,dateLabel:'Apr 3, 2026'},
+    {company:'Clearwater Foods',industry:'CPG / Food & Beverage',location:'Remote-first (NJ HQ)',size:'450 employees',trigger:'Launching DTC channel for first time after 20 years of wholesale-only distribution',triggerType:'new_product',why:'DTC launch requires digital strategy, conversion optimization, and lifecycle expertise',urgency:'warm',icpScore:7,decisionMaker:'Allison Wright',decisionMakerTitle:'VP Marketing',source:'Company blog',signalDate:now-5*86400000,dateLabel:'Apr 2, 2026'},
+    {company:'Summit Medical Group',industry:'Healthcare / Multi-location',location:'NJ/NY Metro',size:'5,000 employees',trigger:'New VP Customer Experience hired, 12 digital roles posted, restructuring patient journey',triggerType:'hiring_surge',why:'Large healthcare group restructuring digital experience — Core Leadership opportunity',urgency:'warm',icpScore:7,decisionMaker:'Robert Kim',decisionMakerTitle:'VP Customer Experience',source:'LinkedIn',signalDate:now-6*86400000,dateLabel:'Apr 1, 2026'},
+    {company:'NovaTech Solutions',industry:'B2B SaaS',location:'Austin, TX',size:'320 employees',trigger:'New VP of Growth hired from HubSpot, company shifting from PLG to enterprise sales motion',triggerType:'exec_hire',why:'Motion shift from PLG to enterprise requires commercial digital transformation advisory',urgency:'hot',icpScore:8,decisionMaker:'Alex Rivera',decisionMakerTitle:'VP Growth',source:'LinkedIn',signalDate:now-7*86400000,dateLabel:'Mar 31, 2026'},
+    {company:'Coastal Pet Health',industry:'Animal Health / Veterinary',location:'Dallas, TX',size:'1,100 employees',trigger:'Series B raised $28M, expanding from 3 to 12 locations, hiring commercial team',triggerType:'funding',why:'Multi-location expansion into new markets with no digital infrastructure — clear advisory need',urgency:'warm',icpScore:8,decisionMaker:'Dr. Lisa Park',decisionMakerTitle:'Chief Growth Officer',source:'TechCrunch',signalDate:now-8*86400000,dateLabel:'Mar 30, 2026'},
+    {company:'Empire Dental Group',industry:'Dental / PE-backed',location:'NJ/NY Metro',size:'800 employees',trigger:'PE-backed rollup — 8 acquisitions since 2024, no unified patient digital journey',triggerType:'acquisition',why:'Classic PE rollup with disconnected digital — Deep Embed opportunity across full portfolio',urgency:'hot',icpScore:9,decisionMaker:'Michael Torres',decisionMakerTitle:'VP Marketing',source:'PitchBook',signalDate:now-9*86400000,dateLabel:'Mar 29, 2026'},
+    {company:'Bright Horizons Digital',industry:'Education / EdTech',location:'Remote-first',size:'2,200 employees',trigger:'New CMO hired from Netflix, tasked with building consumer digital business',triggerType:'exec_hire',why:'New CMO from consumer tech will immediately seek external advisory to audit current state',urgency:'hot',icpScore:8,decisionMaker:'Priya Sharma',decisionMakerTitle:'CMO',source:'LinkedIn',signalDate:now-10*86400000,dateLabel:'Mar 28, 2026'}
   ];
   renderSignals();
   document.getElementById('sigCount').textContent=S.signals.length;
-  document.getElementById('sigMeta').textContent='Sample signals shown · Click Pull Signals for live intelligence';
+  document.getElementById('sigMeta').textContent='Showing sample signals &middot; Pull Signals for live intelligence';
 }
 
-function renderSignals() {
+// ── RENDER SIGNALS ────────────────────────────────────────────
+function renderSignals(){
   document.getElementById('sigCount').textContent=S.signals.length;
-  if(!S.signals.length){setHtml('sigContainer','<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No signals found</div><div class="empty-sub">Adjust ICP settings and try again</div></div>');return;}
+  var filtered=getSortedFiltered();
+  if(!S.signals.length){setHtml('sigContainer','<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No signals yet</div><div class="empty-sub">Click Pull Signals to scan the market</div></div>');return;}
+  if(!filtered.length){setHtml('sigContainer','<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No signals match this filter</div><div class="empty-sub">Try "All" or adjust your ICP settings</div></div>');return;}
   var tmap={exec_hire:'👤 Exec Hire',hiring_surge:'📈 Hiring Surge',bad_quarter:'📉 Bad Quarter',funding:'💰 Funding',expansion:'🌎 Expansion',restructure:'🔄 Restructure',acquisition:'🤝 Acquisition',new_product:'🚀 New Product'};
-  var html='<div class="signals-grid">'+S.signals.map(function(s,i){
-    var sc=s.icpScore>=8?'hi':s.icpScore>=6?'mid':'lo';
-    return '<div class="sig-card '+s.urgency+'" data-i="'+i+'">'+
-      '<div class="sig-top"><div><div class="sig-co">'+s.company+'</div><div class="sig-ind">'+s.industry+' &middot; '+s.location+'</div></div>'+
-      '<div class="sig-right"><div class="score '+sc+'">ICP '+s.icpScore+'/10</div><div class="urg '+s.urgency+'">'+s.urgency+'</div></div></div>'+
-      '<div class="sig-trigger"><strong>'+(tmap[s.triggerType]||s.triggerType)+':</strong> '+s.trigger+'</div>'+
-      '<div class="sig-tags"><span class="sig-tag">'+s.size+'</span><span class="sig-tag">'+s.decisionMakerTitle+'</span>'+(s.source?'<span class="sig-tag">via '+s.source+'</span>':'')+'</div>'+
+  var html='<div class="showing-label">Showing '+filtered.length+' of '+S.signals.length+' signals</div><div class="signals-grid">'+
+    filtered.map(function(s){
+      var idx=S.signals.indexOf(s);
+      var sc=s.icpScore>=8?'hi':s.icpScore>=6?'mid':'lo';
+      var isWatched=S.watchlist.indexOf(s.company)>-1;
+      return '<div class="sig-card '+s.urgency+(isWatched?' watched':'')+'" data-i="'+idx+'">'+
+        '<div class="sig-top">'+
+          '<div><div class="sig-co">'+s.company+'</div><div class="sig-ind">'+s.industry+' &middot; '+s.location+'</div></div>'+
+          '<div class="sig-right"><div class="score '+sc+'">ICP '+s.icpScore+'/10</div><div class="urg '+s.urgency+'">'+s.urgency+'</div></div>'+
+        '</div>'+
+        '<div class="sig-trigger"><strong>'+(tmap[s.triggerType]||s.triggerType)+':</strong> '+s.trigger+'</div>'+
+        '<div class="sig-footer">'+
+          '<div class="sig-tags">'+
+            '<span class="sig-tag">'+s.size+'</span>'+
+            '<span class="sig-tag">'+s.decisionMakerTitle+'</span>'+
+            (s.source?'<span class="sig-tag">via '+s.source+'</span>':'')+
+            '<span class="sig-tag">📅 '+(s.dateLabel||'Recent')+'</span>'+
+          '</div>'+
+          '<div class="sig-actions">'+
+            '<button class="sig-btn watch'+(isWatched?' on':'')+'" data-co="'+s.company+'">'+(isWatched?'★ Watching':'☆ Watch')+'</button>'+
+            '<button class="sig-btn brief" data-i="'+idx+'">Brief →</button>'+
+            '<button class="sig-btn dismiss" data-co="'+s.company+'">✕</button>'+
+          '</div>'+
+        '</div>'+
       '</div>';
-  }).join('')+'</div>';
+    }).join('')+'</div>';
   setHtml('sigContainer',html);
-  document.querySelectorAll('.sig-card').forEach(function(card){
-    card.addEventListener('click', function(){ selectSignal(+card.getAttribute('data-i')); });
+  // Wire clicks
+  document.querySelectorAll('#sigContainer .sig-card').forEach(function(card){
+    card.addEventListener('click',function(e){
+      if(e.target.classList.contains('sig-btn'))return;
+      selectSignal(+card.getAttribute('data-i'));
+    });
+  });
+  document.querySelectorAll('.sig-btn.watch').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var co=btn.getAttribute('data-co');
+      var idx=S.watchlist.indexOf(co);
+      if(idx>-1)S.watchlist.splice(idx,1);else S.watchlist.push(co);
+      document.getElementById('watchCount').textContent=S.watchlist.length;
+      renderSignals();
+      renderWatchlist();
+    });
+  });
+  document.querySelectorAll('.sig-btn.brief').forEach(function(btn){
+    btn.addEventListener('click',function(e){e.stopPropagation();selectSignal(+btn.getAttribute('data-i'));});
+  });
+  document.querySelectorAll('.sig-btn.dismiss').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var co=btn.getAttribute('data-co');
+      if(S.dismissed.indexOf(co)<0)S.dismissed.push(co);
+      renderSignals();
+    });
   });
 }
 
-// ── BRIEFING ─────────────────────────────────────────────────
-async function selectSignal(i) {
+function renderWatchlist(){
+  document.getElementById('watchCount').textContent=S.watchlist.length;
+  if(!S.watchlist.length){setHtml('watchContainer','<div class="empty-state"><div class="empty-icon">★</div><div class="empty-title">No companies watched yet</div><div class="empty-sub">Click "Watch" on any signal to add it here</div></div>');return;}
+  var watched=S.signals.filter(function(s){return S.watchlist.indexOf(s.company)>-1;});
+  var tmap={exec_hire:'👤 Exec Hire',hiring_surge:'📈 Hiring Surge',bad_quarter:'📉 Bad Quarter',funding:'💰 Funding',expansion:'🌎 Expansion',restructure:'🔄 Restructure',acquisition:'🤝 Acquisition',new_product:'🚀 New Product'};
+  var html='<div class="signals-grid">'+watched.map(function(s){
+    var idx=S.signals.indexOf(s);
+    var sc=s.icpScore>=8?'hi':s.icpScore>=6?'mid':'lo';
+    return '<div class="sig-card '+s.urgency+' watched" data-i="'+idx+'">'+
+      '<div class="sig-top"><div><div class="sig-co">★ '+s.company+'</div><div class="sig-ind">'+s.industry+' &middot; '+s.location+'</div></div>'+
+      '<div class="sig-right"><div class="score '+sc+'">ICP '+s.icpScore+'/10</div><div class="urg '+s.urgency+'">'+s.urgency+'</div></div></div>'+
+      '<div class="sig-trigger"><strong>'+(tmap[s.triggerType]||s.triggerType)+':</strong> '+s.trigger+'</div>'+
+      '<div class="sig-footer"><div class="sig-tags"><span class="sig-tag">'+s.decisionMaker+'</span><span class="sig-tag">📅 '+(s.dateLabel||'Recent')+'</span></div>'+
+      '<div class="sig-actions"><button class="sig-btn brief" data-i="'+idx+'">Brief →</button><button class="sig-btn watch on unwatch" data-co="'+s.company+'">★ Unwatch</button></div></div>'+
+    '</div>';
+  }).join('')+'</div>';
+  setHtml('watchContainer',html);
+  document.querySelectorAll('#watchContainer .sig-card').forEach(function(card){
+    card.addEventListener('click',function(e){if(e.target.classList.contains('sig-btn'))return;selectSignal(+card.getAttribute('data-i'));});
+  });
+  document.querySelectorAll('#watchContainer .brief').forEach(function(btn){
+    btn.addEventListener('click',function(e){e.stopPropagation();selectSignal(+btn.getAttribute('data-i'));});
+  });
+  document.querySelectorAll('#watchContainer .unwatch').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var co=btn.getAttribute('data-co');
+      S.watchlist.splice(S.watchlist.indexOf(co),1);
+      renderSignals();renderWatchlist();
+    });
+  });
+}
+
+// ── BRIEFING ──────────────────────────────────────────────────
+async function selectSignal(i){
   S.selected=S.signals[i];
   showPanel('briefing');
   loading('briefContainer');
   var sig=S.selected;
-  try {
+  try{
     var resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
-        system:'BD analyst for Burrows & Co. Services: '+S.services.map(function(s){return s.name+' ('+s.range+')';}).join(', ')+'. Respond ONLY with JSON: {"snapshot":"","painPoints":["","",""],"whyNow":"","primaryService":"","secondaryService":"","pitchAngle":"","firstMove":"","talkingPoints":["","",""],"additionalDMs":[{"name":"","title":""}]}',
-        messages:[{role:'user',content:'Briefing for: '+JSON.stringify(sig)}]
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:'Senior BD analyst for Burrows & Co. Digital Advisory. Services: '+S.services.map(function(s){return s.name+' ('+s.range+')';}).join(', ')+'. Use Challenger Sale framework — teach them something about their situation, reframe their problem. Respond ONLY with JSON: {"snapshot":"specific hypothesis not generic description","painPoints":["business pain","personal pain for DM","team pain"],"whyNow":"why this window closes","primaryService":"","secondaryService":"","entryPoint":"lowest risk first engagement","pitchAngle":"challenger reframe","firstMove":"specific action","nextMoves":["move 2 in 3 days","move 3 in 7 days"],"talkingPoints":["insight 1","insight 2","insight 3"],"valueGiveaway":"one insight they get value from even without hiring","competitiveAngle":"why Burrows specifically","additionalDMs":[{"name":"","title":""}]}',
+        messages:[{role:'user',content:'Generate full lead briefing for: '+JSON.stringify(sig)}]
       })
     });
     var d=await resp.json();
     var txt=d.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
     var m=txt.match(/\{[\s\S]*\}/);
     S.briefing=m?JSON.parse(m[0]):null;
-  } catch(e){ S.briefing=null; }
-  if(!S.briefing) S.briefing={snapshot:sig.company+' represents a strong opportunity based on the '+sig.trigger+'.',painPoints:['Digital transformation urgency','Leadership bandwidth constraints','Growth execution pressure'],whyNow:'The recent '+sig.triggerType.replace(/_/g,' ')+' creates a 60-90 day window for external advisory.',primaryService:'Discovery & Strategy Sprint',secondaryService:'Core Leadership Retainer',pitchAngle:'Burrows & Co. helps companies like '+sig.company+' turn inflection moments into accelerated growth.',firstMove:'LinkedIn outreach to '+sig.decisionMaker,talkingPoints:['30-45 day Discovery Sprint delivers a funded roadmap','We own outcomes alongside you — not a deck and disappear firm','Entry is low-risk: fixed scope, clear deliverable'],additionalDMs:[]};
+  }catch(e){S.briefing=null;}
+  if(!S.briefing)S.briefing={snapshot:sig.company+' represents a strong opportunity. The '+sig.trigger+' creates an immediate window for advisory engagement.',painPoints:['Digital transformation urgency without senior leadership bandwidth','Decision maker under pressure to show results in first 90 days','Team building without a clear strategic north star'],whyNow:'The recent '+sig.triggerType.replace(/_/g,' ')+' creates a 60-90 day window. After that, internal priorities lock in and external advisory becomes harder to justify.',primaryService:'Discovery & Strategy Sprint',secondaryService:'Core Leadership Retainer',entryPoint:'Executive Workshop — half-day alignment session to prove value before any retainer commitment.',pitchAngle:'Most companies in this situation build the team first, then wonder why the strategy is not working. Burrows & Co. helps you get the strategy right first so the team executes in the same direction from day one.',firstMove:'LinkedIn outreach to '+sig.decisionMaker+' referencing the specific '+sig.triggerType.replace(/_/g,' '),nextMoves:['Follow up in 3 days with a relevant insight about their industry','Share a case study of similar company 7 days after first touch'],talkingPoints:['Discovery Sprint delivers a funded roadmap in 30-45 days','We embed alongside your team — not a deck and disappear firm','Entry is low risk: fixed scope, clear deliverable, no retainer to start'],valueGiveaway:'Companies that engage external advisory in the first 60 days of a leadership transition move 2x faster on their roadmap than those who wait until the team is fully built.',competitiveAngle:'Unlike large consulting firms, Burrows & Co. is boutique enough to be embedded — you get Phil and Mindy, not a team of analysts. We own outcomes alongside you.',additionalDMs:[{name:'CFO / Finance Lead',title:'VP Finance'},{name:'Operating Partner',title:'PE Operating Partner (if PE-backed)'}]};
   var b=S.briefing;
   var svc=S.services.find(function(s){return s.name===b.primaryService;})||S.services[3];
   var svc2=S.services.find(function(s){return s.name===b.secondaryService;})||S.services[1];
   setHtml('briefContainer',
     '<div class="hero">'+
     '<div class="hero-co">'+sig.company+' <em>Briefing</em></div>'+
-    '<div class="hero-meta">'+sig.industry+' &middot; '+sig.location+' &middot; '+sig.size+'</div>'+
+    '<div class="hero-meta">'+sig.industry+' &middot; '+sig.location+' &middot; '+sig.size+' &middot; Signal date: '+(sig.dateLabel||'Recent')+'</div>'+
     '<div class="hero-grid">'+
     '<div class="hero-stat"><div class="stat-label">ICP Score</div><div class="stat-val ac">'+sig.icpScore+'/10</div></div>'+
     '<div class="hero-stat"><div class="stat-label">Urgency</div><div class="stat-val">'+sig.urgency.toUpperCase()+'</div></div>'+
-    '<div class="hero-stat"><div class="stat-label">Decision Maker</div><div class="stat-val">'+sig.decisionMaker+'</div></div>'+
-    '<div class="hero-stat"><div class="stat-label">First Move</div><div class="stat-val">'+b.firstMove+'</div></div>'+
+    '<div class="hero-stat"><div class="stat-label">Primary Contact</div><div class="stat-val">'+sig.decisionMaker+'</div></div>'+
+    '<div class="hero-stat"><div class="stat-label">Entry Point</div><div class="stat-val" style="font-size:12px;">'+(b.entryPoint||b.firstMove||'Discovery Sprint')+'</div></div>'+
     '</div><div style="font-size:13px;line-height:1.6;">'+b.snapshot+'</div></div>'+
     '<div class="sc"><div class="sc-label">Why Right Now</div><div class="sc-body">'+b.whyNow+'</div></div>'+
     '<div class="sc"><div class="sc-label">Pain Points</div><div class="sc-body">'+(b.painPoints||[]).map(function(p){return '<div style="padding:6px 0;border-bottom:1px solid var(--border);">&rarr; '+p+'</div>';}).join('')+'</div></div>'+
-    '<div class="sc"><div class="sc-label">Pitch Angle</div><div class="sc-body" style="color:var(--accent);">'+b.pitchAngle+'</div></div>'+
+    '<div class="sc"><div class="sc-label">Challenger Pitch Angle</div><div class="sc-body" style="color:var(--accent);">'+b.pitchAngle+'</div></div>'+
+    (b.valueGiveaway?'<div class="sc" style="border-color:rgba(200,240,90,.2);"><div class="sc-label">Value Giveaway — Lead With This</div><div class="sc-body" style="font-style:italic;">'+b.valueGiveaway+'</div></div>':'')+
     '<div class="sc"><div class="sc-label">Service Match</div>'+
     '<div class="svc-match"><div><div class="svc-name">'+svc.name+'</div><div style="font-size:11px;color:var(--muted);">'+svc.fit+'</div></div><div style="display:flex;gap:8px;align-items:center;"><span class="svc-range">'+svc.range+'</span><span class="svc-badge">Primary</span></div></div>'+
     '<div class="svc-match" style="opacity:.7;"><div><div class="svc-name">'+svc2.name+'</div></div><div><span class="svc-range">'+svc2.range+'</span></div></div></div>'+
-    '<div class="sc"><div class="sc-label">Talking Points</div><div class="sc-body">'+(b.talkingPoints||[]).map(function(p,i){return '<div style="padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--accent);font-family:var(--mono);font-size:10px;margin-right:8px;">'+(i+1)+'</span>'+p+'</div>';}).join('')+'</div></div>'+
-    '<div class="action-row"><button class="abtn primary" id="genOutBtn">&rarr; Generate Outreach</button></div>'
+    '<div class="sc"><div class="sc-label">Decision Makers</div><div class="sc-body">'+
+    '<div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong>'+sig.decisionMaker+'</strong> &mdash; '+sig.decisionMakerTitle+' &middot; Primary target</div>'+
+    (b.additionalDMs||[]).map(function(d){return '<div style="padding:8px 0;border-bottom:1px solid var(--border);">'+d.name+' &mdash; '+d.title+'</div>';}).join('')+
+    '</div></div>'+
+    '<div class="sc"><div class="sc-label">First 3 Moves</div><div class="sc-body">'+
+    '<div style="padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--accent);font-family:var(--mono);font-size:10px;margin-right:8px;">Move 1</span>'+(b.firstMove||'LinkedIn outreach')+'</div>'+
+    (b.nextMoves||[]).map(function(m,i){return '<div style="padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--accent);font-family:var(--mono);font-size:10px;margin-right:8px;">Move '+(i+2)+'</span>'+m+'</div>';}).join('')+
+    '</div></div>'+
+    '<div class="sc"><div class="sc-label">Insight-Led Talking Points</div><div class="sc-body">'+(b.talkingPoints||[]).map(function(p,i){return '<div style="padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--accent);font-family:var(--mono);font-size:10px;margin-right:8px;">'+(i+1)+'</span>'+p+'</div>';}).join('')+'</div></div>'+
+    (b.competitiveAngle?'<div class="sc"><div class="sc-label">Why Burrows & Co. Specifically</div><div class="sc-body">'+b.competitiveAngle+'</div></div>':'')+
+    '<div class="action-row"><button class="abtn primary" id="genOutBtn">&rarr; Generate Outreach</button><button class="abtn" id="briefBackBtn">&larr; Back to signals</button></div>'
   );
-  document.getElementById('genOutBtn').addEventListener('click', genOutreach);
+  document.getElementById('genOutBtn').addEventListener('click',genOutreach);
+  document.getElementById('briefBackBtn').addEventListener('click',function(){showPanel('signals');});
 }
 
-// ── OUTREACH ─────────────────────────────────────────────────
-async function genOutreach() {
+// ── OUTREACH ──────────────────────────────────────────────────
+async function genOutreach(){
   showPanel('outreach');
   loading('outContainer');
-  var sig=S.selected; var b=S.briefing;
+  var sig=S.selected;var b=S.briefing;
   var out;
-  try {
+  try{
     var resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
-        system:'Write outreach for Phil Burrows at Burrows & Co. Pattern interrupt opening. Value before ask. One ask only. Peer tone. Respond ONLY with JSON: {"linkedin_connect":"","linkedin_dm":"","cold_email_subject":"","cold_email":"","warm_intro":"","follow_up_day3":""}',
-        messages:[{role:'user',content:'Outreach for: '+sig.company+', '+sig.decisionMaker+' ('+sig.decisionMakerTitle+'), trigger: '+sig.trigger+', pitch: '+b.pitchAngle}]
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:'Write outreach for Phil Burrows at Burrows & Co. Digital Advisory. Rules: Pattern interrupt opening (never "I hope this finds you well"), give value before asking, one ask only, peer tone not vendor tone, LinkedIn DM under 150 words, cold email 150-200 words max. Respond ONLY with JSON: {"linkedin_connect":"","linkedin_dm":"","cold_email_subject":"","cold_email":"","warm_intro":"","follow_up_day3":""}',
+        messages:[{role:'user',content:'Write outreach for: Company: '+sig.company+', Contact: '+sig.decisionMaker+' ('+sig.decisionMakerTitle+'), Trigger: '+sig.trigger+', Pitch: '+b.pitchAngle+', Value giveaway: '+(b.valueGiveaway||'')}]
       })
     });
     var d=await resp.json();
     var txt=d.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
     var m=txt.match(/\{[\s\S]*\}/);
     out=m?JSON.parse(m[0]):null;
-  } catch(e){out=null;}
-  if(!out) out={
+  }catch(e){out=null;}
+  var fname=sig.decisionMaker.split(' ')[0];
+  if(!out)out={
     linkedin_connect:'Saw the news at '+sig.company+' — the '+sig.trigger.slice(0,60)+'... I work with leaders navigating exactly this moment. Worth connecting?',
-    linkedin_dm:'Hi '+sig.decisionMaker.split(' ')[0]+',\n\nI noticed what\'s happening at '+sig.company+' and wanted to reach out directly.\n\nAt Burrows & Co., we work with commercial and digital leaders at companies at exactly this inflection point — helping them build the roadmap and infrastructure to accelerate through the transition.\n\nWorth a 20-minute conversation to see if there\'s a fit?\n\n— Phil Burrows\nBurrows & Co. Digital Advisory',
+    linkedin_dm:'Hi '+fname+',\n\nNoticed what\'s happening at '+sig.company+' and wanted to reach out.\n\nOne thing worth sharing: companies that get external perspective in the first 60 days of a transition like this typically move 2x faster on their roadmap than those who wait.\n\nAt Burrows & Co., we embed alongside leadership teams at exactly this inflection point — not a deck and disappear firm. We own outcomes alongside you.\n\nWorth a 20-minute conversation?\n\n— Phil Burrows',
     cold_email_subject:sig.company+' — thought this might be timely',
-    cold_email:'Hi '+sig.decisionMaker.split(' ')[0]+',\n\nI\'ll keep this brief.\n\n'+sig.trigger+' — this is exactly the moment when external perspective pays for itself fast.\n\nBurrows & Co. works with digital and commercial leaders as an embedded partner who owns outcomes alongside you. Our Discovery Sprint (30-45 days, fixed scope) typically surfaces 3-5 high-impact growth levers and a funded roadmap.\n\nHappy to have a direct 20-minute conversation — no slides, just talk.\n\nPhil Burrows\nBurrows & Co. Digital Advisory',
-    warm_intro:'Hey [Name] — would you be comfortable making a quick intro to '+sig.decisionMaker+' at '+sig.company+'? Given their recent '+sig.triggerType.replace(/_/g,' ')+', I think there\'s a real fit with what we do at Burrows & Co. A quick email intro would be amazing — happy to send you a blurb to forward.',
-    follow_up_day3:'Hi '+sig.decisionMaker.split(' ')[0]+',\n\nOne thing worth sharing: companies that engage external advisory in the first 60 days of a transition typically move 2x faster on their roadmap than those that wait until the team is built.\n\nStill worth a conversation?\n\n— Phil'
+    cold_email:'Hi '+fname+',\n\nI\'ll keep this brief.\n\n'+sig.trigger+'. This is exactly the moment when external perspective pays for itself fast.\n\nBurrows & Co. works with commercial and digital leaders as an embedded partner — not a consulting firm that disappears after the deck. We own outcomes alongside you.\n\nOur Discovery Sprint (30-45 days, fixed scope) typically surfaces 3-5 high-impact growth levers and a funded roadmap. Past clients have used it to justify 7-figure digital investments internally.\n\nHappy to have a direct 20-minute conversation — no slides, just talk.\n\nPhil Burrows\nBurrows & Co. Digital Advisory',
+    warm_intro:'Hey [Name] — would you be comfortable making a quick intro to '+sig.decisionMaker+' at '+sig.company+'? Given their recent situation, I think there\'s a real fit with what we do at Burrows & Co. A quick email intro would be amazing — happy to send you a blurb to forward.',
+    follow_up_day3:'Hi '+fname+',\n\nOne data point worth sharing: companies that navigate a '+sig.triggerType.replace(/_/g,' ')+' with external advisory support in the first 60 days typically move 2x faster on their roadmap.\n\nThought it was relevant given what\'s happening at '+sig.company+'.\n\nStill worth a conversation?\n\n— Phil'
   };
   var types=[
     {key:'linkedin_connect',label:'LinkedIn Connect',hint:'Under 300 chars — connection request note'},
     {key:'linkedin_dm',label:'LinkedIn DM',hint:'Under 150 words — conversational, signal-specific'},
     {key:'cold_email',label:'Cold Email',hint:'Subject: '+(out.cold_email_subject||'')},
-    {key:'warm_intro',label:'Warm Intro Ask',hint:'Forward to a mutual connection'},
-    {key:'follow_up_day3',label:'Day 3 Follow-up',hint:'Adds value — no "following up" language'}
+    {key:'warm_intro',label:'Warm Intro Ask',hint:'Send to a mutual connection to forward'},
+    {key:'follow_up_day3',label:'Day 3 Follow-up',hint:'Adds value — never says "following up"'}
   ];
   setHtml('outContainer',
     '<div style="margin-bottom:16px;"><div style="font-family:var(--serif);font-size:20px;font-weight:300;">'+sig.company+' <em style="color:var(--accent);">Outreach</em></div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">For '+sig.decisionMaker+' &middot; '+sig.decisionMakerTitle+'</div></div>'+
@@ -497,11 +701,11 @@ async function genOutreach() {
       '<div class="out-hdr"><div><div class="out-title">'+t.label+'</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">'+t.hint+'</div></div>'+
       '<button class="copy-btn" data-copy="'+t.key+'">Copy</button></div>'+
       '<div class="out-content" id="oc-'+t.key+'">'+(out[t.key]||'')+'</div></div>';}).join('')+
-    '<div class="action-row"><button class="abtn" id="outBackBtn">&larr; Back to briefing</button></div>'
+    '<div class="action-row"><button class="abtn" id="outBackBtn">&larr; Back to briefing</button><button class="abtn" id="outSigsBtn">&larr; All signals</button></div>'
   );
-  document.querySelectorAll('[data-key]').forEach(function(tab){
+  document.querySelectorAll('.out-tab').forEach(function(tab){
     tab.addEventListener('click',function(){
-      document.querySelectorAll('[data-key]').forEach(function(t){t.classList.remove('on');});
+      document.querySelectorAll('.out-tab').forEach(function(t){t.classList.remove('on');});
       document.querySelectorAll('.out-box').forEach(function(b){b.style.display='none';});
       tab.classList.add('on');
       document.getElementById('out-'+tab.getAttribute('data-key')).style.display='block';
@@ -514,20 +718,20 @@ async function genOutreach() {
     });
   });
   document.getElementById('outBackBtn').addEventListener('click',function(){showPanel('briefing');});
+  document.getElementById('outSigsBtn').addEventListener('click',function(){showPanel('signals');});
 }
 
-// ── EVENTS ───────────────────────────────────────────────────
-async function loadEvents() {
-  loading('evContainer');
+// ── EVENTS ────────────────────────────────────────────────────
+function loadEvents(){
   var events=[
-    {name:'Gartner Marketing Symposium',date:'June 2026',location:'San Diego, CA',audience:'CMOs, VP Marketing, digital leaders at enterprise and mid-market',recommendation:'speak',why:'Your buyers attend in force. Speaking positions you as a thought leader with direct access to decision makers.',angle:'How growth-stage companies close the digital infrastructure gap while scaling'},
-    {name:'Digital Summit Dallas',date:'May 2026',location:'Dallas, TX',audience:'Digital marketing and growth leaders in Texas market',recommendation:'speak',why:'Texas ICP concentration. Smaller audience means higher conversion from speaking to real conversations.',angle:'From digital chaos to commercial clarity — a 90-day transformation playbook'},
-    {name:'Shoptalk',date:'March 2026',location:'Las Vegas, NV',audience:'Commerce, DTC, retail digital leaders — VP Digital, CMO, VP eComm',recommendation:'attend',why:'High density of DTC and multi-channel brand leaders matching ICP A exactly.',angle:''},
-    {name:'Chief Experience Officer Summit',date:'September 2026',location:'NYC, NY',audience:'CXO, VP Customer Experience, digital transformation executives',recommendation:'speak',why:'Direct match to customer experience advisory services. NJ/NYC geography is a natural network play.',angle:'AI-powered customer experience: what actually works vs what just sounds good in a deck'},
-    {name:'PE Operating Partners Forum',date:'October 2026',location:'Chicago, IL',audience:'PE operating partners, portfolio company CEOs and digital leads',recommendation:'attend',why:'PE-backed ICP target. One operating partner relationship can unlock multiple portfolio engagements.',angle:''},
-    {name:'Forrester B2B Summit',date:'June 2026',location:'Austin, TX',audience:'B2B marketing, revenue, and digital leaders at growth-stage companies',recommendation:'attend',why:'Austin Texas ICP concentration. Strong mix of digital and commercial growth leaders.',angle:''},
-    {name:'INBOUND',date:'September 2026',location:'Boston, MA',audience:'Marketing, sales, and growth leaders — VP Marketing, CMO, VP Growth',recommendation:'attend',why:'High volume of VP Marketing and CMO profiles across all industries and company sizes.',angle:''},
-    {name:'Healthcare Digital Marketing Summit',date:'Q2 2026',location:'Nashville, TN',audience:'Healthcare marketing and digital leaders — VP Digital, CMO in health systems',recommendation:'speak',why:'Healthcare is a growing vertical. Speaking establishes credibility in an underserved sector.',angle:'Transforming the patient digital journey: from awareness to loyalty at scale'}
+    {name:'Gartner Marketing Symposium',date:'June 2026',location:'San Diego, CA',audience:'CMOs, VP Marketing, digital leaders at enterprise and mid-market',recommendation:'speak',why:'Your buyers attend in force. Speaking positions you as a thought leader.',angle:'How growth-stage companies close the digital infrastructure gap while scaling'},
+    {name:'Digital Summit Dallas',date:'May 2026',location:'Dallas, TX',audience:'Digital marketing and growth leaders in Texas market',recommendation:'speak',why:'Texas ICP concentration. Smaller audience means higher conversion rate.',angle:'From digital chaos to commercial clarity — a 90-day transformation playbook'},
+    {name:'Shoptalk',date:'March 2026',location:'Las Vegas, NV',audience:'Commerce, DTC, retail digital leaders — VP Digital, CMO, VP eComm',recommendation:'attend',why:'High density of DTC and multi-channel brand leaders matching ICP exactly.',angle:''},
+    {name:'Chief Experience Officer Summit',date:'September 2026',location:'NYC, NY',audience:'CXO, VP Customer Experience, digital transformation executives',recommendation:'speak',why:'Direct match to customer experience advisory. NJ/NYC geography is natural.',angle:'AI-powered customer experience: what works vs what sounds good in a deck'},
+    {name:'PE Operating Partners Forum',date:'October 2026',location:'Chicago, IL',audience:'PE operating partners, portfolio company CEOs and digital leads',recommendation:'attend',why:'PE-backed ICP target. One relationship = multiple portfolio engagements.',angle:''},
+    {name:'Forrester B2B Summit',date:'June 2026',location:'Austin, TX',audience:'B2B marketing, revenue, and digital leaders at growth-stage companies',recommendation:'attend',why:'Austin Texas ICP. Mix of digital and commercial growth leaders.',angle:''},
+    {name:'INBOUND',date:'September 2026',location:'Boston, MA',audience:'Marketing, sales, and growth leaders — VP Marketing, CMO, VP Growth',recommendation:'attend',why:'High volume of VP Marketing and CMO profiles across all industries.',angle:''},
+    {name:'Healthcare Digital Marketing Summit',date:'Q2 2026',location:'Nashville, TN',audience:'Healthcare marketing and digital leaders — VP Digital, CMO',recommendation:'speak',why:'Healthcare is a growing vertical. Speaking establishes credibility.',angle:'Transforming the patient digital journey: from awareness to loyalty at scale'}
   ];
   setHtml('evContainer','<div class="events-grid">'+events.map(function(e){
     return '<div class="ev-card"><div class="ev-top"><div><div class="ev-name">'+e.name+'</div><div class="ev-date">'+e.date+' &middot; '+e.location+'</div></div><div class="ev-badge '+e.recommendation+'">'+e.recommendation+'</div></div>'+
@@ -536,30 +740,94 @@ async function loadEvents() {
   }).join('')+'</div>');
 }
 
-// ── SETTINGS ─────────────────────────────────────────────────
-function renderSettings() {
+// ── COMMAND BAR ───────────────────────────────────────────────
+document.getElementById('cmdAskBtn').addEventListener('click',runCmd);
+document.getElementById('cmdInput').addEventListener('keydown',function(e){
+  if(e.key==='Enter')runCmd();
+  if(e.key==='Escape'){document.getElementById('cmdResp').classList.remove('open');document.getElementById('cmdInput').value='';}
+});
+
+async function runCmd(){
+  var inp=document.getElementById('cmdInput');
+  var input=inp.value.trim();
+  if(!input)return;
+  var resp=document.getElementById('cmdResp');
+  resp.innerHTML='<span style="color:var(--muted);">Thinking...</span>';
+  resp.classList.add('open');
+  var lower=input.toLowerCase();
+  // Navigation
+  var navMap={signals:'signals',signal:'signals',feed:'signals',watchlist:'watchlist',watch:'watchlist',briefing:'briefing',brief:'briefing',outreach:'outreach',events:'events',conferences:'events',playbook:'playbook','best practices':'playbook',settings:'settings',icp:'settings'};
+  for(var k in navMap){
+    if(lower.includes('go to '+k)||lower.includes('show '+k)||lower.includes('open '+k)||lower===k){
+      showPanel(navMap[k]);
+      resp.innerHTML='<span class="cmd-tag nav">NAV</span>Navigated to '+navMap[k]+'.';
+      inp.value='';return;
+    }
+  }
+  // Quick answers
+  if(lower.includes('q2 gap')||lower.includes('revenue gap')){
+    resp.innerHTML='<span class="cmd-tag ans">ANSWER</span>Q2 gap is <strong>$29,700/mo</strong>. Current: $6,800 &rarr; Q2 target: $36,500. Zoetis ($22,500/mo) closes most of it.';inp.value='';return;
+  }
+  if(lower.includes('hot signal')||lower.includes('best signal')){
+    resp.innerHTML='<span class="cmd-tag ans">ANSWER</span>Best signals: new exec hire (90-day window), bad quarter + board pressure (budget unlocked by pain), PE-backed acquisition (portfolio-wide opportunity). Sort by urgency to see them first.';inp.value='';return;
+  }
+  if(lower.includes('pull')||lower.includes('refresh')||lower.includes('scan')){
+    resp.innerHTML='<span class="cmd-tag ans">PULLING</span>Pulling signals now...';
+    pullSignals();inp.value='';return;
+  }
+  // Code changes → route to Claude
+  var codeWords=['add','create','build','new tab','new view','new feature','change the','update the layout','invoice','tracker','export'];
+  if(codeWords.some(function(w){return lower.includes(w);})){
+    var prompt=encodeURIComponent('Growth Engine update request: '+input+'. Context: burowsandco.github.io/growth-engine — built on Firebase + GitHub Pages. Repo: github.com/Burowsandco/growth-engine');
+    resp.innerHTML='<span class="cmd-tag code">BUILD</span>Code change needed. Click below — Claude will build and commit directly to GitHub.<div class="cmd-acts"><button class="cmd-act p" id="openClaudeBtn">&#x2192; Open Claude to build this</button><button class="cmd-act" id="cmdDismiss">Dismiss</button></div>';
+    document.getElementById('openClaudeBtn').addEventListener('click',function(){window.open('https://claude.ai/new?q='+prompt,'_blank');});
+    document.getElementById('cmdDismiss').addEventListener('click',function(){resp.classList.remove('open');inp.value='';});
+    return;
+  }
+  // Claude API fallback
+  try{
+    var r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,
+        system:'You are the Growth Engine assistant for Burrows & Co. Digital Advisory. The engine surfaces live B2B signals, generates lead briefings, and writes personalized outreach. ICP: VP Digital, CMO, VP Growth, Chief Digital Officer at companies 100-10,000 employees, NJ/NYC/Texas/remote-first. Answer in plain English under 60 words.',
+        messages:[{role:'user',content:input}]
+      })
+    });
+    var d=await r.json();
+    var ans=d.content&&d.content[0]&&d.content[0].text||'No response.';
+    resp.innerHTML='<span class="cmd-tag ans">ANSWER</span>'+ans+'<div class="cmd-acts"><button class="cmd-act" id="cmdClose2">Dismiss</button></div>';
+    document.getElementById('cmdClose2').addEventListener('click',function(){resp.classList.remove('open');inp.value='';});
+  }catch(e){
+    var q=encodeURIComponent(input+' — Burrows & Co. Growth Engine');
+    resp.innerHTML='<span class="cmd-tag code">ROUTE</span>Routing to Claude...<div class="cmd-acts"><button class="cmd-act p" id="routeBtn">&#x2192; Open Claude</button></div>';
+    document.getElementById('routeBtn').addEventListener('click',function(){window.open('https://claude.ai/new?q='+q,'_blank');});
+  }
+}
+
+// ── SETTINGS ──────────────────────────────────────────────────
+function renderSettings(){
   var tt=document.getElementById('titleTags');
-  if(tt) tt.innerHTML=S.icp.titles.map(function(t,i){return '<div class="tag on" data-ti="'+i+'">'+t+' &times;</div>';}).join('');
+  if(tt)tt.innerHTML=S.icp.titles.map(function(t,i){return '<div class="tag on" data-ti="'+i+'">'+t+' &times;</div>';}).join('');
   document.querySelectorAll('[data-ti]').forEach(function(el){el.addEventListener('click',function(){S.icp.titles.splice(+el.getAttribute('data-ti'),1);renderSettings();});});
   var it=document.getElementById('indTags');
-  if(it) it.innerHTML=S.icp.industries.length?S.icp.industries.map(function(t,i){return '<div class="tag on" data-ii="'+i+'">'+t+' &times;</div>';}).join(''):'<div class="tag" style="opacity:.5;cursor:default;">All industries</div>';
+  if(it)it.innerHTML=S.icp.industries.length?S.icp.industries.map(function(t,i){return '<div class="tag on" data-ii="'+i+'">'+t+' &times;</div>';}).join(''):'<div class="tag" style="opacity:.5;cursor:default;">All industries (no filter)</div>';
   document.querySelectorAll('[data-ii]').forEach(function(el){el.addEventListener('click',function(){S.icp.industries.splice(+el.getAttribute('data-ii'),1);renderSettings();});});
   var slabels={exec_hire:'Executive Hires',hiring_surge:'Hiring Surge',bad_quarter:'Bad Quarter / Miss',funding:'Funding Rounds',expansion:'Market Expansion',restructure:'Restructuring',acquisition:'Acquisitions',new_product:'New Product Launch'};
   var st=document.getElementById('sigToggles');
-  if(st) st.innerHTML=Object.entries(S.icp.signals).map(function(e){return '<div class="toggle-row"><div class="toggle-label">'+slabels[e[0]]+'</div><div class="toggle'+(e[1]?' on':'')+'" data-sig="'+e[0]+'"></div></div>';}).join('');
+  if(st)st.innerHTML=Object.entries(S.icp.signals).map(function(e){return '<div class="toggle-row"><div class="toggle-label">'+slabels[e[0]]+'</div><div class="toggle'+(e[1]?' on':'')+'" data-sig="'+e[0]+'"></div></div>';}).join('');
   document.querySelectorAll('[data-sig]').forEach(function(el){el.addEventListener('click',function(){S.icp.signals[el.getAttribute('data-sig')]=!S.icp.signals[el.getAttribute('data-sig')];el.classList.toggle('on');});});
   var allGeos=['NJ/NYC Metro','Texas (Dallas/Austin)','Remote-First','US-Wide','West Coast'];
   var gt=document.getElementById('geoToggles');
-  if(gt) gt.innerHTML=allGeos.map(function(g){return '<div class="toggle-row"><div class="toggle-label">'+g+'</div><div class="toggle'+(S.icp.geos.includes(g)?' on':'')+'" data-geo="'+g+'"></div></div>';}).join('');
+  if(gt)gt.innerHTML=allGeos.map(function(g){return '<div class="toggle-row"><div class="toggle-label">'+g+'</div><div class="toggle'+(S.icp.geos.includes(g)?' on':'')+'" data-geo="'+g+'"></div></div>';}).join('');
   document.querySelectorAll('[data-geo]').forEach(function(el){el.addEventListener('click',function(){var g=el.getAttribute('data-geo');var idx=S.icp.geos.indexOf(g);if(idx>-1)S.icp.geos.splice(idx,1);else S.icp.geos.push(g);el.classList.toggle('on');});});
-  var kw=document.getElementById('keywords'); if(kw) kw.value=S.icp.keywords;
+  var kw=document.getElementById('keywords');if(kw)kw.value=S.icp.keywords;
 }
 
 document.getElementById('titleInput').addEventListener('keydown',function(e){if(e.key!=='Enter')return;var v=this.value.trim();if(!v)return;S.icp.titles.push(v);this.value='';renderSettings();});
 document.getElementById('indInput').addEventListener('keydown',function(e){if(e.key!=='Enter')return;var v=this.value.trim();if(!v)return;S.icp.industries.push(v);this.value='';renderSettings();});
 document.getElementById('minR').addEventListener('input',function(){document.getElementById('minV').textContent=this.value;S.icp.minEmp=+this.value;});
 document.getElementById('maxR').addEventListener('input',function(){document.getElementById('maxV').textContent=this.value;S.icp.maxEmp=+this.value;});
-document.getElementById('saveSettingsBtn').addEventListener('click',function(){S.icp.keywords=document.getElementById('keywords').value;this.textContent='Saved \u2713';var btn=this;setTimeout(function(){btn.textContent='Save Settings';},1500);});
+document.getElementById('saveSettingsBtn').addEventListener('click',function(){S.icp.keywords=document.getElementById('keywords').value;var btn=this;btn.textContent='Saved \u2713';setTimeout(function(){btn.textContent='Save Settings & Re-score';},1500);});
 </script>
 </body>
 </html>
