@@ -524,11 +524,11 @@ firebase.initializeApp({
 
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false">
 // ── Auth ──────────────────────────────────────────────────────
 const ALLOWED_DOMAIN = 'burrowsadvisory.com';
 
-function signInWithGoogle() {
+window.signInWithGoogle = function() {
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({hd: ALLOWED_DOMAIN});
   firebase.auth().signInWithPopup(provider)
@@ -550,7 +550,7 @@ function signInWithGoogle() {
     });
 }
 
-function showApp(user) {
+window.showApp = function(user) {
   document.getElementById('auth-gate').style.display = 'none';
   const shell = document.getElementById('appShell');
   shell.style.display = 'flex';
@@ -615,7 +615,7 @@ const S = {
 };
 
 // ── Panel Navigation ───────────────────────────────────────────
-function switchPanel(id, el) {
+window.switchPanel = function(id, el) {
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
@@ -623,13 +623,13 @@ function switchPanel(id, el) {
 }
 
 // ── Status ─────────────────────────────────────────────────────
-function setStatus(msg, live=false) {
+window.setStatus = function(msg, live=false) {
   document.getElementById('statusLbl').textContent = msg;
   document.getElementById('statusDot').className = 'status-dot' + (live?' live':'');
 }
 
 // ── Signal Pull ────────────────────────────────────────────────
-async function runSignalPull() {
+async window.runSignalPull = function() {
   const btn = document.getElementById('refreshBtn');
   btn.disabled = true; btn.textContent = 'Scanning...';
   setStatus('Scanning market...', true);
@@ -688,11 +688,11 @@ Return exactly 6 signals. icpScore 1-10. Real, specific, current. Include buying
   btn.disabled = false; btn.textContent = '⟳ Pull Signals';
 }
 
-function buildICPDescription() {
+window.buildICPDescription = function() {
   return `Target titles: ${S.icp.titles.join(', ')}. Industries: ${S.icp.industries.length ? S.icp.industries.join(', ') : 'all industries'}. Geography: ${S.icp.geos.join(', ')}. Company size: ${S.icp.minEmp}-${S.icp.maxEmp} employees. Active signals: ${Object.entries(S.icp.signals).filter(([k,v])=>v).map(([k])=>k).join(', ')}.`;
 }
 
-function useFallbackSignals() {
+window.useFallbackSignals = function() {
   S.signals = [
     {company:'Momentum Health',industry:'Healthcare / Wellness',location:'Austin, TX',size:'800 employees',trigger:'Just hired new Chief Digital Officer from Amazon — digital overhaul expected',triggerType:'exec_hire',why:'New CDO from tech background typically drives external advisory in first 90 days to audit current state',urgency:'hot',icpScore:9,decisionMaker:'Sarah Chen',decisionMakerTitle:'Chief Digital Officer',source:'LinkedIn'},
     {company:'Vantage Brands',industry:'Consumer Goods / DTC',location:'NYC, NY',size:'1,200 employees',trigger:'Q3 miss — revenue down 18% YoY, announced "digital acceleration" initiative',triggerType:'bad_quarter',why:'Public pressure to show digital revenue growth creates budget urgency for transformation advisory',urgency:'hot',icpScore:9,decisionMaker:'Marcus Reid',decisionMakerTitle:'CMO',source:'Press release'},
@@ -707,7 +707,7 @@ function useFallbackSignals() {
   document.getElementById('signalsMeta').textContent = 'Showing sample signals · Pull Signals to get live intelligence';
 }
 
-function renderSignals() {
+window.renderSignals = function() {
   const container = document.getElementById('signalsContainer');
   if(!S.signals.length){container.innerHTML='<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No signals found</div><div class="empty-sub">Try adjusting your ICP settings</div></div>';return;}
   container.innerHTML = '<div class="signals-grid">' + S.signals.map((s,i) => {
@@ -738,14 +738,14 @@ function renderSignals() {
 }
 
 // ── Briefing Generation ────────────────────────────────────────
-async function selectSignal(idx) {
+async window.selectSignal = function(idx) {
   S.selectedSignal = S.signals[idx];
   switchPanel('briefing', document.getElementById('briefingTab'));
   document.getElementById('briefingContainer').innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Generating lead briefing...</div></div>';
   await generateBriefing(S.selectedSignal);
 }
 
-async function generateBriefing(signal) {
+async window.generateBriefing = function(signal) {
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -783,7 +783,7 @@ Respond ONLY with valid JSON:
   }
 }
 
-function getFallbackBriefing(signal) {
+window.getFallbackBriefing = function(signal) {
   return {
     snapshot: `${signal.company} is a ${signal.size} ${signal.industry} company based in ${signal.location}. The recent ${signal.triggerType.replace('_',' ')} signals a strategic inflection point.`,
     painPoints: ['Scaling digital infrastructure without senior leadership bandwidth','Misaligned commercial strategy and digital execution','No external perspective on transformation roadmap'],
@@ -798,7 +798,7 @@ function getFallbackBriefing(signal) {
   };
 }
 
-function renderBriefing(signal, b) {
+window.renderBriefing = function(signal, b) {
   const scoreClass = signal.icpScore >= 8 ? 'high' : signal.icpScore >= 6 ? 'mid' : 'low';
   const svc = S.services.find(s=>s.name===b.primaryService) || S.services[0];
   const svc2 = S.services.find(s=>s.name===b.secondaryService) || S.services[1];
@@ -882,14 +882,14 @@ function renderBriefing(signal, b) {
 }
 
 // ── Outreach Generation ────────────────────────────────────────
-async function goToOutreach() {
+async window.goToOutreach = function() {
   switchPanel('outreach', document.getElementById('outreachTab'));
   if(!S.selectedSignal || !S.currentBriefing) return;
   document.getElementById('outreachContainer').innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Writing personalized outreach...</div></div>';
   await generateOutreach();
 }
 
-async function generateOutreach() {
+async window.generateOutreach = function() {
   const signal = S.selectedSignal;
   const briefing = S.currentBriefing;
   try {
@@ -929,7 +929,7 @@ Respond ONLY with valid JSON:
   }
 }
 
-function getFallbackOutreach(signal, briefing) {
+window.getFallbackOutreach = function(signal, briefing) {
   return {
     linkedin_connect: `Saw the news about ${signal.company} — the ${signal.trigger.split(' ').slice(0,6).join(' ')}. I work with leadership teams navigating exactly this moment. Would love to connect.`,
     linkedin_dm: `Hi ${signal.decisionMaker.split(' ')[0]},\n\nI noticed ${signal.company}'s recent ${signal.triggerType.replace('_',' ')} and wanted to reach out directly.\n\nAt Burrows & Co., we work with commercial and digital leaders at companies navigating these exact inflection points — helping them build the roadmap and leadership infrastructure to accelerate through the transition rather than stumble.\n\nWe recently completed a Discovery Sprint for a similar company that surfaced $2M+ in untapped digital revenue in 45 days.\n\nWorth a 20-minute call to see if there's a fit? No pitch deck, just a direct conversation.\n\n— Phil`,
@@ -940,7 +940,7 @@ function getFallbackOutreach(signal, briefing) {
   };
 }
 
-function renderOutreach(signal, outreach) {
+window.renderOutreach = function(signal, outreach) {
   const types = [
     {key:'linkedin_connect',label:'LinkedIn Connect',hint:'Under 300 chars — pattern interrupt, no pitch'},
     {key:'linkedin_dm',label:'LinkedIn DM',hint:'Under 150 words — insight-led, one soft ask'},
@@ -973,14 +973,14 @@ function renderOutreach(signal, outreach) {
   `;
 }
 
-function showOutreachType(el, id) {
+window.showOutreachType = function(el, id) {
   document.querySelectorAll('.outreach-tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.outreach-box').forEach(b=>b.style.display='none');
   el.classList.add('active');
   document.getElementById(id).style.display='block';
 }
 
-function copyOutreach(id) {
+window.copyOutreach = function(id) {
   const text = document.getElementById(id).textContent;
   navigator.clipboard.writeText(text).then(()=>{
     const btn = event.target;
@@ -990,7 +990,7 @@ function copyOutreach(id) {
 }
 
 // ── Events ─────────────────────────────────────────────────────
-async function loadEvents() {
+async window.loadEvents = function() {
   document.getElementById('eventsContainer').innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Finding relevant conferences...</div></div>';
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -1019,7 +1019,7 @@ Return 8 events.`,
   }
 }
 
-function getFallbackEvents() {
+window.getFallbackEvents = function() {
   return [
     {name:'Gartner Marketing Symposium/Xpo',date:'June 2026',location:'San Diego, CA',audience:'CMOs, VP Marketing, digital leaders at mid-to-large companies',recommendation:'speak',why:'Your buyers attend in force. Speaking positions you as a thought leader with direct Q&A access to decision makers.',speakingAngle:'How PE-backed brands close the digital infrastructure gap while scaling — specific frameworks and case studies'},
     {name:'Digital Summit Dallas',date:'May 2026',location:'Dallas, TX',audience:'Digital marketing leaders, growth officers, brand executives in Texas market',recommendation:'speak',why:'Texas ICP concentration. Smaller audience = higher conversion rate from booth/speaking to actual conversations.',speakingAngle:'From digital chaos to commercial clarity — a 90-day transformation playbook for growth-stage brands'},
@@ -1032,7 +1032,7 @@ function getFallbackEvents() {
   ];
 }
 
-function renderEvents(events) {
+window.renderEvents = function(events) {
   document.getElementById('eventsContainer').innerHTML = '<div class="events-grid">' + events.map(e=>`
     <div class="event-card">
       <div class="event-top">
@@ -1049,7 +1049,7 @@ function renderEvents(events) {
 }
 
 // ── Settings ───────────────────────────────────────────────────
-function renderSettings() {
+window.renderSettings = function() {
   // Title tags
   const titleTags = document.getElementById('titleTags');
   titleTags.innerHTML = S.icp.titles.map((t,i)=>`<div class="tag active" onclick="removeTag('titles',${i})">${t} ×</div>`).join('');
@@ -1084,7 +1084,7 @@ function renderSettings() {
   document.getElementById('customKeywords').value = S.icp.customKeywords;
 }
 
-function addTag(type, el) {
+window.addTag = function(type, el) {
   if(event.key !== 'Enter') return;
   const val = el.value.trim();
   if(!val) return;
@@ -1094,25 +1094,25 @@ function addTag(type, el) {
   renderSettings();
 }
 
-function removeTag(type, idx) {
+window.removeTag = function(type, idx) {
   if(type==='titles') S.icp.titles.splice(idx,1);
   if(type==='industries') S.icp.industries.splice(idx,1);
   renderSettings();
 }
 
-function toggleSignal(key, el) {
+window.toggleSignal = function(key, el) {
   S.icp.signals[key] = !S.icp.signals[key];
   el.classList.toggle('on');
 }
 
-function toggleGeo(geo, el) {
+window.toggleGeo = function(geo, el) {
   const idx = S.icp.geos.indexOf(geo);
   if(idx>-1) S.icp.geos.splice(idx,1);
   else S.icp.geos.push(geo);
   el.classList.toggle('on');
 }
 
-function saveSettings() {
+window.saveSettings = function() {
   S.icp.customKeywords = document.getElementById('customKeywords').value;
   const btn = event.target;
   btn.textContent = 'Saved ✓';
@@ -1124,7 +1124,7 @@ const GMAIL_CLIENT_ID = ''; // Fill in after Google Cloud setup
 let gmailConnected = false;
 let scheduledEmails = [];
 
-function connectGmail() {
+window.connectGmail = function() {
   if(!GMAIL_CLIENT_ID) {
     alert('Gmail connection requires Google OAuth setup.\n\nSee the setup guide in the GitHub repo README for step-by-step instructions.\n\nOnce set up, paste your Client ID at the top of the script.');
     return;
@@ -1140,7 +1140,7 @@ function connectGmail() {
   });
 }
 
-function updateGmailStatus(email) {
+window.updateGmailStatus = function(email) {
   document.getElementById('gmailDot').className = 'status-dot live';
   document.getElementById('gmailStatusText').textContent = 'Gmail connected';
   document.getElementById('gmailAccount').textContent = email || 'Burrows Advisory account';
@@ -1148,7 +1148,7 @@ function updateGmailStatus(email) {
   document.getElementById('gmailBtn').disabled = true;
 }
 
-function prefillCompose(to, subject, body) {
+window.prefillCompose = function(to, subject, body) {
   document.getElementById('sch-to').value = to || '';
   document.getElementById('sch-subject').value = subject || '';
   document.getElementById('sch-body').value = body || '';
@@ -1160,7 +1160,7 @@ function prefillCompose(to, subject, body) {
   switchPanel('scheduler', document.querySelector('.nav-tab:nth-child(5)'));
 }
 
-function scheduleEmail() {
+window.scheduleEmail = function() {
   const to = document.getElementById('sch-to').value.trim();
   const subject = document.getElementById('sch-subject').value.trim();
   const body = document.getElementById('sch-body').value.trim();
@@ -1175,7 +1175,7 @@ function scheduleEmail() {
   showToast(`Scheduled from ${fromLabel} for ${time ? new Date(time).toLocaleString() : 'tomorrow 9am'}`);
 }
 
-function sendNow() {
+window.sendNow = function() {
   const to = document.getElementById('sch-to').value.trim();
   const subject = document.getElementById('sch-subject').value.trim();
   const body = document.getElementById('sch-body').value.trim();
@@ -1187,7 +1187,7 @@ function sendNow() {
   sendViaGmail(to, subject, body);
 }
 
-async function sendViaGmail(to, subject, body) {
+async window.sendViaGmail = function(to, subject, body) {
   try {
     const message = `To: ${to}\nSubject: ${subject}\nContent-Type: text/plain; charset=utf-8\n\n${body}`;
     const encoded = btoa(unescape(encodeURIComponent(message))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -1202,14 +1202,14 @@ async function sendViaGmail(to, subject, body) {
   } catch(e) { showToast('Error: ' + e.message); }
 }
 
-function clearCompose() {
+window.clearCompose = function() {
   document.getElementById('sch-to').value = '';
   document.getElementById('sch-subject').value = '';
   document.getElementById('sch-body').value = '';
   document.getElementById('sch-time').value = '';
 }
 
-function renderQueue() {
+window.renderQueue = function() {
   const container = document.getElementById('scheduledQueue');
   document.getElementById('queueCount').textContent = scheduledEmails.length + ' queued';
   if(!scheduledEmails.length) {
@@ -1231,7 +1231,7 @@ function renderQueue() {
   `).join('');
 }
 
-function editScheduled(idx) {
+window.editScheduled = function(idx) {
   const e = scheduledEmails[idx];
   document.getElementById('sch-to').value = e.to;
   document.getElementById('sch-subject').value = e.subject;
@@ -1242,12 +1242,12 @@ function editScheduled(idx) {
   renderQueue();
 }
 
-function deleteScheduled(idx) {
+window.deleteScheduled = function(idx) {
   scheduledEmails.splice(idx, 1);
   renderQueue();
 }
 
-function showToast(msg) {
+window.showToast = function(msg) {
   const t = document.createElement('div');
   t.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:12px 20px;background:var(--surface);border:1px solid var(--accent);border-radius:8px;font-family:var(--mono);font-size:12px;color:var(--accent);z-index:999;animation:fadeIn .2s ease;';
   t.textContent = msg;
@@ -1256,7 +1256,7 @@ function showToast(msg) {
 }
 
 // Schedule outreach directly from briefing panel
-function scheduleOutreach() {
+window.scheduleOutreach = function() {
   if(!S.selectedSignal || !S.currentBriefing) return;
   const signal = S.selectedSignal;
   const b = S.currentBriefing;
@@ -1268,14 +1268,14 @@ var GE_CHAT = 'https://claude.ai';
 var GE_GUIDE = 'https://docs.google.com/document/d/1NYwKZR6dL3TJoSoqB_2NDNhy6EADE2kP-c0F-RV04Ws/edit';
 var GE_CFO = 'https://burowsandco.github.io/cfo-command';
 
-function geClose() {
+window.geClose = function() {
   var r = document.getElementById('geResp');
   var i = document.getElementById('geInp');
   if(r) r.classList.remove('open');
   if(i) i.value = '';
 }
 
-function geShow(tag, cls, msg, acts) {
+window.geShow = function(tag, cls, msg, acts) {
   var b = document.getElementById('geRespBody');
   var r = document.getElementById('geResp');
   if(!b||!r) return;
@@ -1310,7 +1310,7 @@ if(geInpEl) {
   });
 }
 
-async function geRun() {
+async window.geRun = function() {
   var inp = document.getElementById('geInp');
   if(!inp) return;
   var input = inp.value.trim();
@@ -1425,7 +1425,7 @@ async function geRun() {
   if(btn){btn.disabled=false;btn.textContent='Ask';}
 }
 
-async function geResearch(company) {
+async window.geResearch = function(company) {
   try {
     var r = await fetch('https://api.anthropic.com/v1/messages', {
       method:'POST', headers:{'Content-Type':'application/json'},
@@ -1458,105 +1458,6 @@ async function geResearch(company) {
 // Init
 renderSettings();
 loadEvents();
-<script>
-// Auth patch — ensures signInWithGoogle is always defined
-var ALLOWED = 'burrowsadvisory.com';
-window.signInWithGoogle = function() {
-  var provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({hd: ALLOWED});
-  firebase.auth().signInWithPopup(provider)
-    .then(function(result) {
-      var email = result.user.email || '';
-      if(email.indexOf('@' + ALLOWED) === -1) {
-        document.getElementById('authMsg').textContent = 'Access restricted to @burrowsadvisory.com accounts.';
-        firebase.auth().signOut();
-        return;
-      }
-      document.getElementById('auth-gate').style.display = 'none';
-      document.getElementById('appShell').style.display = 'flex';
-      var dot = document.getElementById('statusDot');
-      var lbl = document.getElementById('statusLbl');
-      if(dot) dot.className = 'status-dot live';
-      if(lbl) lbl.textContent = result.user.displayName || result.user.email;
-    })
-    .catch(function(err) {
-      if(err.code === 'auth/popup-blocked') {
-        firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
-      } else {
-        var msg = document.getElementById('authMsg');
-        if(msg) msg.textContent = 'Sign-in error: ' + err.code;
-      }
-    });
-};
-firebase.auth().onAuthStateChanged(function(user) {
-  if(user && user.email && user.email.indexOf('@' + ALLOWED) > -1) {
-    document.getElementById('auth-gate').style.display = 'none';
-    document.getElementById('appShell').style.display = 'flex';
-    var dot = document.getElementById('statusDot');
-    var lbl = document.getElementById('statusLbl');
-    if(dot) dot.className = 'status-dot live';
-    if(lbl) lbl.textContent = user.displayName || user.email;
-  }
-});
-</script>
-</script>
-<script>
-// Expose auth functions globally for inline onclick handlers
-window.signInWithGoogle = function() {
-  var provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({hd: 'burrowsadvisory.com'});
-  firebase.auth().signInWithPopup(provider)
-    .then(function(result) {
-      var email = result.user.email || '';
-      if(!email.endsWith('@burrowsadvisory.com')) {
-        document.getElementById('authMsg').textContent = 'Access restricted to @burrowsadvisory.com accounts.';
-        firebase.auth().signOut();
-        return;
-      }
-      document.getElementById('auth-gate').style.display = 'none';
-      document.getElementById('appShell').style.display = 'flex';
-      document.getElementById('statusLbl').textContent = result.user.displayName || result.user.email;
-      document.getElementById('statusDot').className = 'status-dot live';
-    })
-    .catch(function(err) {
-      if(err.code === 'auth/popup-blocked') {
-        firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
-      } else {
-        document.getElementById('authMsg').textContent = 'Error: ' + err.code;
-      }
-    });
-};
-firebase.auth().onAuthStateChanged(function(user) {
-  if(user && user.email && user.email.endsWith('@burrowsadvisory.com')) {
-    document.getElementById('auth-gate').style.display = 'none';
-    document.getElementById('appShell').style.display = 'flex';
-    document.getElementById('statusLbl').textContent = user.displayName || user.email;
-    document.getElementById('statusDot').className = 'status-dot live';
-  }
-});
-</script>
-<script>
-// Expose all functions used in onclick handlers to global scope
-window.switchPanel = function(id, el) {
-  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
-  var panel = document.getElementById('panel-'+id);
-  if(panel) panel.classList.add('active');
-  if(el) el.classList.add('active');
-};
-window.runSignalPull = runSignalPull;
-window.selectSignal = selectSignal;
-window.goToOutreach = goToOutreach;
-window.showOutreachType = showOutreachType;
-window.copyOutreach = copyOutreach;
-window.loadEvents = loadEvents;
-window.addTag = addTag;
-window.removeTag = removeTag;
-window.toggleSignal = toggleSignal;
-window.toggleGeo = toggleGeo;
-window.saveSettings = saveSettings;
-window.saveAlertSettings = saveAlertSettings;
-window.testAlert = testAlert;
 </script>
 </div><!-- end app-shell -->
 </body>
