@@ -1535,6 +1535,29 @@ firebase.auth().onAuthStateChanged(function(user) {
   }
 });
 </script>
+<script>
+// Expose all functions used in onclick handlers to global scope
+window.switchPanel = function(id, el) {
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+  var panel = document.getElementById('panel-'+id);
+  if(panel) panel.classList.add('active');
+  if(el) el.classList.add('active');
+};
+window.runSignalPull = runSignalPull;
+window.selectSignal = selectSignal;
+window.goToOutreach = goToOutreach;
+window.showOutreachType = showOutreachType;
+window.copyOutreach = copyOutreach;
+window.loadEvents = loadEvents;
+window.addTag = addTag;
+window.removeTag = removeTag;
+window.toggleSignal = toggleSignal;
+window.toggleGeo = toggleGeo;
+window.saveSettings = saveSettings;
+window.saveAlertSettings = saveAlertSettings;
+window.testAlert = testAlert;
+</script>
 </div><!-- end app-shell -->
 </body>
 </html>
