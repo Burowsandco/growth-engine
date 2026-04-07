@@ -1416,6 +1416,75 @@ document.addEventListener('DOMContentLoaded', function() {
   // Init settings render
   renderSettings();
   loadAlertSettings();
+<script data-cfasync="false">
+// Firebase init — dedicated script tag, runs before everything else
+if(typeof firebase !== 'undefined' && !firebase.apps.length) {
+  firebase.initializeApp({
+    apiKey: "AIzaSyAgSLxhOP1-2XFA-7GUEpDz9duDBkxB8iQ",
+    authDomain: "burrows-cfo.firebaseapp.com",
+    databaseURL: "https://burrows-cfo-default-rtdb.firebaseio.com",
+    projectId: "burrows-cfo",
+    appId: "1:466879182304:web:a4a703af3a72cd55106785"
+  });
+}
+// Wire sign in button directly — no function lookup needed
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.getElementById('signInBtn') || document.querySelector('#auth-gate button');
+  if(!btn) return;
+  btn.addEventListener('click', function() {
+    btn.textContent = 'Opening Google...';
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({hd:'burrowsadvisory.com'});
+    firebase.auth().signInWithPopup(provider)
+      .then(function(r) {
+        var email = r.user.email || '';
+        if(!email.endsWith('@burrowsadvisory.com')) {
+          firebase.auth().signOut();
+          btn.textContent = 'Sign in with Google';
+          document.getElementById('authMsg').textContent = 'Restricted to @burrowsadvisory.com accounts.';
+          return;
+        }
+        document.getElementById('auth-gate').style.display = 'none';
+        document.getElementById('appShell').style.display = 'flex';
+        document.getElementById('statusLbl').textContent = r.user.displayName || email;
+        document.getElementById('statusDot').className = 'status-dot live';
+        // Wire nav tabs
+        document.querySelectorAll('.nav-tab').forEach(function(tab) {
+          tab.addEventListener('click', function() {
+            var pid = tab.getAttribute('data-panel');
+            if(!pid) return;
+            document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+            document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+            var panel = document.getElementById('panel-'+pid);
+            if(panel) panel.classList.add('active');
+            tab.classList.add('active');
+          });
+        });
+        // Wire pull signals
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+          if(typeof runSignalPull==='function') runSignalPull();
+        });
+        // Wire sign out
+        var sob = document.getElementById('signOutBtn');
+        if(sob) sob.addEventListener('click', function(){ firebase.auth().signOut().then(function(){ location.reload(); }); });
+        if(typeof loadEvents==='function') loadEvents();
+      })
+      .catch(function(e) {
+        btn.textContent = 'Sign in with Google';
+        document.getElementById('authMsg').textContent = e.code === 'auth/popup-blocked' ? 'Allow popups for this site then try again.' : 'Error: ' + e.code;
+      });
+  });
+  // Also check if already signed in
+  firebase.auth().onAuthStateChanged(function(user) {
+    if(user && user.email && user.email.endsWith('@burrowsadvisory.com')) {
+      document.getElementById('auth-gate').style.display = 'none';
+      document.getElementById('appShell').style.display = 'flex';
+      document.getElementById('statusLbl').textContent = user.displayName || user.email;
+      document.getElementById('statusDot').className = 'status-dot live';
+    }
+  });
+});
+</script>
 });
 </script>
 </body>
