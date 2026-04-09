@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Burrows &amp; Co. — Growth Engine</title>
+<title>Burrows &amp; Co. â Growth Engine</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script>
@@ -410,7 +410,7 @@ input[type=range]{width:100%;accent-color:var(--acc)}
 
 <script data-cfasync="false">
 
-// ── STATE ─────────────────────────────────────────────────────────────────────
+// ââ STATE âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 var URGENCY_RANK={hot:0,warm:1,new:2};
 var CRM_STAGES=['watching','contacted','responded','meeting','proposal','closed'];
 var STAGE_LABELS={watching:'Watching',contacted:'Contacted',responded:'Responded',meeting:'Meeting Booked',proposal:'Proposal Sent',closed:'Closed Won'};
@@ -442,7 +442,7 @@ var S={
   }
 };
 
-// ── HELPERS ───────────────────────────────────────────────────────────────────
+// ââ HELPERS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function setHtml(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;}
 function showPanel(id){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
@@ -521,7 +521,7 @@ function loadState(){try{
   var wl=localStorage.getItem('ge_watchlist');if(wl)S.watchlist=JSON.parse(wl);
 }catch(e){}}
 
-// ── AUTH ──────────────────────────────────────────────────────────────────────
+// ââ AUTH ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 document.getElementById('signInBtn').addEventListener('click',function(){
   var btn=document.getElementById('signInBtn');
   btn.textContent='Opening Google...';
@@ -544,14 +544,14 @@ function onSignedIn(user){
 }
 document.getElementById('signOutBtn').addEventListener('click',function(){firebase.auth().signOut().then(function(){location.reload();});});
 
-// ── NAV ───────────────────────────────────────────────────────────────────────
+// ââ NAV âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 document.querySelectorAll('.ntab').forEach(function(t){t.addEventListener('click',function(){showPanel(t.getAttribute('data-panel'));});});
 document.getElementById('backToSig').addEventListener('click',function(){showPanel('signals');});
 document.getElementById('backToBrief').addEventListener('click',function(){showPanel('briefing');});
 document.getElementById('backFromLead').addEventListener('click',function(){showPanel('crm');});
 document.getElementById('addLeadBtn2').addEventListener('click',function(){showPanel('addlead');});
 
-// ── CONTROLS ──────────────────────────────────────────────────────────────────
+// ââ CONTROLS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 document.getElementById('cntGrp').querySelectorAll('.cb').forEach(function(btn){
   btn.addEventListener('click',function(){
     document.getElementById('cntGrp').querySelectorAll('.cb').forEach(function(b){b.classList.remove('on');});
@@ -593,7 +593,7 @@ function getSorted(){
   return sigs.slice(0,S.limit);
 }
 
-// ── PULL SIGNALS ──────────────────────────────────────────────────────────────
+// ââ PULL SIGNALS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function pullSignals(){
   var btn=document.getElementById('pullBtn');
   btn.disabled=true;btn.textContent='Scanning...';
@@ -622,7 +622,7 @@ async function pullSignals(){
     '{"signals":[{"company":"","website":"","industry":"","location":"","size":"","isPEBacked":false,"peFirm":"","trigger":"","triggerType":"exec_hire","why":"","urgency":"hot","icpScore":8,"decisionMaker":"","decisionMakerTitle":"","decisionMakerLinkedIn":"","emailGuesses":[{"email":"","confidence":"high","label":""}],"sourceType":"LinkedIn","sourceUrl":"","sourceNote":"","signalDate":0,"dateLabel":""}]}';
 
   try{
-    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+    var resp=await fetch('https://ge-proxy.philburrows.workers.dev',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
@@ -652,9 +652,9 @@ async function pullSignals(){
       .map(function(s,i){return normalizeSignal(s,i);});
 
     if(!newSigs.length){
-      document.getElementById('sigMeta').textContent='No new signals found — try again or adjust ICP settings';
+      document.getElementById('sigMeta').textContent='No new signals found â try again or adjust ICP settings';
       renderSignals();
-      btn.disabled=false;btn.textContent='⟳ Pull Signals';
+      btn.disabled=false;btn.textContent='â³ Pull Signals';
       updateCounts();
       return;
     }
@@ -662,19 +662,19 @@ async function pullSignals(){
     S.signals=newSigs.concat(S.signals);
     saveState();
     renderSignals();
-    document.getElementById('sigMeta').textContent='Last pull: '+new Date().toLocaleTimeString()+' · '+newSigs.length+' new signals · '+S.signals.length+' total · Click any card to brief';
+    document.getElementById('sigMeta').textContent='Last pull: '+new Date().toLocaleTimeString()+' Â· '+newSigs.length+' new signals Â· '+S.signals.length+' total Â· Click any card to brief';
 
   }catch(e){
     console.error('Pull error:',e);
-    document.getElementById('sigMeta').innerHTML='<span style="color:var(--red);">⚠ '+e.message+' — check console for details and try again.</span>';
+    document.getElementById('sigMeta').innerHTML='<span style="color:var(--red);">â  '+e.message+' â check console for details and try again.</span>';
     renderSignals();
   }
 
-  btn.disabled=false;btn.textContent='⟳ Pull Signals';
+  btn.disabled=false;btn.textContent='â³ Pull Signals';
   updateCounts();
 }
 
-// ── RENDER SIGNALS ────────────────────────────────────────────────────────────
+// ââ RENDER SIGNALS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderSignals(){
   updateCounts();
   var filtered=getSorted();
@@ -691,7 +691,7 @@ function renderSignals(){
 
   var tmap={exec_hire:'&#x1F464; Exec Hire',hiring_surge:'&#x1F4C8; Hiring Surge',bad_quarter:'&#x1F4C9; Bad Quarter',funding:'&#x1F4B0; Funding',expansion:'&#x1F30E; Expansion',restructure:'&#x1F504; Restructure',acquisition:'&#x1F91D; Acquisition',new_product:'&#x1F680; New Product'};
 
-  var html='<div class="showing">Showing '+filtered.length+' of '+total+' signals — sorted by '+S.sortBy+'</div><div class="sigs-grid">';
+  var html='<div class="showing">Showing '+filtered.length+' of '+total+' signals â sorted by '+S.sortBy+'</div><div class="sigs-grid">';
 
   filtered.forEach(function(s){
     var idx=S.signals.indexOf(s);
@@ -796,7 +796,7 @@ function renderSignals(){
   });
 }
 
-// ── WATCHLIST ─────────────────────────────────────────────────────────────────
+// ââ WATCHLIST âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderWatchlist(){
   var wl=S.watchlist||[];
   updateCounts();
@@ -839,7 +839,7 @@ function renderWatchlist(){
   document.querySelectorAll('.wl-unwatch').forEach(function(btn){btn.addEventListener('click',function(){S.watchlist.splice(S.watchlist.indexOf(btn.getAttribute('data-co')),1);saveState();renderSignals();renderWatchlist();});});
 }
 
-// ── CRM ───────────────────────────────────────────────────────────────────────
+// ââ CRM âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function addToCRM(sig){
   var exists=false;
   CRM_STAGES.forEach(function(st){(S.crm[st]||[]).forEach(function(l){if(l.company===sig.company)exists=true;});});
@@ -1002,7 +1002,7 @@ function openCRMDetail(stage,li){
 document.getElementById('crmModalClose').addEventListener('click',function(){document.getElementById('crmModal').classList.remove('open');});
 document.getElementById('crmModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 
-// ── ADD MANUAL LEAD ───────────────────────────────────────────────────────────
+// ââ ADD MANUAL LEAD âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 document.getElementById('submitLeadBtn').addEventListener('click',async function(){
   var co=document.getElementById('fl-co').value.trim();
   if(!co){alert('Company name is required.');return;}
@@ -1026,14 +1026,14 @@ document.getElementById('submitLeadBtn').addEventListener('click',async function
 });
 document.getElementById('cancelLeadBtn').addEventListener('click',function(){showPanel('crm');});
 
-// ── BRIEFING ──────────────────────────────────────────────────────────────────
+// ââ BRIEFING ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function selectSignal(i){
   S.selected=S.signals[i];
   showPanel('briefing');
   loading('briefContainer');
   var sig=S.selected;
   try{
-    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+    var resp=await fetch('https://ge-proxy.philburrows.workers.dev',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
         system:'Senior BD analyst for Burrows & Co. Services: '+S.services.map(function(s){return s.name+' ('+s.range+')';}).join(', ')+'. Use Challenger Sale: teach something new, reframe their problem, recommend entry point. Respond ONLY with JSON: {"snapshot":"","painPoints":["","",""],"whyNow":"","primaryService":"","secondaryService":"","entryPoint":"","pitchAngle":"","firstMove":"","nextMoves":["",""],"talkingPoints":["","",""],"valueGiveaway":"","competitiveAngle":""}',
@@ -1046,7 +1046,7 @@ async function selectSignal(i){
     S.briefing=m?JSON.parse(m[0]):null;
   }catch(e){S.briefing=null;}
 
-  if(!S.briefing)S.briefing={snapshot:sig.company+' — '+sig.trigger,painPoints:['Digital transformation urgency','Leadership gap during transition','Growth pressure without clear strategy'],whyNow:'The recent trigger creates a 60-90 day window. After that, internal priorities lock in.',primaryService:'Discovery & Strategy Sprint',secondaryService:'Core Leadership Retainer',entryPoint:'Executive Workshop — half-day alignment session.',pitchAngle:'Most companies in this situation build the team first then wonder why the strategy is not working.',firstMove:'LinkedIn outreach to '+sig.decisionMaker,nextMoves:['Follow up in 3 days with industry insight','Share relevant case study day 7'],talkingPoints:['Discovery Sprint delivers funded roadmap in 30-45 days','We embed alongside your team — not a deck-and-disappear firm','Entry is low risk: fixed scope, clear deliverable'],valueGiveaway:'Companies that engage external advisory in the first 60 days of a transition move 2x faster on their roadmap.',competitiveAngle:'Boutique enough to embed directly — you get Phil and Mindy, not a team of analysts.'};
+  if(!S.briefing)S.briefing={snapshot:sig.company+' â '+sig.trigger,painPoints:['Digital transformation urgency','Leadership gap during transition','Growth pressure without clear strategy'],whyNow:'The recent trigger creates a 60-90 day window. After that, internal priorities lock in.',primaryService:'Discovery & Strategy Sprint',secondaryService:'Core Leadership Retainer',entryPoint:'Executive Workshop â half-day alignment session.',pitchAngle:'Most companies in this situation build the team first then wonder why the strategy is not working.',firstMove:'LinkedIn outreach to '+sig.decisionMaker,nextMoves:['Follow up in 3 days with industry insight','Share relevant case study day 7'],talkingPoints:['Discovery Sprint delivers funded roadmap in 30-45 days','We embed alongside your team â not a deck-and-disappear firm','Entry is low risk: fixed scope, clear deliverable'],valueGiveaway:'Companies that engage external advisory in the first 60 days of a transition move 2x faster on their roadmap.',competitiveAngle:'Boutique enough to embed directly â you get Phil and Mindy, not a team of analysts.'};
 
   var b=S.briefing;
   var svc=S.services.find(function(s){return s.name===b.primaryService;})||S.services[3];
@@ -1065,7 +1065,7 @@ async function selectSignal(i){
         '<div style="background:var(--surf2);border-radius:7px;padding:11px 13px;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Contact</div><div style="font-size:12px;font-weight:500;"><a href="'+liUrl+'" target="_blank" style="color:var(--txt);">'+sig.decisionMaker+' &#x2197;</a></div></div>'+
         '<div style="background:var(--surf2);border-radius:7px;padding:11px 13px;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Signal Date</div><div style="font-size:12px;font-weight:500;">'+sig.dateLabel+'</div></div>'+
       '</div>'+
-      (emails.length?'<div style="margin-bottom:10px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Email Guesses — click to copy — <a href="https://hunter.io/email-verifier" target="_blank" style="color:var(--blu);">verify at Hunter.io</a></div><div class="sig-emails" id="briefEmails">'+renderEmails(emails,sig.decisionMakerLinkedIn)+'</div></div>':'')+
+      (emails.length?'<div style="margin-bottom:10px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Email Guesses â click to copy â <a href="https://hunter.io/email-verifier" target="_blank" style="color:var(--blu);">verify at Hunter.io</a></div><div class="sig-emails" id="briefEmails">'+renderEmails(emails,sig.decisionMakerLinkedIn)+'</div></div>':'')+
       (sig.sourceUrl?'<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:8px;">Source: <a href="'+sig.sourceUrl+'" target="_blank" style="color:var(--blu);">'+sig.sourceType+' &#x2197;</a>'+(sig.sourceNote?' &mdash; '+sig.sourceNote:'')+'</div>':'')+
       '<div style="font-size:13px;line-height:1.6;">'+b.snapshot+'</div>'+
     '</div>'+
@@ -1108,13 +1108,13 @@ async function selectSignal(i){
   document.getElementById('briefBackBtn').addEventListener('click',function(){showPanel('signals');});
 }
 
-// ── OUTREACH ──────────────────────────────────────────────────────────────────
+// ââ OUTREACH ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 async function genOutreach(){
   showPanel('outreach');loading('outContainer');
   var sig=S.selected;var b=S.briefing;
   var out;
   try{
-    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+    var resp=await fetch('https://ge-proxy.philburrows.workers.dev',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
         system:'Write outreach for Phil Burrows at Burrows & Co. Reference the specific signal source. Pattern interrupt opening. Value before ask. One ask only. Respond ONLY with JSON: {"linkedin_connect":"","linkedin_dm":"","cold_email_subject":"","cold_email":"","warm_intro":"","follow_up_day3":""}',
@@ -1129,12 +1129,12 @@ async function genOutreach(){
 
   var fname=sig.decisionMaker.split(' ')[0];
   if(!out)out={
-    linkedin_connect:'Saw the '+sig.sourceType.toLowerCase()+' about '+sig.company+' — '+sig.trigger.slice(0,60)+'... Worth connecting?',
-    linkedin_dm:'Hi '+fname+',\n\nNoticed the '+sig.sourceType.toLowerCase()+' coverage of '+sig.company+' — specifically '+sig.trigger.slice(0,80)+'.\n\nCompanies navigating this move 2x faster with external perspective in the first 60 days.\n\nAt Burrows & Co. we embed alongside leadership at exactly this moment. Not a deck-and-disappear firm.\n\nWorth 20 minutes?\n\n— Phil Burrows',
-    cold_email_subject:sig.company+' — saw the '+sig.sourceType.toLowerCase()+' coverage',
-    cold_email:'Hi '+fname+',\n\nSaw the '+sig.sourceType.toLowerCase()+' on '+sig.company+' — '+sig.trigger+'.\n\nThis is the exact moment when external perspective pays for itself fast.\n\nBurrows & Co. embeds alongside commercial and digital leaders at inflection points like this. Discovery Sprint (30-45 days, fixed scope) typically surfaces 3-5 high-impact growth levers and a funded roadmap.\n\n20-minute call to see if there is a fit?\n\nPhil Burrows\nBurrows & Co. Digital Advisory',
+    linkedin_connect:'Saw the '+sig.sourceType.toLowerCase()+' about '+sig.company+' â '+sig.trigger.slice(0,60)+'... Worth connecting?',
+    linkedin_dm:'Hi '+fname+',\n\nNoticed the '+sig.sourceType.toLowerCase()+' coverage of '+sig.company+' â specifically '+sig.trigger.slice(0,80)+'.\n\nCompanies navigating this move 2x faster with external perspective in the first 60 days.\n\nAt Burrows & Co. we embed alongside leadership at exactly this moment. Not a deck-and-disappear firm.\n\nWorth 20 minutes?\n\nâ Phil Burrows',
+    cold_email_subject:sig.company+' â saw the '+sig.sourceType.toLowerCase()+' coverage',
+    cold_email:'Hi '+fname+',\n\nSaw the '+sig.sourceType.toLowerCase()+' on '+sig.company+' â '+sig.trigger+'.\n\nThis is the exact moment when external perspective pays for itself fast.\n\nBurrows & Co. embeds alongside commercial and digital leaders at inflection points like this. Discovery Sprint (30-45 days, fixed scope) typically surfaces 3-5 high-impact growth levers and a funded roadmap.\n\n20-minute call to see if there is a fit?\n\nPhil Burrows\nBurrows & Co. Digital Advisory',
     warm_intro:'Would you intro me to '+sig.decisionMaker+' at '+sig.company+'? Saw the '+sig.sourceType.toLowerCase()+' and think there is a real fit. Can send a blurb to forward.',
-    follow_up_day3:'Hi '+fname+',\n\nOne data point: companies that bring in external advisory in the first 60 days of a transition like '+sig.company+' is navigating typically move 2x faster on execution.\n\nStill worth a conversation?\n\n— Phil'
+    follow_up_day3:'Hi '+fname+',\n\nOne data point: companies that bring in external advisory in the first 60 days of a transition like '+sig.company+' is navigating typically move 2x faster on execution.\n\nStill worth a conversation?\n\nâ Phil'
   };
 
   var types=[
@@ -1178,11 +1178,11 @@ async function genOutreach(){
   document.getElementById('outSigsBtn').addEventListener('click',function(){showPanel('signals');});
 }
 
-// ── EVENTS ────────────────────────────────────────────────────────────────────
+// ââ EVENTS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function loadEvents(){
   var events=[
     {name:'Gartner Marketing Symposium',date:'June 2026',location:'San Diego, CA',audience:'CMOs, VP Marketing, digital leaders',recommendation:'speak',why:'Your buyers attend in force.',angle:'How growth-stage companies close the digital infrastructure gap while scaling'},
-    {name:'Digital Summit Dallas',date:'May 2026',location:'Dallas, TX',audience:'Digital and growth leaders in Texas',recommendation:'speak',why:'Texas ICP concentration. Higher conversion from speaking to conversations.',angle:'From digital chaos to commercial clarity — a 90-day transformation playbook'},
+    {name:'Digital Summit Dallas',date:'May 2026',location:'Dallas, TX',audience:'Digital and growth leaders in Texas',recommendation:'speak',why:'Texas ICP concentration. Higher conversion from speaking to conversations.',angle:'From digital chaos to commercial clarity â a 90-day transformation playbook'},
     {name:'Shoptalk',date:'March 2026',location:'Las Vegas, NV',audience:'Commerce, DTC, retail digital leaders',recommendation:'attend',why:'High density of DTC and multi-channel leaders matching ICP.',angle:''},
     {name:'Chief Experience Officer Summit',date:'September 2026',location:'NYC, NY',audience:'CXO, VP Customer Experience leaders',recommendation:'speak',why:'Direct match to CX advisory. NJ/NYC geography.',angle:'AI-powered customer experience: what works vs what sounds good in a deck'},
     {name:'PE Operating Partners Forum',date:'October 2026',location:'Chicago, IL',audience:'PE operating partners, portfolio CEOs',recommendation:'attend',why:'PE-backed ICP. One relationship = multiple portfolio engagements.',angle:''},
@@ -1200,7 +1200,7 @@ function loadEvents(){
   }).join('')+'</div>');
 }
 
-// ── SETTINGS ──────────────────────────────────────────────────────────────────
+// ââ SETTINGS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderSettings(){
   var tt=document.getElementById('titleTags');
   if(tt)tt.innerHTML=S.icp.titles.map(function(t,i){return'<div class="tag" data-ti="'+i+'">'+t+' &times;</div>';}).join('');
