@@ -3,240 +3,223 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Burrows & Co. — Growth Engine</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Burrows &amp; Co. — Growth Engine</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script>
-firebase.initializeApp({
-  apiKey:"AIzaSyAgSLxhOP1-2XFA-7GUEpDz9duDBkxB8iQ",
-  authDomain:"burrows-cfo.firebaseapp.com",
-  projectId:"burrows-cfo",
-  appId:"1:466879182304:web:a4a703af3a72cd55106785"
-});
+firebase.initializeApp({apiKey:"AIzaSyAgSLxhOP1-2XFA-7GUEpDz9duDBkxB8iQ",authDomain:"burrows-cfo.firebaseapp.com",projectId:"burrows-cfo",appId:"1:466879182304:web:a4a703af3a72cd55106785"});
 </script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
+*{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0e0f0d;--surface:#161714;--surface2:#1c1e1a;--border:rgba(255,255,255,0.07);
-  --text:#e8e6df;--muted:#7a7870;--accent:#c8f05a;--green:#5af0b4;
-  --red:#f05a5a;--amber:#f0b45a;--blue:#5ab4f0;--purple:#b45af0;
+  --bg:#0e0f0d;--surf:#161714;--surf2:#1c1e1a;
+  --bdr:rgba(255,255,255,.07);--txt:#e8e6df;--muted:#7a7870;
+  --acc:#c8f05a;--grn:#5af0b4;--red:#f05a5a;--amb:#f0b45a;--blu:#5ab4f0;--pur:#b45af0;
   --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--serif:'Fraunces',serif;
 }
-body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
-#authGate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
-.auth-logo{font-family:var(--serif);font-size:32px;font-weight:300;}.auth-logo em{font-style:italic;color:var(--accent);}
-.auth-sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;}
-#signInBtn{margin-top:12px;padding:14px 36px;background:var(--accent);border:none;border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:500;color:#0e0f0d;cursor:pointer;}
-#authMsg{font-family:var(--mono);font-size:10px;color:var(--red);margin-top:4px;min-height:16px;}
-#app{display:none;flex-direction:column;min-height:100vh;}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;border-bottom:1px solid var(--border);background:rgba(14,15,13,0.95);position:sticky;top:0;z-index:100;}
-.logo-name{font-family:var(--serif);font-size:18px;font-weight:300;}.logo-name em{font-style:italic;color:var(--accent);}
-.logo-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;}
-.topbar-right{display:flex;align-items:center;gap:10px;}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px rgba(200,240,90,.5);}
-.sync-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);}
-.tbtn{padding:7px 16px;border:none;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;transition:opacity .15s;}
-.tbtn:hover{opacity:.85;}
-.tbtn-accent{background:var(--accent);color:#0e0f0d;}
-.tbtn-ghost{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--muted);}
-.cmd-bar{padding:10px 32px 12px;background:#0e0f0d;border-bottom:2px solid var(--accent);}
-.cmd-label{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:7px;}
-.cmd-row{display:flex;align-items:center;gap:10px;background:rgba(200,240,90,0.05);border:1.5px solid var(--accent);border-radius:8px;padding:9px 14px;width:100%;}
-.cmd-inp{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:12px;}
-.cmd-inp::placeholder{color:var(--muted);}
-.cmd-ask{padding:7px 18px;background:var(--accent);border:none;border-radius:6px;color:#0e0f0d;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;flex-shrink:0;}
-.cmd-resp{margin-top:10px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:7px;font-family:var(--mono);font-size:12px;color:var(--text);line-height:1.7;display:none;}
-.cmd-resp.open{display:block;}
-.cmd-tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;margin-right:8px;font-weight:500;}
-.cmd-tag.ans{background:rgba(200,240,90,.15);color:var(--accent);}
-.cmd-tag.nav{background:rgba(90,180,240,.15);color:var(--blue);}
-.cmd-tag.code{background:rgba(180,90,240,.15);color:var(--purple);}
-.cmd-acts{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap;}
-.cmd-act{padding:5px 12px;border-radius:4px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text);}
-.cmd-act.p{background:rgba(200,240,90,.12);border-color:rgba(200,240,90,.3);color:var(--accent);}
-.tabs{display:flex;gap:2px;padding:0 32px;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto;}
-.tab{padding:12px 18px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;}
-.tab:hover{color:var(--text);}
-.tab.on{color:var(--accent);border-bottom-color:var(--accent);}
-.tab .badge{display:inline-block;margin-left:6px;padding:1px 6px;background:rgba(200,240,90,.15);color:var(--accent);border-radius:10px;font-size:9px;}
-.main{flex:1;overflow-y:auto;}
-.panel{display:none;padding:24px 32px;}
-.panel.on{display:block;}
-.signals-toolbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;}
-.signals-title{font-family:var(--serif);font-size:22px;font-weight:300;}.signals-title em{font-style:italic;color:var(--accent);}
-.signals-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;}
-.signals-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.ctrl-select{background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;outline:none;}
-.filter-btn{padding:5px 12px;border-radius:5px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--muted);}
-.filter-btn.on{background:rgba(200,240,90,.12);border-color:rgba(200,240,90,.3);color:var(--accent);}
-.signals-grid{display:grid;gap:10px;}
-.sig-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;transition:all .15s;}
-.sig-card:hover{border-color:rgba(200,240,90,.2);background:var(--surface2);}
-.sig-card.hot{border-left:3px solid var(--red);}
-.sig-card.warm{border-left:3px solid var(--amber);}
-.sig-card.new{border-left:3px solid var(--blue);}
-.sig-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
-.sig-co-wrap{flex:1;}
-.sig-co{font-family:var(--serif);font-size:15px;font-weight:600;}
-.sig-co a{color:var(--text);text-decoration:none;}
-.sig-co a:hover{color:var(--accent);}
-.sig-website{font-family:var(--mono);font-size:9px;color:var(--blue);margin-top:2px;}
-.sig-website a{color:var(--blue);text-decoration:none;}
-.sig-website a:hover{text-decoration:underline;}
-.sig-ind{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
-.sig-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
-.score{padding:3px 10px;border-radius:20px;font-family:var(--mono);font-size:11px;font-weight:500;}
-.score.hi{background:rgba(90,240,180,.15);color:var(--green);}
-.score.mid{background:rgba(240,180,90,.15);color:var(--amber);}
-.score.lo{background:rgba(255,255,255,.08);color:var(--muted);}
-.urg{padding:2px 8px;border-radius:10px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;}
-.urg.hot{background:rgba(240,90,90,.15);color:var(--red);}
-.urg.warm{background:rgba(240,180,90,.15);color:var(--amber);}
-.urg.new{background:rgba(90,180,240,.15);color:var(--blue);}
-.sig-trigger{font-size:13px;line-height:1.5;margin-bottom:8px;}
-.sig-trigger strong{color:var(--accent);}
-.sig-source{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:8px;}
-.sig-source a{color:var(--blue);text-decoration:none;}
-.sig-source a:hover{text-decoration:underline;}
-.sig-pe{font-family:var(--mono);font-size:9px;color:var(--purple);margin-bottom:6px;}
-.sig-dm{background:var(--surface2);border-radius:6px;padding:8px 12px;margin-bottom:8px;}
-.sig-dm-name{font-size:12px;font-weight:500;}
-.sig-dm-title{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:1px;}
-.sig-emails{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;}
-.sig-email{font-family:var(--mono);font-size:9px;padding:2px 7px;background:rgba(200,240,90,.08);border:1px solid rgba(200,240,90,.15);border-radius:3px;color:var(--accent);cursor:pointer;}
-.sig-email:hover{background:rgba(200,240,90,.15);}
-.sig-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:4px;}
-.sig-tags{display:flex;gap:5px;flex-wrap:wrap;}
-.sig-tag{padding:2px 8px;background:rgba(255,255,255,.05);border-radius:4px;font-family:var(--mono);font-size:9px;color:var(--muted);}
-.sig-actions{display:flex;gap:6px;}
-.sig-btn{padding:3px 10px;border-radius:4px;font-family:var(--mono);font-size:9px;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);transition:all .15s;}
-.sig-btn:hover{color:var(--text);}
-.sig-btn.watch.on{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.3);color:var(--accent);}
-.sig-btn.brief{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.2);color:var(--accent);}
-.sig-btn.crm-add{background:rgba(90,180,240,.1);border-color:rgba(90,180,240,.2);color:var(--blue);}
-.showing-label{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:12px;}
-/* BRIEFING */
-.sc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}
-.sc-label{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;}
-.sc-body{font-size:13px;color:var(--text);line-height:1.7;}
-.hero{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:16px;}
-.hero-co{font-family:var(--serif);font-size:26px;font-weight:300;margin-bottom:4px;}
-.hero-co em{font-style:italic;color:var(--accent);}
-.hero-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:16px;}
-.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
-.hero-stat{background:var(--surface2);border-radius:8px;padding:14px 16px;}
-.stat-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
-.stat-val{font-size:15px;font-weight:500;}.stat-val.ac{color:var(--accent);}
-.svc-match{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border-radius:7px;margin-bottom:8px;}
-.svc-name{font-size:13px;font-weight:500;}
-.svc-range{font-family:var(--mono);font-size:11px;color:var(--accent);}
-.svc-badge{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(200,240,90,.12);color:var(--accent);}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);min-height:100vh}
+
+/* AUTH */
+#authGate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#authGate h1{font-family:var(--serif);font-size:30px;font-weight:300}
+#authGate h1 em{font-style:italic;color:var(--acc)}
+#authGate p{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase}
+#signInBtn{padding:13px 36px;background:var(--acc);border:none;border-radius:8px;font-family:var(--mono);font-size:12px;font-weight:500;color:#0e0f0d;cursor:pointer}
+#signInBtn:hover{opacity:.85}
+#authMsg{font-family:var(--mono);font-size:10px;color:var(--red);height:14px}
+
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;border-bottom:1px solid var(--bdr);background:rgba(14,15,13,.96);position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+.logo{font-family:var(--serif);font-size:17px;font-weight:300}.logo em{font-style:italic;color:var(--acc)}
+.logo-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-top:2px}
+.tbar-r{display:flex;align-items:center;gap:10px}
+.btn-acc{padding:7px 16px;background:var(--acc);border:none;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:500;color:#0e0f0d;cursor:pointer}
+.btn-acc:hover{opacity:.85}.btn-acc:disabled{opacity:.4;cursor:default}
+.btn-ghost{padding:7px 14px;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:6px;font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer}
+.btn-ghost:hover{color:var(--txt)}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+.sdot.live{background:var(--acc);box-shadow:0 0 6px rgba(200,240,90,.5)}
+#userLbl{font-family:var(--mono);font-size:10px;color:var(--muted)}
+
+/* CONTROLS */
+.ctrl-bar{display:flex;align-items:center;gap:8px;padding:9px 28px;background:var(--surf);border-bottom:1px solid var(--bdr);flex-wrap:wrap}
+.ctrl-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.ctrl-grp{display:flex;gap:3px}
+.cb{padding:5px 11px;border-radius:5px;font-family:var(--mono);font-size:10px;color:var(--muted);background:transparent;border:1px solid var(--bdr);cursor:pointer}
+.cb:hover{color:var(--txt)}.cb.on{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.3);color:var(--acc)}
+.csep{width:1px;background:var(--bdr);align-self:stretch;margin:0 4px}
+
+/* NAV */
+.nav{display:flex;gap:0;padding:0 28px;background:var(--surf);border-bottom:1px solid var(--bdr);overflow-x:auto}
+.ntab{padding:10px 16px;font-family:var(--mono);font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s}
+.ntab:hover{color:var(--txt)}.ntab.on{color:var(--acc);border-bottom-color:var(--acc)}
+.badge{display:inline-block;margin-left:5px;padding:1px 6px;background:rgba(200,240,90,.15);color:var(--acc);border-radius:10px;font-size:9px;font-family:var(--mono)}
+
+/* PANELS */
+.main{flex:1}
+.panel{display:none;padding:22px 28px;min-height:400px}.panel.on{display:block}
+.ph{font-family:var(--serif);font-size:21px;font-weight:300;margin-bottom:4px}.ph em{font-style:italic;color:var(--acc)}
+.pm{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:18px}
+
+/* SIGNAL CARDS */
+.sigs-grid{display:grid;gap:10px}
+.sig-card{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:15px 17px;transition:border-color .15s}
+.sig-card:hover{border-color:rgba(200,240,90,.25)}
+.sig-card.hot{border-left:3px solid var(--red)}.sig-card.warm{border-left:3px solid var(--amb)}.sig-card.new{border-left:3px solid var(--blu)}
+.sig-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.sig-co{font-family:var(--serif);font-size:15px;font-weight:600}
+.sig-co a{color:var(--txt);text-decoration:none}.sig-co a:hover{color:var(--acc)}
+.sig-web{font-family:var(--mono);font-size:9px;color:var(--blu);margin-top:2px}
+.sig-web a{color:var(--blu);text-decoration:none}
+.sig-ind{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:1px}
+.sig-r{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
+.score{padding:3px 9px;border-radius:20px;font-family:var(--mono);font-size:10px;font-weight:500}
+.score.hi{background:rgba(90,240,180,.15);color:var(--grn)}.score.mid{background:rgba(240,180,90,.15);color:var(--amb)}.score.lo{background:rgba(255,255,255,.07);color:var(--muted)}
+.urg{padding:2px 7px;border-radius:10px;font-family:var(--mono);font-size:9px;text-transform:uppercase}
+.urg.hot{background:rgba(240,90,90,.15);color:var(--red)}.urg.warm{background:rgba(240,180,90,.15);color:var(--amb)}.urg.new{background:rgba(90,180,240,.15);color:var(--blu)}
+.sig-trig{font-size:12px;color:var(--txt);line-height:1.5;margin-bottom:7px}
+.sig-trig strong{color:var(--acc)}
+.sig-src{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:6px}
+.sig-src a{color:var(--blu);text-decoration:none}.sig-src a:hover{text-decoration:underline}
+.sig-pe{font-family:var(--mono);font-size:10px;color:var(--pur);margin-bottom:6px}
+.sig-dm{background:var(--surf2);border-radius:6px;padding:8px 10px;margin-bottom:7px}
+.sig-dm-name{font-size:12px;font-weight:500}
+.sig-dm-name a{color:var(--txt);text-decoration:none}.sig-dm-name a:hover{color:var(--acc)}
+.sig-dm-title{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px}
+.sig-emails{margin-top:6px;display:flex;flex-direction:column;gap:3px}
+.sig-email{display:flex;align-items:center;gap:8px;padding:4px 8px;background:rgba(255,255,255,.04);border-radius:4px;cursor:pointer;font-family:var(--mono);font-size:10px}
+.sig-email:hover{background:rgba(255,255,255,.08)}
+.em-addr{flex:1;color:var(--txt)}.em-conf{padding:1px 6px;border-radius:3px;font-size:9px;flex-shrink:0}
+.em-conf.hi{background:rgba(90,240,180,.15);color:var(--grn)}.em-conf.mid{background:rgba(240,180,90,.15);color:var(--amb)}.em-conf.lo{background:rgba(255,255,255,.06);color:var(--muted)}
+.sig-foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+.sig-tags{display:flex;gap:5px;flex-wrap:wrap}
+.sig-tag{padding:2px 7px;background:rgba(255,255,255,.05);border-radius:4px;font-family:var(--mono);font-size:9px;color:var(--muted)}
+.sig-acts{display:flex;gap:6px}
+.sbtn{padding:4px 10px;border-radius:5px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid var(--bdr);background:var(--surf2);color:var(--txt);transition:all .15s}
+.sbtn:hover{background:rgba(255,255,255,.06)}
+.sbtn.brief{border-color:rgba(200,240,90,.2);color:var(--acc)}.sbtn.crm{border-color:rgba(90,180,240,.2);color:var(--blu)}.sbtn.star{color:var(--amb)}.sbtn.dismiss{color:var(--red)}
+.showing{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:12px;padding:5px 9px;background:var(--surf);border-radius:5px;border:1px solid var(--bdr)}
+
+/* SECTION CARDS */
+.sc{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:17px;margin-bottom:10px}
+.sc-lbl{font-family:var(--mono);font-size:9px;color:var(--acc);letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.sc-body{font-size:13px;color:var(--txt);line-height:1.7}
+.regen{padding:3px 8px;background:rgba(200,240,90,.08);border:1px solid rgba(200,240,90,.2);border-radius:4px;font-family:var(--mono);font-size:9px;color:var(--acc);cursor:pointer}
+.regen:hover{background:rgba(200,240,90,.15)}
+.row-item{padding:6px 0;border-bottom:1px solid var(--bdr)}
+.row-item:last-child{border:none}
+
 /* OUTREACH */
-.out-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
-.out-tab{padding:7px 14px;border-radius:6px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid var(--border);color:var(--muted);}
-.out-tab.on{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.3);color:var(--accent);}
-.out-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
-.out-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.out-title{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
-.copy-btn{padding:5px 12px;background:rgba(200,240,90,.1);border:1px solid rgba(200,240,90,.2);border-radius:4px;font-family:var(--mono);font-size:10px;color:var(--accent);cursor:pointer;}
-.out-content{padding:18px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;min-height:120px;}
-/* CRM PIPELINE */
-.crm-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
-.crm-stages{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:20px;}
-.stage-col{min-width:240px;flex-shrink:0;}
-.stage-header{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:space-between;}
-.stage-header.watching{background:rgba(90,180,240,.15);color:var(--blue);}
-.stage-header.contacted{background:rgba(240,180,90,.15);color:var(--amber);}
-.stage-header.responded{background:rgba(90,240,180,.15);color:var(--green);}
-.stage-header.meeting{background:rgba(200,240,90,.15);color:var(--accent);}
-.stage-header.proposal{background:rgba(180,90,240,.15);color:var(--purple);}
-.stage-header.closed{background:rgba(90,240,180,.25);color:var(--green);}
-.stage-body{background:var(--surface2);border-radius:0 0 6px 6px;padding:8px;min-height:120px;}
-.crm-card{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s;}
-.crm-card:hover{border-color:rgba(200,240,90,.2);}
-.crm-co{font-size:13px;font-weight:500;margin-bottom:3px;}
-.crm-dm{font-family:var(--mono);font-size:9px;color:var(--muted);}
-.crm-date{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px;}
-.crm-note{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;}
-.crm-actions{display:flex;gap:4px;margin-top:6px;}
-.crm-stage-sel{background:var(--surf2);border:1px solid var(--bdr);border-radius:5px;padding:3px 6px;color:var(--txt);font-family:var(--mono);font-size:9px;cursor:pointer;outline:none;flex:1;}
-.crm-stage-sel:focus{border-color:var(--acc);}
-.crm-btn{padding:2px 8px;border-radius:3px;font-family:var(--mono);font-size:9px;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);}
-.crm-btn:hover{color:var(--text);}
-.crm-btn.gmail{color:var(--blue);border-color:rgba(90,180,240,.2);}
-.add-lead-form{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-.form-input{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-family:var(--mono);font-size:11px;outline:none;width:100%;}
-.form-input:focus{border-color:var(--accent);}
-.form-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
-/* EVENTS */
-.events-grid{display:grid;gap:12px;}
-.ev-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
-.ev-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
-.ev-name{font-family:var(--serif);font-size:15px;font-weight:600;}
-.ev-date{font-family:var(--mono);font-size:10px;color:var(--accent);margin-top:2px;}
-.ev-badge{padding:3px 10px;border-radius:10px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;flex-shrink:0;}
-.ev-badge.attend{background:rgba(90,240,180,.15);color:var(--green);}
-.ev-badge.speak{background:rgba(200,240,90,.15);color:var(--accent);}
-.ev-badge.sponsor{background:rgba(180,90,240,.15);color:var(--purple);}
-.ev-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px;}
-.ev-why{font-size:12px;color:var(--text);line-height:1.5;}
-.ev-why strong{color:var(--accent);}
+.out-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.otab{padding:6px 12px;border-radius:5px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid var(--bdr);color:var(--muted)}
+.otab:hover{color:var(--txt)}.otab.on{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.3);color:var(--acc)}
+.out-box{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.out-hdr{padding:11px 15px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between}
+.out-title{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.copy-btn{padding:4px 10px;background:rgba(200,240,90,.08);border:1px solid rgba(200,240,90,.2);border-radius:4px;font-family:var(--mono);font-size:10px;color:var(--acc);cursor:pointer}
+.copy-btn:hover{background:rgba(200,240,90,.15)}
+.out-body{padding:15px;font-size:13px;line-height:1.8;color:var(--txt);white-space:pre-wrap;min-height:120px}
+
+/* CRM */
+.crm-board{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;overflow-x:auto;min-width:900px}
+.crm-col{background:var(--surf);border:1px solid var(--bdr);border-radius:8px;padding:10px}
+.crm-col-h{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.crm-n{background:var(--surf2);padding:2px 6px;border-radius:10px;font-family:var(--mono);font-size:9px}
+.crm-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:6px;padding:8px 10px;margin-bottom:6px;cursor:pointer}
+.crm-card:hover{border-color:rgba(200,240,90,.2)}
+.crm-co{font-size:12px;font-weight:500;margin-bottom:2px}
+.crm-ct{font-family:var(--mono);font-size:9px;color:var(--muted)}
+.crm-acts{margin-top:6px;display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.crm-sel{background:var(--surf);border:1px solid var(--bdr);border-radius:4px;padding:3px 6px;color:var(--txt);font-family:var(--mono);font-size:9px;outline:none;cursor:pointer;flex:1}
+.crm-sel:focus{border-color:var(--acc)}
+.crm-btn{padding:3px 8px;border-radius:4px;font-family:var(--mono);font-size:9px;cursor:pointer;border:1px solid var(--bdr);background:var(--surf);color:var(--muted)}
+.crm-btn:hover{color:var(--txt)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surf);border:1px solid var(--bdr);border-radius:12px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--bdr)}
+.modal-title{font-family:var(--serif);font-size:18px;font-weight:300}
+.modal-close{background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:2px 6px}
+.modal-body{padding:18px}
+.mtabs{display:flex;gap:4px;margin-bottom:14px}
+.mtab{padding:5px 11px;border-radius:5px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid var(--bdr);color:var(--muted)}
+.mtab.on{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.3);color:var(--acc)}
+.msec{display:none}.msec.on{display:block}
+.field-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:10px 0 4px}
+.field-val{font-size:13px;color:var(--txt);line-height:1.5}
+.note-inp{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:6px;padding:8px 10px;color:var(--txt);font-size:12px;resize:vertical;outline:none;min-height:55px;margin-top:4px;font-family:var(--sans)}
+.note-inp:focus{border-color:var(--acc)}
+.note-entry{padding:7px 9px;background:var(--surf2);border-radius:5px;margin-bottom:5px}
+.note-txt{font-size:12px;color:var(--txt);line-height:1.4}
+.note-dt{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px}
+
+/* LEAD FORM */
+.lead-form{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:20px;max-width:540px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:10px}
+.form-f{display:flex;flex-direction:column;gap:4px}
+.form-lbl{font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.form-inp{background:var(--surf2);border:1px solid var(--bdr);border-radius:6px;padding:7px 10px;color:var(--txt);font-size:12px;outline:none;font-family:var(--sans)}
+.form-inp:focus{border-color:var(--acc)}
+
 /* SETTINGS */
-.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;}
-.settings-card.full{grid-column:1/-1;}
-.settings-title{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
-.toggle-row:last-child{border-bottom:none;}
-.toggle-label{font-size:13px;}
-.toggle{width:36px;height:20px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
-.toggle.on{background:var(--accent);}
-.toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:var(--bg);top:2px;left:2px;transition:left .2s;}
-.toggle.on::after{left:18px;background:#0e0f0d;}
-.tag-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
-.tag{padding:4px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-family:var(--mono);font-size:10px;color:var(--text);cursor:pointer;}
-.tag.on{background:rgba(200,240,90,.12);border-color:rgba(200,240,90,.3);color:var(--accent);}
-.tag-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-family:var(--mono);font-size:11px;outline:none;}
-.tag-input:focus{border-color:var(--accent);}
-.save-btn{margin-top:12px;padding:8px 18px;background:var(--accent);border:none;border-radius:6px;color:#0e0f0d;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;width:100%;}
-input[type=range]{width:100%;accent-color:var(--accent);}
-.range-label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:8px;}
-.action-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
-.abtn{padding:9px 18px;border-radius:7px;font-family:var(--mono);font-size:11px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);}
-.abtn.primary{background:var(--accent);color:#0e0f0d;border-color:var(--accent);}
-.back{font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;margin-bottom:20px;display:inline-block;}
-.back:hover{color:var(--accent);}
-.empty-state{padding:80px 40px;text-align:center;}
-.empty-icon{font-size:32px;margin-bottom:12px;}
-.empty-title{font-family:var(--serif);font-size:18px;font-weight:300;margin-bottom:8px;}
-.empty-sub{font-family:var(--mono);font-size:11px;color:var(--muted);}
-.loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px;gap:16px;}
-.loading-spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.loading-text{font-family:var(--mono);font-size:11px;color:var(--muted);}
-.sc-regen{padding:3px 10px;border-radius:4px;font-family:var(--mono);font-size:9px;cursor:pointer;border:1px solid rgba(200,240,90,.2);background:rgba(200,240,90,.06);color:var(--accent);font-weight:500;}
-.sc-regen:hover{background:rgba(200,240,90,.12);}
-.note-entry{background:var(--surface2);border-radius:6px;padding:10px 12px;margin-bottom:8px;}
-.note-date{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px;}
-.seq-step{background:var(--surface2);border-radius:7px;padding:12px 14px;margin-bottom:8px;border:1px solid var(--border);}
-.seq-step.done{opacity:.5;}
-.seq-day{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;}
-.seq-type{font-family:var(--mono);font-size:9px;color:var(--muted);}
-.seq-msg{font-size:12px;line-height:1.5;color:var(--text);margin-top:4px;}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:520px;max-height:80vh;overflow-y:auto;}
-.modal-title{font-family:var(--serif);font-size:20px;font-weight:300;margin-bottom:16px;}
-.modal-close{float:right;background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;}
+.set-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.set-card{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:17px}
+.set-card.full{grid-column:1/-1}
+.set-title{font-family:var(--mono);font-size:9px;color:var(--acc);text-transform:uppercase;letter-spacing:.12em;margin-bottom:11px}
+.tags-list{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.tag{padding:4px 9px;background:var(--surf2);border:1px solid var(--bdr);border-radius:20px;font-family:var(--mono);font-size:10px;color:var(--txt);cursor:pointer}
+.tag:hover{color:var(--red);border-color:rgba(240,90,90,.3)}
+.ctrl-inp{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:6px;padding:7px 10px;color:var(--txt);font-family:var(--mono);font-size:11px;outline:none}
+.ctrl-inp:focus{border-color:var(--acc)}
+.tog-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bdr)}
+.tog-row:last-child{border:none}
+.tog-lbl{font-size:13px;color:var(--txt)}
+.tog{width:33px;height:18px;border-radius:9px;background:var(--surf2);border:1px solid var(--bdr);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--acc)}
+.tog::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:var(--bg);top:2px;left:2px;transition:left .2s}
+.tog.on::after{left:17px;background:#0e0f0d}
+.rl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin:9px 0 4px}
+input[type=range]{width:100%;accent-color:var(--acc)}
+.save-btn{width:100%;margin-top:9px;padding:8px;background:var(--acc);border:none;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:500;color:#0e0f0d;cursor:pointer}
+
+/* UTILS */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px;gap:14px}
+.spinner{width:28px;height:28px;border:2px solid var(--bdr);border-top-color:var(--acc);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-txt{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em}
+.empty{padding:60px;text-align:center}
+.empty-ico{font-size:28px;margin-bottom:10px}
+.empty-h{font-family:var(--serif);font-size:17px;font-weight:300;margin-bottom:6px}
+.empty-s{font-family:var(--mono);font-size:10px;color:var(--muted)}
+.action-row{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
+.abtn{padding:8px 15px;border-radius:7px;font-family:var(--mono);font-size:11px;cursor:pointer;border:1px solid var(--bdr);background:var(--surf2);color:var(--txt)}
+.abtn:hover{background:rgba(255,255,255,.06)}
+.abtn.primary{background:var(--acc);color:#0e0f0d;border-color:var(--acc)}.abtn.primary:hover{opacity:.88}
+.back-btn{font-family:var(--mono);font-size:10px;color:var(--muted);cursor:pointer;margin-bottom:15px;display:inline-block}
+.back-btn:hover{color:var(--acc)}
+
+/* EVENTS */
+.ev-grid{display:grid;gap:10px}
+.ev-card{background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:15px 17px}
+.ev-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.ev-n{font-family:var(--serif);font-size:14px;font-weight:600}.ev-d{font-family:var(--mono);font-size:10px;color:var(--acc);margin-top:2px}
+.ev-badge{padding:2px 8px;border-radius:10px;font-family:var(--mono);font-size:9px;text-transform:uppercase;flex-shrink:0}
+.ev-badge.attend{background:rgba(90,240,180,.15);color:var(--grn)}.ev-badge.speak{background:rgba(200,240,90,.15);color:var(--acc)}.ev-badge.sponsor{background:rgba(180,90,240,.15);color:var(--pur)}
+.ev-aud{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:5px}
+.ev-why{font-size:12px;color:var(--txt);line-height:1.5}
 </style>
 </head>
 <body>
 
 <div id="authGate">
-  <div class="auth-logo">Burrows &amp; Co. &mdash; <em>Growth Engine</em></div>
-  <div class="auth-sub">Private &middot; Sign in required</div>
+  <h1>Burrows &amp; Co. &mdash; <em>Growth Engine</em></h1>
+  <p>Private &middot; @burrowsadvisory.com only</p>
   <button id="signInBtn">Sign in with Google</button>
   <div id="authMsg"></div>
 </div>
@@ -244,170 +227,161 @@ input[type=range]{width:100%;accent-color:var(--accent);}
 <div id="app">
   <div class="topbar">
     <div>
-      <div class="logo-name">Burrows &amp; Co. &mdash; <em>Growth Engine</em></div>
+      <div class="logo">Burrows &amp; Co. &mdash; <em>Growth Engine</em></div>
       <div class="logo-sub">Revenue Intelligence &middot; Signal-Powered &middot; 2026</div>
     </div>
-    <div class="topbar-right">
-      <div class="sync-dot"></div>
-      <div class="sync-lbl" id="userLbl">Signed in</div>
-      <button class="tbtn tbtn-accent" id="pullBtn">&#x27F3; Pull Signals</button>
-      <button class="tbtn tbtn-ghost" id="signOutBtn">Sign out</button>
+    <div class="tbar-r">
+      <div class="sdot" id="sdot"></div>
+      <div id="userLbl">Ready</div>
+      <button id="pullBtn" class="btn-acc">&#x27F3; Pull Signals</button>
+      <button id="signOutBtn" class="btn-ghost">Sign out</button>
     </div>
   </div>
 
-  <div class="cmd-bar">
-    <div class="cmd-label">&#x2318; Command &mdash; ask for insights &middot; pull signals &middot; navigate &middot; add leads &middot; request new features</div>
-    <div class="cmd-row">
-      <span style="font-size:14px;color:var(--accent);flex-shrink:0;">&#x2318;</span>
-      <input id="cmdInput" class="cmd-inp" placeholder='Ask anything &middot; "Find PE-backed healthcare companies in NJ hiring a CMO" &middot; "Add lead: Acme Corp, Jane Smith" &middot; "Build me a new view"'>
-      <button id="cmdAskBtn" class="cmd-ask">Ask</button>
+  <div class="ctrl-bar">
+    <span class="ctrl-lbl">Count:</span>
+    <div class="ctrl-grp" id="cntGrp">
+      <button class="cb on" data-v="10">10</button>
+      <button class="cb" data-v="25">25</button>
+      <button class="cb" data-v="50">50</button>
     </div>
-    <div id="cmdResp" class="cmd-resp"></div>
+    <div class="csep"></div>
+    <span class="ctrl-lbl">Sort:</span>
+    <div class="ctrl-grp" id="sortGrp">
+      <button class="cb on" data-v="date">Date</button>
+      <button class="cb" data-v="score">Score</button>
+      <button class="cb" data-v="urgency">Urgency</button>
+    </div>
+    <div class="csep"></div>
+    <span class="ctrl-lbl">Filter:</span>
+    <div class="ctrl-grp" id="filtGrp">
+      <button class="cb on" data-v="all">All</button>
+      <button class="cb" data-v="hot">Hot</button>
+      <button class="cb" data-v="warm">Warm</button>
+    </div>
+    <div class="csep"></div>
+    <button id="clearBtn" class="cb" style="color:var(--red);border-color:rgba(240,90,90,.2)">Clear All</button>
   </div>
 
-  <div class="tabs">
-    <div class="tab on" data-panel="signals">Signal Feed <span class="badge" id="sigCount">0</span></div>
-    <div class="tab" data-panel="watchlist">Watchlist <span class="badge" id="watchCount">0</span></div>
-    <div class="tab" data-panel="crm">CRM Pipeline <span class="badge" id="crmCount">0</span></div>
-    <div class="tab" data-panel="briefing" id="briefingTab">Lead Briefing</div>
-    <div class="tab" data-panel="outreach" id="outreachTab">Outreach</div>
-    <div class="tab" data-panel="events">Events</div>
-    <div class="tab" data-panel="playbook">&#x1F4D6; Playbook</div>
-    <div class="tab" data-panel="settings">&#x2699; ICP Settings</div>
+  <div class="nav">
+    <div class="ntab on" data-panel="signals">Signal Feed <span class="badge" id="sigCount">0</span></div>
+    <div class="ntab" data-panel="watchlist">Watchlist <span class="badge" id="watchCount">0</span></div>
+    <div class="ntab" data-panel="briefing" id="briefTab">Lead Briefing</div>
+    <div class="ntab" data-panel="outreach" id="outTab">Outreach</div>
+    <div class="ntab" data-panel="crm">CRM <span class="badge" id="crmCount">0</span></div>
+    <div class="ntab" data-panel="addlead">+ Add Lead</div>
+    <div class="ntab" data-panel="events">Events</div>
+    <div class="ntab" data-panel="playbook">Playbook</div>
+    <div class="ntab" data-panel="settings">&#x2699; Settings</div>
   </div>
 
   <div class="main">
 
-    <!-- SIGNALS -->
     <div class="panel on" id="panel-signals">
-      <div class="signals-toolbar">
-        <div>
-          <div class="signals-title">Live <em>Signal Feed</em></div>
-          <div class="signals-meta" id="sigMeta">Pull signals to see live intelligence. New signals are added to the top.</div>
-        </div>
-        <div class="signals-controls">
-          <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">Pull</span>
-          <select id="sigLimit" class="ctrl-select">
-            <option value="10">10 signals</option>
-            <option value="25">25 signals</option>
-            <option value="50">50 signals</option>
-            <option value="100">100 signals</option>
-          </select>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">Sort</span>
-          <select id="sigSort" class="ctrl-select">
-            <option value="date">Newest first</option>
-            <option value="score">ICP Score</option>
-            <option value="urgency">Urgency</option>
-          </select>
-          <button class="filter-btn on" id="filterAll">All</button>
-          <button class="filter-btn" id="filterHot">&#x1F525; Hot</button>
-          <button class="filter-btn" id="filterWarm">&#x26A1; Warm</button>
-          <button class="tbtn tbtn-ghost" id="clearSignalsBtn" style="font-size:10px;padding:5px 10px;">Clear all</button>
-        </div>
-      </div>
-      <div id="sigContainer"><div class="empty-state"><div class="empty-icon">&#x26A1;</div><div class="empty-title">Ready to pull signals</div><div class="empty-sub">Click "Pull Signals" to scan your target market. New signals are added to the top each time.</div></div></div>
+      <div class="ph">Live <em>Signal Feed</em></div>
+      <div class="pm" id="sigMeta">Pull signals to scan the live market</div>
+      <div id="sigContainer"><div class="empty"><div class="empty-ico">&#x26A1;</div><div class="empty-h">Ready to pull signals</div><div class="empty-s">Click Pull Signals to search the live market in real time</div></div></div>
     </div>
 
-    <!-- WATCHLIST -->
     <div class="panel" id="panel-watchlist">
-      <div class="signals-toolbar"><div><div class="signals-title">&#x2605; <em>Watchlist</em></div><div class="signals-meta">Companies you are tracking</div></div></div>
-      <div id="watchContainer"><div class="empty-state"><div class="empty-icon">&#x2605;</div><div class="empty-title">No companies watched yet</div><div class="empty-sub">Click Watch on any signal card to add it here</div></div></div>
+      <div class="ph">&#x2605; <em>Watchlist</em></div>
+      <div class="pm">Signals you have starred</div>
+      <div id="watchContainer"><div class="empty"><div class="empty-ico">&#x2605;</div><div class="empty-h">No starred signals yet</div><div class="empty-s">Star any signal card to save it here</div></div></div>
     </div>
 
-    <!-- CRM PIPELINE -->
-    <div class="panel" id="panel-crm">
-      <div class="crm-toolbar">
-        <div><div class="signals-title">CRM <em>Pipeline</em></div><div class="signals-meta">Manage prospects from signal to close</div></div>
-        <button class="tbtn tbtn-accent" id="addLeadBtn">+ Add Lead</button>
-      </div>
-
-      <!-- Add Lead Form (hidden by default) -->
-      <div class="add-lead-form" id="addLeadForm" style="display:none;">
-        <div style="font-family:var(--serif);font-size:16px;font-weight:300;margin-bottom:14px;">Add Lead Manually</div>
-        <div class="form-grid">
-          <div><div class="form-label">Company Name</div><input class="form-input" id="nl-company" placeholder="Acme Corp"></div>
-          <div><div class="form-label">Website</div><input class="form-input" id="nl-website" placeholder="acmecorp.com"></div>
-          <div><div class="form-label">Contact Name</div><input class="form-input" id="nl-contact" placeholder="Jane Smith"></div>
-          <div><div class="form-label">Contact Title</div><input class="form-input" id="nl-title" placeholder="VP Digital"></div>
-          <div><div class="form-label">Industry</div><input class="form-input" id="nl-industry" placeholder="Healthcare"></div>
-          <div><div class="form-label">Location</div><input class="form-input" id="nl-location" placeholder="Austin, TX"></div>
-        </div>
-        <div style="margin-bottom:10px;"><div class="form-label">Signal / Why reach out</div><input class="form-input" id="nl-signal" placeholder="Saw their LinkedIn post about DTC expansion..."></div>
-        <div style="margin-bottom:10px;"><div class="form-label">Source URL (LinkedIn post, article, etc.)</div><input class="form-input" id="nl-source" placeholder="https://..."></div>
-        <div style="display:flex;gap:8px;"><button class="tbtn tbtn-accent" id="saveLeadBtn">Save &amp; Generate Briefing</button><button class="tbtn tbtn-ghost" id="cancelLeadBtn">Cancel</button></div>
-      </div>
-
-      <div class="crm-stages" id="crmStages"></div>
-    </div>
-
-    <!-- BRIEFING -->
     <div class="panel" id="panel-briefing">
-      <div class="back" id="backToSig">&#8592; Back to signals</div>
-      <div id="briefContainer"><div class="empty-state"><div class="empty-icon">&#x1F4CB;</div><div class="empty-title">Select a signal first</div></div></div>
+      <div class="back-btn" id="backToSig">&#x2190; Back to signals</div>
+      <div id="briefContainer"><div class="empty"><div class="empty-ico">&#x1F4CB;</div><div class="empty-h">Select a signal to brief</div><div class="empty-s">Click Brief on any signal card</div></div></div>
     </div>
 
-    <!-- OUTREACH -->
     <div class="panel" id="panel-outreach">
-      <div class="back" id="backToBrief">&#8592; Back to briefing</div>
-      <div id="outContainer"><div class="empty-state"><div class="empty-icon">&#x2709;</div><div class="empty-title">Generate a briefing first</div></div></div>
+      <div class="back-btn" id="backToBrief">&#x2190; Back to briefing</div>
+      <div id="outContainer"><div class="empty"><div class="empty-ico">&#x2709;&#xFE0F;</div><div class="empty-h">No outreach yet</div><div class="empty-s">Generate a briefing first, then click Generate Outreach</div></div></div>
     </div>
 
-    <!-- EVENTS -->
-    <div class="panel" id="panel-events">
-      <div class="signals-toolbar"><div><div class="signals-title">Events &amp; <em>Conferences</em></div><div class="signals-meta">Where your buyers are</div></div><button class="tbtn tbtn-ghost" id="refreshEventsBtn">&#x27F3; Refresh</button></div>
-      <div id="evContainer"><div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading...</div></div></div>
+    <div class="panel" id="panel-crm">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div><div class="ph">CRM <em>Pipeline</em></div><div class="pm">Manage leads through your sales stages</div></div>
+        <button id="addLeadBtn2" class="btn-acc" style="font-size:11px;padding:6px 13px">+ Add Lead</button>
+      </div>
+      <div style="overflow-x:auto"><div class="crm-board" id="crmBoard"></div></div>
     </div>
 
-    <!-- PLAYBOOK -->
-    <div class="panel" id="panel-playbook">
-      <div class="signals-toolbar"><div><div class="signals-title">Prospecting <em>Playbook</em></div><div class="signals-meta">Best practices from Clay, Apollo, and top B2B sales frameworks</div></div></div>
-      <div class="sc"><div class="sc-label">Signal Sources — Where to Find Real Triggers</div><div class="sc-body">
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">LinkedIn</strong> &mdash; Job postings (hiring surge), executive announcements (new role), company posts (product launches, expansions). Most reliable for exec hire signals.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Crunchbase / PitchBook</strong> &mdash; Funding rounds, acquisitions, PE ownership, investor details. Best for funding and M&A signals.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Google News / PR Newswire</strong> &mdash; Earnings misses, press releases, expansion announcements. Best for bad quarter and new product signals.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Glassdoor / Indeed / LinkedIn Jobs</strong> &mdash; Volume and types of roles posted. 5+ digital/marketing roles in 30 days = hiring surge signal.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">D&amp;B Hoovers / ZoomInfo</strong> &mdash; Company firmographics, revenue, employee count, tech stack, decision maker contact info.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">SEC EDGAR</strong> &mdash; Public company filings, 10-K/10-Q for revenue misses, restructuring, major strategic changes.</div>
-        <div style="padding:8px 0;"><strong style="color:var(--accent);">G2 / Capterra</strong> &mdash; Tech stack signals. A company switching CRM or marketing platforms signals a transformation moment.</div>
-      </div></div>
-      <div class="sc"><div class="sc-label">Email Finding — Best Practice Approach</div><div class="sc-body">
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);">The engine generates 3 format guesses based on common corporate patterns. Use Apollo, Hunter.io, or Clearbit to verify before sending. Verification is free for small volumes.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Format 1:</strong> firstname@company.com (most common, ~40% of companies)</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Format 2:</strong> first.last@company.com (~30% of companies)</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Format 3:</strong> flast@company.com (~20% of companies)</div>
-        <div style="padding:8px 0;">Click any email guess to copy it. Verify at hunter.io/email-verifier before sending to avoid bounces.</div>
-      </div></div>
-      <div class="sc"><div class="sc-label">Clay / Apollo Best Practices Applied Here</div><div class="sc-body">
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Trigger-first waterfall (Clay method)</strong> &mdash; Identify the trigger first, then find the person, then write the message. Never start with a list of names and work backwards.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Multi-source enrichment (Apollo method)</strong> &mdash; Every signal is cross-referenced: company website + LinkedIn + news + funding data. A signal only surfaces if it can be validated from at least one public source.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Intent + timing = urgency score</strong> &mdash; ICP score reflects fit. Urgency (Hot/Warm/New) reflects timing. Hot = act this week. The combination drives your prioritization.</div>
-        <div style="padding:8px 0;"><strong style="color:var(--accent);">Personalization at scale</strong> &mdash; Every outreach message references the specific trigger. Never a generic template. The source URL tells you exactly what to reference in your message.</div>
-      </div></div>
-      <div class="sc"><div class="sc-label">The Core Framework</div><div class="sc-body">
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Trigger-Based Only</strong> &mdash; No trigger = no outreach. The trigger is your reason to exist in their inbox.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">The 90-Day Window</strong> &mdash; New executives have 90 days to prove themselves. Act within 1 week of the announcement.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Pattern Interrupt</strong> &mdash; Never start with "I hope this finds you well." Reference the specific trigger in your first sentence.</div>
-        <div style="padding:8px 0;"><strong style="color:var(--accent);">Entry Point First</strong> &mdash; Discovery Sprint or Executive Workshop before any retainer conversation. Prove value first.</div>
-      </div></div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div class="panel" id="panel-settings">
-      <div class="signals-toolbar"><div><div class="signals-title">ICP &amp; <em>Settings</em></div><div class="signals-meta">Tune your targeting</div></div></div>
-      <div class="settings-grid">
-        <div class="settings-card"><div class="settings-title">Target Titles</div><div class="tag-list" id="titleTags"></div><input class="tag-input" id="titleInput" placeholder="Add title and press Enter..."></div>
-        <div class="settings-card"><div class="settings-title">Target Industries</div><div class="tag-list" id="indTags"></div><input class="tag-input" id="indInput" placeholder="Add industry (blank = all)..."></div>
-        <div class="settings-card"><div class="settings-title">Signal Triggers</div><div id="sigToggles"></div></div>
-        <div class="settings-card">
-          <div class="settings-title">Geography</div><div id="geoToggles"></div>
-          <div style="margin-top:16px;"><div class="settings-title">Company Size</div>
-            <div style="padding:8px 0;"><div class="range-label"><span>Min employees</span><span id="minV">100</span></div><input type="range" id="minR" min="50" max="5000" step="50" value="100"></div>
-            <div style="padding:8px 0;"><div class="range-label"><span>Max employees</span><span id="maxV">10000</span></div><input type="range" id="maxR" min="500" max="50000" step="500" value="10000"></div>
-          </div>
+    <div class="panel" id="panel-addlead">
+      <div class="back-btn" id="backFromLead">&#x2190; Back</div>
+      <div class="ph" style="margin-bottom:16px">Add <em>Manual Lead</em></div>
+      <div class="lead-form">
+        <div class="form-row">
+          <div class="form-f"><label class="form-lbl">Company *</label><input class="form-inp" id="fl-co" placeholder="Acme Corp"></div>
+          <div class="form-f"><label class="form-lbl">Industry</label><input class="form-inp" id="fl-ind" placeholder="Healthcare / SaaS"></div>
         </div>
-        <div class="settings-card full"><div class="settings-title">Custom Signal Keywords</div>
-          <textarea class="tag-input" id="keywords" rows="3" style="resize:vertical;" placeholder="e.g. digital transformation, AI adoption, ecommerce relaunch..."></textarea>
-          <button class="save-btn" id="saveSettingsBtn">Save Settings</button>
+        <div class="form-row">
+          <div class="form-f"><label class="form-lbl">Contact Name *</label><input class="form-inp" id="fl-ct" placeholder="Jane Smith"></div>
+          <div class="form-f"><label class="form-lbl">Title</label><input class="form-inp" id="fl-ti" placeholder="VP Digital"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-f"><label class="form-lbl">Website</label><input class="form-inp" id="fl-we" placeholder="acme.com"></div>
+          <div class="form-f"><label class="form-lbl">LinkedIn URL</label><input class="form-inp" id="fl-li" placeholder="linkedin.com/in/..."></div>
+        </div>
+        <div class="form-row">
+          <div class="form-f"><label class="form-lbl">Location</label><input class="form-inp" id="fl-lo" placeholder="Austin, TX"></div>
+          <div class="form-f"><label class="form-lbl">Signal / Why Now</label><input class="form-inp" id="fl-si" placeholder="Just hired new CDO..."></div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:10px">
+          <button id="submitLeadBtn" class="btn-acc" style="flex:1;padding:10px">Add Lead + Generate Briefing</button>
+          <button id="cancelLeadBtn" class="btn-ghost" style="padding:10px 18px">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-events">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+        <div><div class="ph">Events &amp; <em>Conferences</em></div><div class="pm">Where your buyers are</div></div>
+        <button id="refreshEventsBtn" class="btn-ghost">&#x27F3; Refresh</button>
+      </div>
+      <div id="evContainer"><div class="loading"><div class="spinner"></div><div class="spin-txt">Finding conferences...</div></div></div>
+    </div>
+
+    <div class="panel" id="panel-playbook">
+      <div class="ph" style="margin-bottom:4px">Prospecting <em>Playbook</em></div>
+      <div class="pm">B2B best practices built into every signal and outreach</div>
+      <div class="sc"><div class="sc-lbl">Core Framework</div><div class="sc-body">
+        <div class="row-item"><strong style="color:var(--acc)">Trigger-Based Only</strong> &mdash; Only reach out when something happened. No trigger = no signal worth pursuing.</div>
+        <div class="row-item"><strong style="color:var(--acc)">The 90-Day Window</strong> &mdash; New executives buy external advisory fastest in the first 60 days. Act within 1 week of the announcement.</div>
+        <div class="row-item"><strong style="color:var(--acc)">Multi-Thread Always</strong> &mdash; Identify economic buyer, champion, and potential blocker. Reach all three independently.</div>
+        <div class="row-item"><strong style="color:var(--acc)">Pain + Budget + Authority</strong> &mdash; A lead only converts when all three exist.</div>
+      </div></div>
+      <div class="sc"><div class="sc-lbl">Outreach Rules</div><div class="sc-body">
+        <div class="row-item"><strong style="color:var(--acc)">Pattern Interrupt</strong> &mdash; First line must break the pattern. Never: "I hope this finds you well."</div>
+        <div class="row-item"><strong style="color:var(--acc)">Give Before You Ask</strong> &mdash; Every first touch includes a gift: insight, benchmark, or framework.</div>
+        <div class="row-item"><strong style="color:var(--acc)">One Ask Per Touch</strong> &mdash; Never ask for a meeting AND a call. One ask only.</div>
+        <div class="row-item"><strong style="color:var(--acc)">Follow-Ups Add Value</strong> &mdash; Never say "following up." Every touch adds new value.</div>
+      </div></div>
+      <div class="sc"><div class="sc-lbl">Entry Point Strategy</div><div class="sc-body">
+        <div class="row-item"><strong style="color:var(--acc)">Executive Workshop ($18-30k)</strong> &mdash; Best cold entry. Fixed scope, clear deliverable. Easy to approve.</div>
+        <div class="row-item"><strong style="color:var(--acc)">Discovery Sprint ($15-20k)</strong> &mdash; Best for companies mid-transition. Sells itself into a retainer.</div>
+        <div class="row-item"><strong style="color:var(--acc)">Retainer (any tier)</strong> &mdash; Best sold after Sprint or Workshop proves value. Never cold.</div>
+      </div></div>
+    </div>
+
+    <div class="panel" id="panel-settings">
+      <div class="ph" style="margin-bottom:4px">ICP &amp; <em>Settings</em></div>
+      <div class="pm">Tune your targeting &mdash; changes apply to all signal scoring instantly</div>
+      <div class="set-grid">
+        <div class="set-card"><div class="set-title">Target Titles</div><div class="tags-list" id="titleTags"></div><input class="ctrl-inp" id="titleInput" placeholder="Add title, press Enter..."></div>
+        <div class="set-card"><div class="set-title">Target Industries</div><div class="tags-list" id="indTags"></div><input class="ctrl-inp" id="indInput" placeholder="Add industry (blank = all)..."></div>
+        <div class="set-card"><div class="set-title">Signal Triggers</div><div id="sigToggles"></div></div>
+        <div class="set-card">
+          <div class="set-title">Geography</div><div id="geoToggles"></div>
+          <div class="set-title" style="margin-top:13px">Company Size</div>
+          <div class="rl"><span>Min employees</span><span id="minV">100</span></div>
+          <input type="range" id="minR" min="50" max="5000" step="50" value="100">
+          <div class="rl"><span>Max employees</span><span id="maxV">10000</span></div>
+          <input type="range" id="maxR" min="500" max="50000" step="500" value="10000">
+        </div>
+        <div class="set-card full"><div class="set-title">Custom Keywords</div>
+          <textarea class="ctrl-inp" id="keywords" rows="3" style="resize:vertical" placeholder="e.g. digital transformation, AI adoption, ecommerce relaunch..."></textarea>
+          <button id="saveSettingsBtn" class="save-btn">Save Settings</button>
         </div>
       </div>
     </div>
@@ -415,23 +389,32 @@ input[type=range]{width:100%;accent-color:var(--accent);}
   </div>
 </div>
 
-<!-- CRM Detail Modal -->
 <div class="modal-overlay" id="crmModal">
   <div class="modal">
-    <button class="modal-close" id="crmModalClose">&times;</button>
-    <div class="modal-title" id="crmModalTitle">Lead Detail</div>
-    <div id="crmModalBody"></div>
+    <div class="modal-hdr">
+      <div class="modal-title" id="crmModalTitle">Lead Profile</div>
+      <button class="modal-close" id="crmModalClose">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="mtabs">
+        <div class="mtab on" data-mt="overview">Overview</div>
+        <div class="mtab" data-mt="notes">Notes</div>
+        <div class="mtab" data-mt="briefing">Briefing</div>
+      </div>
+      <div class="msec on" id="ms-overview"></div>
+      <div class="msec" id="ms-notes"></div>
+      <div class="msec" id="ms-briefing"></div>
+    </div>
   </div>
 </div>
 
-<script>
+<script data-cfasync="false">
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
 var URGENCY_RANK={hot:0,warm:1,new:2};
-var SEQUENCE_TEMPLATES=[
-  {day:'Day 1',type:'LinkedIn Connect',msg:'Send connection request referencing the specific trigger. Keep under 300 chars. Example: "Saw the [source] on [company] — [trigger snippet]... worth connecting?"'},
-  {day:'Day 3',type:'LinkedIn DM or Cold Email',msg:'Send personalized DM or cold email. Reference the exact source. Give value before asking. One ask only: "Worth 20 minutes?"'},
-  {day:'Day 7',type:'Follow-up — Value Add',msg:'Share one relevant insight, benchmark, or case study. Do NOT say "following up." Add something new they can use regardless of hiring you.'},
-  {day:'Day 14',type:'Breakup Message',msg:'Short, direct: "Last note — if timing is off, happy to reconnect when it makes sense. Best of luck with the [trigger]." Leaves door open.'}
-];
+var CRM_STAGES=['watching','contacted','responded','meeting','proposal','closed'];
+var STAGE_LABELS={watching:'Watching',contacted:'Contacted',responded:'Responded',meeting:'Meeting Booked',proposal:'Proposal Sent',closed:'Closed Won'};
+
 var S={
   signals:[],
   watchlist:[],
@@ -440,6 +423,8 @@ var S={
   selected:null,
   briefing:null,
   activeFilter:'all',
+  sortBy:'date',
+  limit:10,
   services:[
     {name:'Light Advisory Retainer',range:'$8k-$12k/mo',fit:'Executive advisory, AI decision framing'},
     {name:'Core Leadership Retainer',range:'$20k-$30k/mo',fit:'Transformation leadership, roadmap ownership'},
@@ -457,52 +442,86 @@ var S={
   }
 };
 
-// ── HELPERS ──────────────────────────────────────────────────
+// ── HELPERS ───────────────────────────────────────────────────────────────────
 function setHtml(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;}
 function showPanel(id){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.ntab').forEach(function(t){t.classList.remove('on');});
   var p=document.getElementById('panel-'+id);if(p)p.classList.add('on');
   var t=document.querySelector('[data-panel="'+id+'"]');if(t)t.classList.add('on');
 }
-function loading(id){setHtml(id,'<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading...</div></div>');}
-function guessEmails(name, website) {
-  if (!name || !website) return [];
-  var domain = website.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/.*/, '').trim().toLowerCase();
-  var parts = name.trim().split(' ');
-  var first = (parts[0] || '').toLowerCase().replace(/[^a-z]/g, '');
-  var last = (parts[parts.length - 1] || '').toLowerCase().replace(/[^a-z]/g, '');
-  if (!first || !domain) return [];
-  var guesses = [];
-  if (last && first !== last) {
-    guesses.push({email: first + '.' + last + '@' + domain, pct: 62, label: 'High', note: 'Most common B2B format — ~62% of companies per Hunter.io'});
-    guesses.push({email: first + '@' + domain, pct: 18, label: 'Medium', note: 'First name only — ~18% of companies'});
-    guesses.push({email: first[0] + last + '@' + domain, pct: 14, label: 'Low', note: 'Initial + last — ~14% of companies. Verify at hunter.io first.'});
-  } else {
-    guesses.push({email: first + '@' + domain, pct: 50, label: 'Medium', note: 'First name only — last name not detected'});
+function loading(id){setHtml(id,'<div class="loading"><div class="spinner"></div><div class="spin-txt">Loading...</div></div>');}
+
+function guessEmails(name,website){
+  if(!name||!website)return[];
+  var domain=website.replace(/^https?:\/\//,'').replace(/^www\./,'').replace(/\/.*/,'').trim().toLowerCase();
+  var parts=name.trim().split(' ');
+  var first=(parts[0]||'').toLowerCase().replace(/[^a-z]/g,'');
+  var last=(parts[parts.length-1]||'').toLowerCase().replace(/[^a-z]/g,'');
+  if(!first||!domain)return[];
+  var guesses=[];
+  if(last&&first!==last){
+    guesses.push({email:first+'.'+last+'@'+domain,confidence:'high',label:'Most common B2B format'});
+    guesses.push({email:first+'@'+domain,confidence:'medium',label:'First name only'});
+    guesses.push({email:first[0]+last+'@'+domain,confidence:'low',label:'Initial + last'});
+  }else{
+    guesses.push({email:first+'@'+domain,confidence:'medium',label:'First name only'});
   }
   return guesses;
 }
 
-function renderEmailGuesses(guesses, linkedInUrl) {
-  var clr = {High: 'var(--green)', Medium: 'var(--amber)', Low: 'var(--muted)'};
-  var html = '';
-  if (guesses && guesses.length) {
-    html += guesses.map(function(g) {
-      return '<span class="sig-email" data-email="' + g.email + '" title="' + g.note + '">' +
-        '<span style="color:' + clr[g.label] + ';font-size:8px;margin-right:3px;font-weight:600;">' + g.pct + '%</span>' +
-        g.email + '</span>';
-    }).join('');
+function renderEmails(guesses,linkedInUrl){
+  var html='';
+  if(guesses&&guesses.length){
+    guesses.forEach(function(g){
+      var email=typeof g==='string'?g:(g&&g.email?g.email:null);
+      if(!email||email==='undefined'||email==='null')return;
+      var conf=g.confidence||(g.pct>=50?'high':g.pct>=20?'medium':'low');
+      var clrCls=conf==='high'?'hi':conf==='medium'?'mid':'lo';
+      var pct=g.pct?g.pct+'%':(conf==='high'?'~62%':conf==='medium'?'~18%':'~14%');
+      html+='<div class="sig-email" data-email="'+email+'">'+
+        '<span class="em-addr">'+email+'</span>'+
+        '<span class="em-conf '+clrCls+'">'+pct+'</span>'+
+        '</div>';
+    });
   }
-  if (linkedInUrl) {
-    html += '<a href="' + linkedInUrl + '" target="_blank" class="sig-email" style="color:var(--blue);text-decoration:none;">LinkedIn ↗</a>';
+  if(linkedInUrl&&linkedInUrl.indexOf('search?q=')===-1){
+    html+='<div class="sig-email"><a href="'+linkedInUrl+'" target="_blank" style="color:var(--blu);text-decoration:none;font-family:var(--mono);font-size:10px;">&#x1F517; LinkedIn Profile &#x2197;</a></div>';
   }
   return html;
 }
-function saveState(){try{localStorage.setItem('ge_signals',JSON.stringify(S.signals));localStorage.setItem('ge_crm',JSON.stringify(S.crm));localStorage.setItem('ge_watchlist',JSON.stringify(S.watchlist));}catch(e){}}
-function loadState(){try{var sigs=localStorage.getItem('ge_signals');if(sigs)S.signals=JSON.parse(sigs);var crm=localStorage.getItem('ge_crm');if(crm)S.crm=JSON.parse(crm);var wl=localStorage.getItem('ge_watchlist');if(wl)S.watchlist=JSON.parse(wl);}catch(e){}}
 
-// ── AUTH ─────────────────────────────────────────────────────
+function normalizeSignal(s,idx){
+  // Normalize emailGuesses - no undefined, handle strings
+  if(!s.emailGuesses||!s.emailGuesses.length){
+    s.emailGuesses=guessEmails(s.decisionMaker,s.website);
+  }else{
+    s.emailGuesses=s.emailGuesses.map(function(e){
+      if(typeof e==='string'&&e&&e!=='undefined')return{email:e,confidence:'low',label:'Format guess'};
+      if(e&&e.email&&e.email!=='undefined'&&e.email!=='null')return e;
+      return null;
+    }).filter(Boolean);
+    if(!s.emailGuesses.length)s.emailGuesses=guessEmails(s.decisionMaker,s.website);
+  }
+  // Fix bad LinkedIn search URLs
+  if(s.decisionMakerLinkedIn&&s.decisionMakerLinkedIn.indexOf('search?q=')>-1){
+    s.decisionMakerLinkedIn='https://www.linkedin.com/search/results/people/?keywords='+
+      encodeURIComponent((s.decisionMaker||'')+' '+(s.company||''));
+  }
+  // Ensure signalDate
+  if(!s.signalDate||s.signalDate<1000000000000)s.signalDate=Date.now()-(idx*60000);
+  s.dateLabel=new Date(s.signalDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  return s;
+}
+
+function saveState(){try{localStorage.setItem('ge_signals',JSON.stringify(S.signals));localStorage.setItem('ge_crm',JSON.stringify(S.crm));localStorage.setItem('ge_watchlist',JSON.stringify(S.watchlist));}catch(e){}}
+function loadState(){try{
+  var sigs=localStorage.getItem('ge_signals');if(sigs)S.signals=JSON.parse(sigs).map(normalizeSignal);
+  var crm=localStorage.getItem('ge_crm');if(crm)S.crm=JSON.parse(crm);
+  var wl=localStorage.getItem('ge_watchlist');if(wl)S.watchlist=JSON.parse(wl);
+}catch(e){}}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
 document.getElementById('signInBtn').addEventListener('click',function(){
   var btn=document.getElementById('signInBtn');
   btn.textContent='Opening Google...';
@@ -520,451 +539,494 @@ function onSignedIn(user){
   document.getElementById('authGate').style.display='none';
   document.getElementById('app').style.display='flex';
   document.getElementById('userLbl').textContent=user.displayName||user.email;
-  loadState();
-  renderSignals();
-  renderWatchlist();
-  renderCRM();
-  loadEvents();
-  renderSettings();
-  updateCounts();
+  document.getElementById('sdot').classList.add('live');
+  loadState();renderSignals();renderWatchlist();renderCRM();loadEvents();renderSettings();updateCounts();
 }
 document.getElementById('signOutBtn').addEventListener('click',function(){firebase.auth().signOut().then(function(){location.reload();});});
 
-// ── NAV ──────────────────────────────────────────────────────
-document.querySelectorAll('.tab').forEach(function(t){t.addEventListener('click',function(){showPanel(t.getAttribute('data-panel'));});});
+// ── NAV ───────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.ntab').forEach(function(t){t.addEventListener('click',function(){showPanel(t.getAttribute('data-panel'));});});
 document.getElementById('backToSig').addEventListener('click',function(){showPanel('signals');});
 document.getElementById('backToBrief').addEventListener('click',function(){showPanel('briefing');});
+document.getElementById('backFromLead').addEventListener('click',function(){showPanel('crm');});
+document.getElementById('addLeadBtn2').addEventListener('click',function(){showPanel('addlead');});
 
-// ── FILTERS ──────────────────────────────────────────────────
-document.getElementById('filterAll').addEventListener('click',function(){setFilter('all');});
-document.getElementById('filterHot').addEventListener('click',function(){setFilter('hot');});
-document.getElementById('filterWarm').addEventListener('click',function(){setFilter('warm');});
-document.getElementById('sigSort').addEventListener('change',renderSignals);
-document.getElementById('sigLimit').addEventListener('change',renderSignals);
-document.getElementById('clearSignalsBtn').addEventListener('click',function(){if(confirm('Clear all signals?')){S.signals=[];renderSignals();saveState();document.getElementById('sigCount').textContent='0';}});
+// ── CONTROLS ──────────────────────────────────────────────────────────────────
+document.getElementById('cntGrp').querySelectorAll('.cb').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.getElementById('cntGrp').querySelectorAll('.cb').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');S.limit=+btn.getAttribute('data-v');renderSignals();
+  });
+});
+document.getElementById('sortGrp').querySelectorAll('.cb').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.getElementById('sortGrp').querySelectorAll('.cb').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');S.sortBy=btn.getAttribute('data-v');renderSignals();
+  });
+});
+document.getElementById('filtGrp').querySelectorAll('.cb').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.getElementById('filtGrp').querySelectorAll('.cb').forEach(function(b){b.classList.remove('on');});
+    btn.classList.add('on');S.activeFilter=btn.getAttribute('data-v');renderSignals();
+  });
+});
+document.getElementById('clearBtn').addEventListener('click',function(){
+  if(confirm('Clear all signals? This cannot be undone.')){{S.signals=[];S.dismissed=[];saveState();renderSignals();updateCounts();}}
+});
 document.getElementById('pullBtn').addEventListener('click',pullSignals);
 document.getElementById('refreshEventsBtn').addEventListener('click',loadEvents);
-
-function setFilter(f){
-  S.activeFilter=f;
-  ['filterAll','filterHot','filterWarm'].forEach(function(id){document.getElementById(id).classList.remove('on');});
-  document.getElementById('filter'+f.charAt(0).toUpperCase()+f.slice(1)).classList.add('on');
-  renderSignals();
-}
 
 function updateCounts(){
   document.getElementById('sigCount').textContent=S.signals.filter(function(s){return S.dismissed.indexOf(s.company)<0;}).length;
   document.getElementById('watchCount').textContent=S.watchlist.length;
-  var total=0;Object.values(S.crm).forEach(function(a){total+=a.length;});
-  document.getElementById('crmCount').textContent=total;
+  var tot=0;CRM_STAGES.forEach(function(st){tot+=(S.crm[st]||[]).length;});
+  document.getElementById('crmCount').textContent=tot;
 }
 
 function getSorted(){
-  var limit=parseInt(document.getElementById('sigLimit').value)||10;
-  var sort=document.getElementById('sigSort').value||'date';
   var sigs=S.signals.filter(function(s){return S.dismissed.indexOf(s.company)<0;});
   if(S.activeFilter==='hot')sigs=sigs.filter(function(s){return s.urgency==='hot';});
   if(S.activeFilter==='warm')sigs=sigs.filter(function(s){return s.urgency==='hot'||s.urgency==='warm';});
-  if(sort==='score')sigs.sort(function(a,b){return b.icpScore-a.icpScore;});
-  else if(sort==='urgency')sigs.sort(function(a,b){return (URGENCY_RANK[a.urgency]||2)-(URGENCY_RANK[b.urgency]||2);});
-  else sigs.sort(function(a,b){return (b.signalDate||0)-(a.signalDate||0);});
-  return sigs.slice(0,limit);
+  if(S.sortBy==='score')sigs.sort(function(a,b){return b.icpScore-a.icpScore;});
+  else if(S.sortBy==='urgency')sigs.sort(function(a,b){return(URGENCY_RANK[a.urgency]||2)-(URGENCY_RANK[b.urgency]||2);});
+  else sigs.sort(function(a,b){return(b.signalDate||0)-(a.signalDate||0);});
+  return sigs.slice(0,S.limit);
 }
 
-// ── PULL SIGNALS ─────────────────────────────────────────────
+// ── PULL SIGNALS ──────────────────────────────────────────────────────────────
 async function pullSignals(){
   var btn=document.getElementById('pullBtn');
   btn.disabled=true;btn.textContent='Scanning...';
-  var limit=parseInt(document.getElementById('sigLimit').value)||10;
+  setHtml('sigContainer','<div class="loading"><div class="spinner"></div><div class="spin-txt">Searching live web for real B2B signals...</div></div>');
+
   var existingCos=S.signals.map(function(s){return s.company;});
-  var icpDesc='Titles: '+S.icp.titles.join(', ')+'. Industries: '+(S.icp.industries.length?S.icp.industries.join(', '):'all')+'. Geo: '+S.icp.geos.join(', ')+'. Size: '+S.icp.minEmp+'-'+S.icp.maxEmp+'.';
-  var sys=`You are a revenue intelligence analyst for Burrows & Co. Digital Advisory. ICP: `+icpDesc+`
+  var icpDesc='Titles: '+S.icp.titles.join(', ')+'. Industries: '+(S.icp.industries.length?S.icp.industries.join(', '):'all industries')+'. Geo: '+S.icp.geos.join(', ')+'. Size: '+S.icp.minEmp+'-'+S.icp.maxEmp+' employees.';
 
-Search the web using multiple B2B prospecting sources:
-- LinkedIn (job postings, executive announcements, company posts)
-- Crunchbase and PitchBook (funding rounds, PE ownership, acquisitions)  
-- Google News and PR Newswire (earnings misses, press releases, expansion news)
-- SEC EDGAR (public company filings for revenue misses and restructuring)
-- Glassdoor/Indeed (hiring volume signals)
-- D&B Hoovers / ZoomInfo (company firmographics)
-- G2 / Capterra (tech stack changes)
-- Business journals (local NJ/NYC, Dallas Morning News, Austin Business Journal)
+  var systemPrompt='You are a B2B revenue intelligence analyst for Burrows & Co. Digital Advisory. '+
+    'ICP: '+icpDesc+'\n\n'+
+    'CRITICAL REQUIREMENTS - every violation breaks the tool:\n'+
+    '1. ONLY real companies that exist with websites that actually load\n'+
+    '2. ONLY real executives you found via web search - never invent names\n'+
+    '3. LinkedIn URLs must be real profiles: linkedin.com/in/firstname-lastname-id format. NEVER linkedin.com/in/search or search URLs\n'+
+    '4. sourceUrl must be the real URL of the actual article/post/filing you found\n'+
+    '5. If you cannot find enough real signals, return fewer - do NOT invent data\n'+
+    '6. Websites must be real and load - verify before including\n\n'+
+    'Search these sources for real signals from 2025-2026:\n'+
+    '- LinkedIn (executive announcements, job postings, company news)\n'+
+    '- Crunchbase / PitchBook (funding rounds, PE acquisitions)\n'+
+    '- Google News / PR Newswire (earnings misses, press releases, expansion news)\n'+
+    '- SEC EDGAR (public company filings, restructuring)\n'+
+    '- Business journals (NJ/NYC, Dallas Morning News, Austin Business Journal)\n\n'+
+    'Find '+S.limit+' REAL verifiable signals. Companies already in system: '+(existingCos.length?existingCos.join(', '):'none')+'.\n\n'+
+    'Respond ONLY with valid JSON - no markdown, no backticks, no extra text:\n'+
+    '{"signals":[{"company":"","website":"","industry":"","location":"","size":"","isPEBacked":false,"peFirm":"","trigger":"","triggerType":"exec_hire","why":"","urgency":"hot","icpScore":8,"decisionMaker":"","decisionMakerTitle":"","decisionMakerLinkedIn":"","emailGuesses":[{"email":"","confidence":"high","label":""}],"sourceType":"LinkedIn","sourceUrl":"","sourceNote":"","signalDate":0,"dateLabel":""}]}';
 
-Find `+limit+` REAL, VERIFIABLE signals from 2025-2026. Every signal must have a real source URL. Companies already seen: `+(existingCos.length?existingCos.join(', '):'none')+`.
-
-For each signal provide:
-- Real company name, real website
-- The PE firm if PE-backed
-- Real decision maker name and title from LinkedIn or company site
-- Source type and actual URL where you found this
-- 3 guessed email formats based on company domain
-
-Respond ONLY with valid JSON:
-{"signals":[{
-  "company":"",
-  "website":"",
-  "industry":"",
-  "location":"",
-  "size":"",
-  "isPEBacked":false,
-  "peFirm":"",
-  "trigger":"",
-  "triggerType":"exec_hire",
-  "why":"",
-  "urgency":"hot",
-  "icpScore":8,
-  "decisionMaker":"",
-  "decisionMakerTitle":"",
-  "decisionMakerLinkedIn":"",
-  "emailGuesses":[{"email":"","confidence":"high|medium|low","label":"e.g. confirmed via LinkedIn or Hunter / most common format / pure guess"}],
-  "sourceType":"LinkedIn",
-  "sourceUrl":"",
-  "sourceNote":"",
-  "signalDate":1234567890000,
-  "dateLabel":"Apr 9, 2026"
-}]}\n\nCRITICAL FOR DATES: signalDate must be a real Unix timestamp in milliseconds from when the event actually occurred per your web search results. dateLabel is the human readable date like \"Apr 9, 2026\". Use the ACTUAL publication date from the source — the date the news was published, the job was posted, the funding was announced. This is how users know signals are fresh and real.`;
   try{
     var resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:4000,
         tools:[{type:'web_search_20250305',name:'web_search'}],
-        system:sys,
-        messages:[{role:'user',content:'Search for '+limit+' real verifiable B2B signals for Burrows & Co. using LinkedIn, Crunchbase, news sources, and business journals. Each signal must have a real source URL.'}]
+        system:systemPrompt,
+        messages:[{role:'user',content:'Search for '+S.limit+' real verifiable B2B buying signals for Burrows & Co. using LinkedIn, Crunchbase, Google News, and business journals. Each must have a real company website that loads, a real executive found via search, and a real source URL.'}]
       })
     });
+
+    if(!resp.ok){
+      var errData=await resp.json();
+      throw new Error('API error '+resp.status+': '+(errData.error&&errData.error.message?errData.error.message:JSON.stringify(errData)));
+    }
+
     var data=await resp.json();
     var txt=data.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
-    var m=txt.match(/\{[\s\S]*\}/);
-    if(!m)throw new Error('no json');
-    var parsed=JSON.parse(m[0]).signals||[];
-    var now=Date.now();
-    // Prepend new signals to top, skip duplicates
-    var newSigs=parsed.filter(function(s){return existingCos.indexOf(s.company)<0;}).map(function(s,i){
-      if(!s.signalDate)s.signalDate=(s.signalDate&&s.signalDate>1577836800000)?s.signalDate:Date.now()-(i*1000);// Use real API date if valid, else today
-      s.dateLabel=new Date(s.signalDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-      // Normalize email guesses to object format with confidence
-      if(!s.emailGuesses||!s.emailGuesses.length){
-        s.emailGuesses=guessEmails(s.decisionMaker,s.website);
-      } else {
-        s.emailGuesses=s.emailGuesses.map(function(e){
-          return typeof e==='string'?{email:e,confidence:'low',label:'Format guess'}:e;
-        });
-      }
-      return s;
-    });
+
+    // Extract JSON from response
+    var jsonMatch=txt.match(/\{[\s\S]*\}/);
+    if(!jsonMatch)throw new Error('No JSON in response. Response was: '+txt.slice(0,200));
+
+    var parsed=JSON.parse(jsonMatch[0]);
+    var newSigs=(parsed.signals||[])
+      .filter(function(s){return s.company&&s.website&&existingCos.indexOf(s.company)<0;})
+      .map(function(s,i){return normalizeSignal(s,i);});
+
+    if(!newSigs.length){
+      document.getElementById('sigMeta').textContent='No new signals found — try again or adjust ICP settings';
+      renderSignals();
+      btn.disabled=false;btn.textContent='⟳ Pull Signals';
+      updateCounts();
+      return;
+    }
+
     S.signals=newSigs.concat(S.signals);
-    renderSignals();
     saveState();
-    var pulled=newSigs.length;
-    document.getElementById('sigMeta').textContent='Last pull: '+new Date().toLocaleTimeString()+' · '+pulled+' new signals added · '+S.signals.length+' total · Click any card to generate briefing';
-  }catch(e){console.log('pull err:',e);loadFallbackSignals();}
+    renderSignals();
+    document.getElementById('sigMeta').textContent='Last pull: '+new Date().toLocaleTimeString()+' · '+newSigs.length+' new signals · '+S.signals.length+' total · Click any card to brief';
+
+  }catch(e){
+    console.error('Pull error:',e);
+    document.getElementById('sigMeta').innerHTML='<span style="color:var(--red);">⚠ '+e.message+' — check console for details and try again.</span>';
+    renderSignals();
+  }
+
   btn.disabled=false;btn.textContent='⟳ Pull Signals';
   updateCounts();
 }
 
-function loadFallbackSignals(){
-  var now=Date.now();
-  var newSigs=[
-    {company:'Momentum Health Partners',website:'momentumhealth.com',industry:'Healthcare / Wellness',location:'Austin, TX',size:'800 employees',isPEBacked:false,peFirm:'',trigger:'New Chief Digital Officer Sarah Chen hired from Amazon AWS — LinkedIn announcement Apr 6 2026',triggerType:'exec_hire',why:'New CDO from tech background drives external advisory in first 90 days',urgency:'hot',icpScore:9,decisionMaker:'Sarah Chen',decisionMakerTitle:'Chief Digital Officer',decisionMakerLinkedIn:'https://linkedin.com/in/search?q=sarah+chen+momentum+health',emailGuesses:['schen@momentumhealth.com','sarah.chen@momentumhealth.com','schenmh@momentumhealth.com'],sourceType:'LinkedIn',sourceUrl:'https://www.linkedin.com/feed/',sourceNote:'Executive announcement post by Sarah Chen on LinkedIn',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},
-    {company:'Vantage Consumer Brands',website:'vantageconsumer.com',industry:'Consumer Goods / DTC',location:'New York, NY',size:'1,200 employees',isPEBacked:false,peFirm:'',trigger:'Q3 2025 earnings miss — revenue down 18% YoY, CEO announced digital acceleration initiative in earnings call',triggerType:'bad_quarter',why:'Board pressure + public miss creates immediate budget for transformation advisory',urgency:'hot',icpScore:9,decisionMaker:'Marcus Reid',decisionMakerTitle:'CMO',decisionMakerLinkedIn:'https://linkedin.com/in/search?q=marcus+reid+vantage',emailGuesses:['mreid@vantageconsumer.com','marcus.reid@vantageconsumer.com','mrvantage@vantageconsumer.com'],sourceType:'Press Release / Earnings',sourceUrl:'https://prnewswire.com',sourceNote:'Q3 earnings press release and investor call transcript',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},
-    {company:'Atlas Fitness Holdings',website:'atlasfitness.com',industry:'Fitness / PE-backed Rollup',location:'Dallas, TX',size:'2,400 employees',isPEBacked:true,peFirm:'Warburg Pincus',trigger:'3 acquisitions in 12 months per PitchBook — fragmented digital and loyalty infrastructure across all brands',triggerType:'acquisition',why:'PE-backed rollup with fragmented digital stack. Warburg will push for standardization.',urgency:'hot',icpScore:9,decisionMaker:'Jennifer Torres',decisionMakerTitle:'VP Growth',decisionMakerLinkedIn:'https://linkedin.com/in/search?q=jennifer+torres+atlas+fitness',emailGuesses:['jtorres@atlasfitness.com','jennifer.torres@atlasfitness.com','jtatlas@atlasfitness.com'],sourceType:'PitchBook / Crunchbase',sourceUrl:'https://crunchbase.com',sourceNote:'PitchBook M&A data showing 3 acquisitions Q1-Q3 2025',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},
-    {company:'Meridian Capital Group',website:'meridiancapitalgroup.com',industry:'Financial Services',location:'Hoboken, NJ',size:'600 employees',isPEBacked:false,peFirm:'',trigger:'$45M Series C closed per Crunchbase — simultaneously posting VP Digital and 8 digital marketing roles on LinkedIn',triggerType:'funding',why:'Post-funding hiring surge signals need for senior strategic guidance while team is building',urgency:'warm',icpScore:8,decisionMaker:'David Park',decisionMakerTitle:'VP Digital (incoming)',decisionMakerLinkedIn:'https://linkedin.com/in/search?q=david+park+meridian+capital',emailGuesses:['dpark@meridiancapitalgroup.com','david.park@meridiancapitalgroup.com','dpmeridian@meridiancapitalgroup.com'],sourceType:'Crunchbase + LinkedIn',sourceUrl:'https://crunchbase.com',sourceNote:'Crunchbase funding round confirmed Apr 2026, LinkedIn shows 8 open digital roles',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},
-    {company:'Clearwater Naturals',website:'clearwaternaturals.com',industry:'CPG / Food & Beverage',location:'Remote-first (Princeton, NJ)',size:'450 employees',isPEBacked:false,peFirm:'',trigger:'Company blog post Apr 2026 announcing first DTC channel launch after 20 years of wholesale-only distribution',triggerType:'new_product',why:'DTC launch requires digital strategy, conversion optimization, and lifecycle expertise',urgency:'warm',icpScore:7,decisionMaker:'Allison Wright',decisionMakerTitle:'VP Marketing',decisionMakerLinkedIn:'https://linkedin.com/in/search?q=allison+wright+clearwater+naturals',emailGuesses:['awright@clearwaternaturals.com','allison.wright@clearwaternaturals.com','awclearwater@clearwaternaturals.com'],sourceType:'Company Blog',sourceUrl:'https://clearwaternaturals.com/blog',sourceNote:'Company blog post announcing DTC launch initiative',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},
-    {company:'Summit Health System',website:'summithealthsystem.org',industry:'Healthcare / Multi-location',location:'NJ/NY Metro',size:'5,000 employees',isPEBacked:false,peFirm:'',trigger:'LinkedIn shows new VP Customer Experience hired plus 12 open digital roles — restructuring patient digital journey per press release',triggerType:'hiring_surge',why:'Large health system restructuring digital patient experience — Core Leadership or Deep Embed',urgency:'warm',icpScore:7,decisionMaker:'Robert Kim',decisionMakerTitle:'VP Customer Experience',decisionMakerLinkedIn:'https://linkedin.com/in/search?q=robert+kim+summit+health',emailGuesses:['rkim@summithealthsystem.org','robert.kim@summithealthsystem.org','rkimsh@summithealthsystem.org'],sourceType:'LinkedIn + PR Newswire',sourceUrl:'https://prnewswire.com',sourceNote:'PR Newswire press release on digital patient experience initiative',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},
-    {company:'NovaTech Systems',website:'novatechsystems.io',industry:'B2B SaaS',location:'Austin, TX',size:'320 employees',isPEBacked:false,peFirm:'',trigger:'New VP of Growth Alex Rivera hired from HubSpot per LinkedIn — company shifting from PLG to enterprise sales motion',triggerType:'exec_hire',why:'Motion shift from PLG to enterprise requires commercial digital transformation advisory',urgency:'hot',icpScore:8,decisionMaker:'Alex Rivera',decisionMakerTitle:'VP Growth',decisionMakerLinkedIn:'https://linkedin.com/in/search?q=alex+rivera+novatech',emailGuesses:['arivera@novatechsystems.io','alex.rivera@novatechsystems.io','arnovatt@novatechsystems.io'],sourceType:'LinkedIn',sourceUrl:'https://linkedin.com',sourceNote:'LinkedIn announcement post by Alex Rivera welcoming new role',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},
-    {company:'Empire Dental Partners',website:'empiredentalpartners.com',industry:'Dental / PE-backed',location:'NJ/NY Metro',size:'800 employees',isPEBacked:true,peFirm:'KKR',trigger:'KKR-backed rollup — 8 acquisitions since 2024 per PitchBook. No unified patient digital journey across brands.',triggerType:'acquisition',why:'Classic PE rollup with disconnected digital — Deep Embed opportunity across full portfolio',urgency:'hot',icpScore:9,decisionMaker:'Michael Torres',decisionMakerTitle:'VP Marketing',decisionMakerLinkedIn:'https://linkedin.com/in/search?q=michael+torres+empire+dental',emailGuesses:['mtorres@empiredentalpartners.com','michael.torres@empiredentalpartners.com','mtempire@empiredentalpartners.com'],sourceType:'PitchBook',sourceUrl:'https://pitchbook.com',sourceNote:'PitchBook PE data showing KKR ownership and 8 platform acquisitions',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},
-    {company:'Bright Path Education',website:'brightpathedu.com',industry:'Education / EdTech',location:'Remote-first',size:'2,200 employees',isPEBacked:false,peFirm:'',trigger:'New CMO Priya Sharma hired from Netflix — announced on LinkedIn Mar 2026. Tasked with building consumer digital business.',triggerType:'exec_hire',why:'New CMO from consumer tech immediately seeks external advisory to audit current state in first 60 days',urgency:'hot',icpScore:8,decisionMaker:'Priya Sharma',decisionMakerTitle:'CMO',decisionMakerLinkedIn:'https://linkedin.com/in/search?q=priya+sharma+bright+path+education',emailGuesses:['psharma@brightpathedu.com','priya.sharma@brightpathedu.com','psbright@brightpathedu.com'],sourceType:'LinkedIn',sourceUrl:'https://linkedin.com',sourceNote:'LinkedIn announcement by Priya Sharma on starting new CMO role',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},
-    {company:'Coastal Pet Health',website:'coastalpethealth.com',industry:'Animal Health / Veterinary',location:'Dallas, TX',size:'1,100 employees',isPEBacked:false,peFirm:'',trigger:'$28M Series B per Crunchbase — expanding from 3 to 12 locations, hiring commercial and digital team aggressively',triggerType:'funding',why:'Multi-location expansion with no digital infrastructure. Clear advisory need for growth architecture.',urgency:'warm',icpScore:8,decisionMaker:'Dr. Lisa Park',decisionMakerTitle:'Chief Growth Officer',decisionMakerLinkedIn:'https://linkedin.com/in/search?q=lisa+park+coastal+pet+health',emailGuesses:['lpark@coastalpethealth.com','lisa.park@coastalpethealth.com','lpcoastal@coastalpethealth.com'],sourceType:'Crunchbase + Austin Business Journal',sourceUrl:'https://crunchbase.com',sourceNote:'Crunchbase Series B data confirmed by Austin Business Journal coverage',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
-  ];
-  var existingCos=S.signals.map(function(s){return s.company;});
-  var filtered=newSigs.filter(function(s){return existingCos.indexOf(s.company)<0;});
-  S.signals=filtered.concat(S.signals);
-  renderSignals();
-  saveState();
-  document.getElementById('sigMeta').textContent='Sample signals loaded (real companies may vary) · Pull Signals for live web-searched intelligence';
-  updateCounts();
-}
-
-// ── RENDER SIGNALS ───────────────────────────────────────────
+// ── RENDER SIGNALS ────────────────────────────────────────────────────────────
 function renderSignals(){
-  document.getElementById('sigCount').textContent=S.signals.filter(function(s){return S.dismissed.indexOf(s.company)<0;}).length;
+  updateCounts();
   var filtered=getSorted();
-  if(!S.signals.length){setHtml('sigContainer','<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No signals yet</div><div class="empty-sub">Click Pull Signals to scan the market</div></div>');return;}
-  if(!filtered.length){setHtml('sigContainer','<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No signals match this filter</div><div class="empty-sub">Try All or adjust ICP settings</div></div>');return;}
-  var tmap={exec_hire:'👤 Exec Hire',hiring_surge:'📈 Hiring Surge',bad_quarter:'📉 Bad Quarter',funding:'💰 Funding',expansion:'🌎 Expansion',restructure:'🔄 Restructure',acquisition:'🤝 Acquisition',new_product:'🚀 New Product'};
-  var src_icons={LinkedIn:'🔗',Crunchbase:'💼',PitchBook:'💼','SEC EDGAR':'📄','PR Newswire':'📰','Google News':'📰',LinkedIn_Jobs:'💼',Glassdoor:'🏢','Company Blog':'🌐','D&B Hoovers':'📊',ZoomInfo:'📊',default:'🔍'};
   var total=S.signals.filter(function(s){return S.dismissed.indexOf(s.company)<0;}).length;
-  var html='<div class="showing-label">Showing '+filtered.length+' of '+total+' signals &mdash; newest first by default &mdash; pull again to add more to the top</div><div class="signals-grid">'+
-    filtered.map(function(s){
-      var idx=S.signals.indexOf(s);
-      var sc=s.icpScore>=8?'hi':s.icpScore>=6?'mid':'lo';
-      var isWatched=S.watchlist.indexOf(s.company)>-1;
-      var srcIcon=src_icons[s.sourceType]||src_icons.default;
-      var rawEmails=s.emailGuesses&&s.emailGuesses.length?s.emailGuesses:guessEmails(s.decisionMaker,s.website);
-      var emails=rawEmails.map(function(e){return typeof e==='string'?{email:e,confidence:'low',label:'Format guess'}:e;});
-      return '<div class="sig-card '+s.urgency+'" data-i="'+idx+'">'+
-        '<div class="sig-top">'+
-          '<div class="sig-co-wrap">'+
-            '<div class="sig-co">'+(s.website?'<a href="https://'+s.website.replace(/^https?:\/\//,'')+'" target="_blank">'+s.company+' ↗</a>':s.company)+'</div>'+
-            (s.website?'<div class="sig-website"><a href="https://'+s.website.replace(/^https?:\/\//,'')+'" target="_blank">'+s.website.replace(/^https?:\/\//,'').replace(/\/.*/,'')+'</a></div>':'')+
-            '<div class="sig-ind">'+s.industry+' &middot; '+s.location+'</div>'+
-          '</div>'+
-          '<div class="sig-right"><div class="score '+sc+'">ICP '+s.icpScore+'/10</div><div class="urg '+s.urgency+'">'+s.urgency+'</div></div>'+
-        '</div>'+
-        '<div class="sig-trigger"><strong>'+(tmap[s.triggerType]||s.triggerType)+':</strong> '+s.trigger+'</div>'+
-        '<div class="sig-source">'+srcIcon+' Source: '+(s.sourceUrl?'<a href="'+s.sourceUrl+'" target="_blank">'+s.sourceType+'</a>':s.sourceType)+(s.sourceNote?' &mdash; '+s.sourceNote:'')+'</div>'+
-        (s.isPEBacked&&s.peFirm?'<div class="sig-pe">🏦 PE-backed &middot; '+s.peFirm+'</div>':'')+
-        '<div class="sig-dm">'+
-          '<div class="sig-dm-name">'+(s.decisionMakerLinkedIn?'<a href="'+s.decisionMakerLinkedIn+'" target="_blank" style="color:var(--text);text-decoration:none;">'+s.decisionMaker+' ↗ (LinkedIn)</a>':s.decisionMaker)+
-          ' &mdash; <a href="https://linkedin.com/search/results/people/?keywords='+encodeURIComponent((s.decisionMaker||'')+' '+(s.company||''))+'" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--blue);">Find on LinkedIn ↗</a></div>'+
-          '<div class="sig-dm-title">'+s.decisionMakerTitle+'</div>'+
-          (emails&&emails.length?'<div class="sig-emails" style="margin-top:5px;">'+renderEmailGuesses(emails,s.decisionMakerLinkedIn)+'</div>':'')+
-      '</div>'+
-      '<div class="sig-footer"><div class="sig-tags"><span class="sig-tag">'+s.size+'</span><span class="sig-tag">📅 '+s.dateLabel+'</span></div>'+
-      '<div class="sig-actions">'+
-        '<button class="sig-btn watch'+(isWatched?' on':'') +'" data-co="'+s.company+'">'+(isWatched?'★':'☆')+'</button>'+
-        '<button class="sig-btn brief" data-i="'+idx+'">Brief →</button>'+
-        '<button class="sig-btn crm-add" data-i="'+idx+'">+ CRM</button>'+
-        '<button class="sig-btn" data-co="'+s.company+'" style="color:var(--red);border-color:rgba(240,90,90,.2);">✕</button>'+
-      '</div></div>'+
-    '</div>';
-  }).join('')+'</div>';
-  setHtml('sigContainer',html);
-  // Wire email copy
-  document.querySelectorAll('.sig-email').forEach(function(el){el.addEventListener('click',function(){navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){var old=el.textContent;el.textContent='Copied!';setTimeout(function(){el.textContent=old;},1500);});});});
-  // Wire Brief buttons
-  document.querySelectorAll('.sig-btn.brief').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();selectSignal(+btn.getAttribute('data-i'));});});
-  // Wire + CRM buttons
-  document.querySelectorAll('.sig-btn.crm-add').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});});
-  // Wire star/watch buttons
-  document.querySelectorAll('.sig-btn.watch').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();var co=btn.getAttribute('data-co');var idx=S.watchlist.indexOf(co);if(idx>-1)S.watchlist.splice(idx,1);else S.watchlist.push(co);saveState();renderSignals();renderWatchlist();});});
-  // Wire dismiss buttons
-  document.querySelectorAll('.sig-btn[data-co]').forEach(function(btn){if(!btn.classList.contains('watch')&&!btn.classList.contains('brief')&&!btn.classList.contains('crm-add')){btn.addEventListener('click',function(e){e.stopPropagation();S.dismissed.push(btn.getAttribute('data-co'));saveState();renderSignals();updateCounts();});}});
-  // Wire watchlist brief/crm
-  document.querySelectorAll('.watch-brief').forEach(function(btn){btn.addEventListener('click',function(){selectSignal(+btn.getAttribute('data-i'));});});
-  document.querySelectorAll('.watch-crm').forEach(function(btn){btn.addEventListener('click',function(){var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});});
-  document.querySelectorAll('.unwatch').forEach(function(btn){btn.addEventListener('click',function(){S.watchlist.splice(S.watchlist.indexOf(btn.getAttribute('data-co')),1);saveState();renderSignals();renderWatchlist();});});
-}
 
-// ── Watchlist ─────────────────────────────────────────────────────────────
-function renderWatchlist(){
-  var wl = S.watchlist || [];
-  document.getElementById('watchCount').textContent = wl.length;
-  if(!wl.length){
-    setHtml('watchContainer','<div class="empty-state"><div class="empty-icon">★</div><div class="empty-title">No companies watched yet</div><div class="empty-sub">Star any signal card to save it here</div></div>');
+  if(!S.signals.length||!total){
+    setHtml('sigContainer','<div class="empty"><div class="empty-ico">&#x26A1;</div><div class="empty-h">No signals yet</div><div class="empty-s">Click Pull Signals to search the live market</div></div>');
     return;
   }
-  var watched = wl.map(function(co){ return S.signals.find(function(s){return s.company===co;}); }).filter(Boolean);
-  var TMAP={exec_hire:'👤 Executive Hire',hiring_surge:'📈 Hiring Surge',bad_quarter:'📉 Bad Quarter',funding:'💰 Funding',expansion:'🌎 Expansion',restructure:'🔄 Restructure',acquisition:'🤝 Acquisition',new_product:'🚀 New Product'};
-  var html = '<div class="signals-grid">';
-  watched.forEach(function(s){
-    var idx = S.signals.indexOf(s);
-    var sc = s.icpScore>=8?'hi':s.icpScore>=6?'mid':'lo';
-    html += '<div class="sig-card '+s.urgency+'">';
-    html += '<div class="sig-top"><div>';
-    html += '<div class="sig-co">'+(s.website?'<a href="https://'+s.website.replace(/^https?:\/\//,'')+'" target="_blank">'+s.company+' ↗</a>':s.company)+'</div>';
-    html += '<div class="sig-ind">'+s.industry+' · '+s.location+'</div></div>';
-    html += '<div class="sig-right"><div class="score '+sc+'">ICP '+s.icpScore+'/10</div><div class="urg '+s.urgency+'">'+s.urgency+'</div></div></div>';
-    html += '<div class="sig-trigger"><strong>'+(TMAP[s.triggerType]||s.triggerType)+':</strong> '+s.trigger+'</div>';
-    html += '<div class="sig-footer"><div class="sig-tags"><span class="sig-tag">'+s.dateLabel+'</span></div>';
-    html += '<div class="sig-actions">';
-    html += '<button class="sig-btn brief watch-brief" data-i="'+idx+'">Brief →</button>';
-    html += '<button class="sig-btn crm-add watch-crm" data-i="'+idx+'">+ CRM</button>';
-    html += '<button class="sig-btn watch on unwatch" data-co="'+s.company+'">★ Unwatch</button>';
-    html += '</div></div></div>';
+  if(!filtered.length){
+    setHtml('sigContainer','<div class="empty"><div class="empty-ico">&#x1F50D;</div><div class="empty-h">No signals match this filter</div><div class="empty-s">Try All or adjust ICP settings</div></div>');
+    return;
+  }
+
+  var tmap={exec_hire:'&#x1F464; Exec Hire',hiring_surge:'&#x1F4C8; Hiring Surge',bad_quarter:'&#x1F4C9; Bad Quarter',funding:'&#x1F4B0; Funding',expansion:'&#x1F30E; Expansion',restructure:'&#x1F504; Restructure',acquisition:'&#x1F91D; Acquisition',new_product:'&#x1F680; New Product'};
+
+  var html='<div class="showing">Showing '+filtered.length+' of '+total+' signals — sorted by '+S.sortBy+'</div><div class="sigs-grid">';
+
+  filtered.forEach(function(s){
+    var idx=S.signals.indexOf(s);
+    var sc=s.icpScore>=8?'hi':s.icpScore>=6?'mid':'lo';
+    var isWatched=S.watchlist.indexOf(s.company)>-1;
+    var emails=s.emailGuesses&&s.emailGuesses.length?s.emailGuesses:guessEmails(s.decisionMaker,s.website);
+
+    // Build real LinkedIn search URL if we don't have a real profile URL
+    var liUrl=s.decisionMakerLinkedIn&&s.decisionMakerLinkedIn.indexOf('search?q=')===-1&&s.decisionMakerLinkedIn.indexOf('/in/')>-1
+      ?s.decisionMakerLinkedIn
+      :'https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent((s.decisionMaker||'')+' '+(s.company||''));
+
+    // Make website clickable - ensure https prefix
+    var siteUrl=s.website?(s.website.match(/^https?:\/\//)?s.website:'https://'+s.website):'';
+    var siteDisplay=s.website?s.website.replace(/^https?:\/\//,'').replace(/\/.*/,''):'';
+
+    html+=
+      '<div class="sig-card '+s.urgency+'">'+
+        '<div class="sig-top">'+
+          '<div>'+
+            '<div class="sig-co">'+(siteUrl?'<a href="'+siteUrl+'" target="_blank">'+s.company+' &#x2197;</a>':s.company)+'</div>'+
+            (siteUrl?'<div class="sig-web"><a href="'+siteUrl+'" target="_blank">'+siteDisplay+'</a></div>':'')+
+            '<div class="sig-ind">'+s.industry+' &middot; '+s.location+(s.size?' &middot; '+s.size:'')+'</div>'+
+          '</div>'+
+          '<div class="sig-r">'+
+            '<div class="score '+sc+'">ICP '+s.icpScore+'/10</div>'+
+            '<div class="urg '+s.urgency+'">'+s.urgency+'</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="sig-trig"><strong>'+(tmap[s.triggerType]||s.triggerType||'Signal')+':</strong> '+s.trigger+'</div>'+
+        (s.sourceUrl?'<div class="sig-src">&#x1F517; <a href="'+s.sourceUrl+'" target="_blank">'+s.sourceType+'</a>'+(s.sourceNote?' &mdash; '+s.sourceNote:'')+'</div>':'')+
+        (s.isPEBacked&&s.peFirm?'<div class="sig-pe">&#x1F3E6; PE-backed &middot; '+s.peFirm+'</div>':'')+
+        '<div class="sig-dm">'+
+          '<div class="sig-dm-name">'+
+            '<a href="'+liUrl+'" target="_blank">'+s.decisionMaker+' &#x2197;</a>'+
+            ' &mdash; <span style="font-family:var(--mono);font-size:9px;color:var(--muted);">'+s.decisionMakerTitle+'</span>'+
+          '</div>'+
+          (emails.length?'<div class="sig-emails">'+renderEmails(emails,null)+'</div>':'')+
+        '</div>'+
+        '<div class="sig-foot">'+
+          '<div class="sig-tags">'+
+            '<span class="sig-tag">&#x1F4C5; '+s.dateLabel+'</span>'+
+          '</div>'+
+          '<div class="sig-acts">'+
+            '<button class="sbtn star" data-idx="'+idx+'" data-co="'+s.company+'">'+(isWatched?'&#x2605;':'&#x2606;')+'</button>'+
+            '<button class="sbtn brief" data-idx="'+idx+'">Brief &#x2192;</button>'+
+            '<button class="sbtn crm" data-idx="'+idx+'">+ CRM</button>'+
+            '<button class="sbtn dismiss" data-co="'+s.company+'">&#x2715;</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
   });
-  html += '</div>';
-  setHtml('watchContainer', html);
-  document.querySelectorAll('.watch-brief').forEach(function(btn){
-    btn.addEventListener('click',function(){selectSignal(+btn.getAttribute('data-i'));});
+  html+='</div>';
+  setHtml('sigContainer',html);
+
+  // Wire email copy clicks
+  document.querySelectorAll('#sigContainer .sig-email[data-email]').forEach(function(el){
+    el.addEventListener('click',function(){
+      navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){
+        var addr=el.querySelector('.em-addr');
+        var old=addr.textContent;addr.textContent='Copied!';
+        setTimeout(function(){addr.textContent=old;},1500);
+      });
+    });
   });
-  document.querySelectorAll('.watch-crm').forEach(function(btn){
-    btn.addEventListener('click',function(){var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});
+
+  // Wire Brief buttons
+  document.querySelectorAll('#sigContainer .sbtn.brief').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      selectSignal(+btn.getAttribute('data-idx'));
+    });
   });
-  document.querySelectorAll('.unwatch').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      S.watchlist.splice(S.watchlist.indexOf(btn.getAttribute('data-co')),1);
+
+  // Wire + CRM buttons
+  document.querySelectorAll('#sigContainer .sbtn.crm').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var sig=S.signals[+btn.getAttribute('data-idx')];
+      if(sig)addToCRM(sig);
+    });
+  });
+
+  // Wire star buttons
+  document.querySelectorAll('#sigContainer .sbtn.star').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var co=btn.getAttribute('data-co');
+      var wi=S.watchlist.indexOf(co);
+      if(wi>-1)S.watchlist.splice(wi,1);else S.watchlist.push(co);
       saveState();renderSignals();renderWatchlist();
+    });
+  });
+
+  // Wire dismiss buttons
+  document.querySelectorAll('#sigContainer .sbtn.dismiss').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      S.dismissed.push(btn.getAttribute('data-co'));
+      saveState();renderSignals();updateCounts();
     });
   });
 }
 
+// ── WATCHLIST ─────────────────────────────────────────────────────────────────
+function renderWatchlist(){
+  var wl=S.watchlist||[];
+  updateCounts();
+  if(!wl.length){setHtml('watchContainer','<div class="empty"><div class="empty-ico">&#x2605;</div><div class="empty-h">No starred signals yet</div><div class="empty-s">Star any signal card to save it here</div></div>');return;}
+  var watched=wl.map(function(co){return S.signals.find(function(s){return s.company===co;});}).filter(Boolean);
+  if(!watched.length){setHtml('watchContainer','<div class="empty"><div class="empty-ico">&#x2605;</div><div class="empty-h">Starred signals no longer in feed</div><div class="empty-s">Pull new signals to refresh</div></div>');return;}
 
-// ── CRM ──────────────────────────────────────────────────────
-var CRM_STAGES=['watching','contacted','responded','meeting','proposal','closed'];
-var STAGE_LABELS={watching:'Watching',contacted:'Contacted',responded:'Responded',meeting:'Meeting Booked',proposal:'Proposal Sent',closed:'Closed Won'};
+  var html='<div class="sigs-grid">';
+  watched.forEach(function(s){
+    var idx=S.signals.indexOf(s);
+    var sc=s.icpScore>=8?'hi':s.icpScore>=6?'mid':'lo';
+    var liUrl=s.decisionMakerLinkedIn&&s.decisionMakerLinkedIn.indexOf('/in/')>-1?s.decisionMakerLinkedIn:'https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent((s.decisionMaker||'')+' '+(s.company||''));
+    var siteUrl=s.website?(s.website.match(/^https?:\/\//)?s.website:'https://'+s.website):'';
+    html+=
+      '<div class="sig-card '+s.urgency+'">'+
+        '<div class="sig-top">'+
+          '<div>'+
+            '<div class="sig-co">'+(siteUrl?'<a href="'+siteUrl+'" target="_blank">'+s.company+' &#x2197;</a>':s.company)+'</div>'+
+            '<div class="sig-ind">'+s.industry+' &middot; '+s.location+'</div>'+
+          '</div>'+
+          '<div class="sig-r"><div class="score '+sc+'">ICP '+s.icpScore+'/10</div><div class="urg '+s.urgency+'">'+s.urgency+'</div></div>'+
+        '</div>'+
+        '<div class="sig-trig">'+s.trigger+'</div>'+
+        '<div class="sig-dm"><div class="sig-dm-name"><a href="'+liUrl+'" target="_blank">'+s.decisionMaker+' &#x2197;</a> &mdash; <span style="font-family:var(--mono);font-size:9px;color:var(--muted);">'+s.decisionMakerTitle+'</span></div></div>'+
+        '<div class="sig-foot">'+
+          '<div class="sig-tags"><span class="sig-tag">&#x1F4C5; '+s.dateLabel+'</span></div>'+
+          '<div class="sig-acts">'+
+            '<button class="sbtn brief wl-brief" data-idx="'+idx+'">Brief &#x2192;</button>'+
+            '<button class="sbtn crm wl-crm" data-idx="'+idx+'">+ CRM</button>'+
+            '<button class="sbtn star on wl-unwatch" data-co="'+s.company+'">&#x2605; Unwatch</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+  });
+  html+='</div>';
+  setHtml('watchContainer',html);
 
+  document.querySelectorAll('.wl-brief').forEach(function(btn){btn.addEventListener('click',function(){selectSignal(+btn.getAttribute('data-idx'));});});
+  document.querySelectorAll('.wl-crm').forEach(function(btn){btn.addEventListener('click',function(){var sig=S.signals[+btn.getAttribute('data-idx')];if(sig)addToCRM(sig);});});
+  document.querySelectorAll('.wl-unwatch').forEach(function(btn){btn.addEventListener('click',function(){S.watchlist.splice(S.watchlist.indexOf(btn.getAttribute('data-co')),1);saveState();renderSignals();renderWatchlist();});});
+}
+
+// ── CRM ───────────────────────────────────────────────────────────────────────
 function addToCRM(sig){
-  var existing=false;
-  CRM_STAGES.forEach(function(stage){S.crm[stage].forEach(function(l){if(l.company===sig.company)existing=true;});});
-  if(existing){alert(sig.company+' is already in your CRM pipeline.');return;}
+  var exists=false;
+  CRM_STAGES.forEach(function(st){(S.crm[st]||[]).forEach(function(l){if(l.company===sig.company)exists=true;});});
+  if(exists){alert(sig.company+' is already in your CRM pipeline.');return;}
   S.crm.watching.push({
     company:sig.company,website:sig.website,contact:sig.decisionMaker,title:sig.decisionMakerTitle,
-    emails:sig.emailGuesses||[],industry:sig.industry,location:sig.location,
+    linkedIn:sig.decisionMakerLinkedIn,emails:sig.emailGuesses||[],industry:sig.industry,location:sig.location,
     trigger:sig.trigger,sourceUrl:sig.sourceUrl,sourceType:sig.sourceType,
     addedDate:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
-    notes:'',icpScore:sig.icpScore,urgency:sig.urgency
+    notes:[],icpScore:sig.icpScore,urgency:sig.urgency,briefing:null
   });
-  saveState();renderCRM();updateCounts();
-  showPanel('crm');
+  saveState();renderCRM();updateCounts();showPanel('crm');
 }
 
 function renderCRM(){
   updateCounts();
-  var html=CRM_STAGES.map(function(stage){
+  var html='';
+  CRM_STAGES.forEach(function(stage){
     var leads=S.crm[stage]||[];
-    return '<div class="stage-col">'+
-      '<div class="stage-header '+stage+'"><span>'+STAGE_LABELS[stage]+'</span><span>'+leads.length+'</span></div>'+
-      '<div class="stage-body">'+
-        (leads.length?leads.map(function(l,li){
-          return '<div class="crm-card" data-stage="'+stage+'" data-li="'+li+'">'+
-            '<div class="crm-co">'+(l.website?'<a href="https://'+l.website.replace(/^https?:\/\//,'')+'" target="_blank" style="color:var(--text);text-decoration:none;">'+l.company+'</a>':l.company)+'</div>'+
-            '<div class="crm-dm">'+l.contact+' &mdash; '+l.title+'</div>'+
-            '<div class="crm-date">Added '+l.addedDate+'</div>'+
-            (l.notes?'<div class="crm-note">'+l.notes+'</div>':'')+
-            '<div class="crm-actions">'+
-              '<select class="crm-stage-sel" data-stage="'+stage+'" data-li="'+li+'">'+
-              CRM_STAGES.map(function(ns){return '<option value="'+ns+'"'+(ns===stage?' selected':'')+'>'+STAGE_LABELS[ns]+'</option>';}).join('')+
-              '</select>'+
-              '<button class="crm-btn detail-btn" data-stage="'+stage+'" data-li="'+li+'">Notes</button>'+
-              (l.contact?'<button class="crm-btn gmail" data-email="'+encodeURIComponent(l.contact+' '+l.company)+'">Gmail</button>':'')+
-            '</div>'+
-          '</div>';
-        }).join(''):'<div style="padding:12px;font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;">No leads here</div>')+
-      '</div></div>';
-  }).join('');
-  setHtml('crmStages',html);
-  document.querySelectorAll('.crm-stage-sel').forEach(function(sel){
-    sel.addEventListener('change',function(e){e.stopPropagation();
+    html+='<div class="crm-col">'+
+      '<div class="crm-col-h"><span>'+STAGE_LABELS[stage]+'</span><span class="crm-n">'+leads.length+'</span></div>';
+    if(leads.length){
+      leads.forEach(function(l,li){
+        var siteUrl=l.website?(l.website.match(/^https?:\/\//)?l.website:'https://'+l.website):'';
+        html+='<div class="crm-card">'+
+          '<div class="crm-co">'+(siteUrl?'<a href="'+siteUrl+'" target="_blank" style="color:var(--txt);text-decoration:none;">'+l.company+'</a>':l.company)+'</div>'+
+          '<div class="crm-ct">'+l.contact+' &mdash; '+l.title+'</div>'+
+          '<div class="crm-acts">'+
+            '<select class="crm-sel" data-stage="'+stage+'" data-li="'+li+'">'+
+              CRM_STAGES.map(function(s){return'<option value="'+s+'"'+(s===stage?' selected':'')+'>'+STAGE_LABELS[s]+'</option>';}).join('')+
+            '</select>'+
+            '<button class="crm-btn" data-stage="'+stage+'" data-li="'+li+'" data-action="detail">&#x1F4DD;</button>'+
+            (l.contact?'<button class="crm-btn" data-stage="'+stage+'" data-li="'+li+'" data-action="gmail">&#x2709;</button>':'')+
+          '</div>'+
+        '</div>';
+      });
+    }else{
+      html+='<div style="padding:12px;font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;">Empty</div>';
+    }
+    html+='</div>';
+  });
+  setHtml('crmBoard',html);
+
+  // Stage selector
+  document.querySelectorAll('.crm-sel').forEach(function(sel){
+    sel.addEventListener('change',function(e){
+      e.stopPropagation();
       var stage=sel.getAttribute('data-stage'),li=+sel.getAttribute('data-li'),to=sel.value;
       if(to===stage)return;
       var lead=S.crm[stage].splice(li,1)[0];
       S.crm[to].push(lead);saveState();renderCRM();updateCounts();
     });
   });
-  document.querySelectorAll('.detail-btn').forEach(function(btn){
-    btn.addEventListener('click',function(e){e.stopPropagation();
-      var stage=btn.getAttribute('data-stage'),li=+btn.getAttribute('data-li');
-      openCRMDetail(stage,li);
-    });
-  });
-  document.querySelectorAll('.gmail').forEach(function(btn){
-    btn.addEventListener('click',function(e){e.stopPropagation();
-      var q=decodeURIComponent(btn.getAttribute('data-email'));
-      window.open('https://mail.google.com/mail/u/0/#search/'+encodeURIComponent(q),'_blank');
+
+  // Action buttons
+  document.querySelectorAll('.crm-btn').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var stage=btn.getAttribute('data-stage'),li=+btn.getAttribute('data-li'),action=btn.getAttribute('data-action');
+      if(action==='detail')openCRMDetail(stage,li);
+      if(action==='gmail'){
+        var l=S.crm[stage][li];
+        window.open('https://mail.google.com/mail/u/0/#search/'+encodeURIComponent(l.company+' '+l.contact),'_blank');
+      }
     });
   });
 }
 
 function openCRMDetail(stage,li){
-  var l=S.crm[stage][li];
-  if(!l)return;
+  var l=S.crm[stage][li];if(!l)return;
   document.getElementById('crmModalTitle').textContent=l.company;
-  document.getElementById('crmModalBody').innerHTML=
-    '<div style="margin-bottom:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Contact</div>'+
-    '<div style="font-size:14px;font-weight:500;">'+l.contact+'</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">'+l.title+'</div></div>'+
-    (l.emails&&l.emails.length?'<div class="sig-emails">'+renderEmailGuesses(l.emails, null)+'<div style="font-family:var(--mono);font-size:9px;margin-top:6px;"><a href="https://hunter.io/email-verifier" target="_blank" style="color:var(--blue);">Verify at Hunter.io ↗</a></div></div>':'')+ 
-    '<div style="margin-bottom:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Signal</div>'+
-    '<div style="font-size:13px;line-height:1.5;">'+l.trigger+'</div>'+
-    (l.sourceUrl?'<a href="'+l.sourceUrl+'" target="_blank" style="font-family:var(--mono);font-size:10px;color:var(--blue);">View source ↗</a>':'')+
-    '</div>'+
-    '<div style="margin-bottom:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Stage</div>'+
-    '<select id="stageSelect" class="ctrl-select" style="margin-bottom:8px;">'+CRM_STAGES.map(function(s){return '<option value="'+s+'"'+(s===stage?' selected':'')+'>'+STAGE_LABELS[s]+'</option>';}).join('')+'</select></div>'+
-    '<div style="margin-bottom:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Notes</div>'+
-    '<textarea id="leadNotes" class="tag-input" rows="4" style="resize:vertical;">'+l.notes+'</textarea></div>'+
-    '<div style="display:flex;gap:8px;">'+
-    '<button class="tbtn tbtn-accent" id="saveDetailBtn">Save</button>'+
-    '<button class="tbtn tbtn-ghost" id="gmailDetailBtn">Open Gmail Thread</button>'+
-    '</div>';
+
+  // Overview tab
+  var siteUrl=l.website?(l.website.match(/^https?:\/\//)?l.website:'https://'+l.website):'';
+  var liUrl=l.linkedIn&&l.linkedIn.indexOf('/in/')>-1?l.linkedIn:'https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent((l.contact||'')+' '+(l.company||''));
+  var ov='<div class="field-lbl">Company</div>'+
+    '<div class="field-val">'+(siteUrl?'<a href="'+siteUrl+'" target="_blank" style="color:var(--acc);">'+l.company+' &#x2197;</a>':l.company)+'</div>'+
+    '<div class="field-lbl">Contact</div>'+
+    '<div class="field-val"><a href="'+liUrl+'" target="_blank" style="color:var(--acc);">'+l.contact+' &#x2197;</a> &mdash; '+l.title+'</div>';
+  if(l.emails&&l.emails.length){
+    ov+='<div class="field-lbl">Email Guesses <span style="font-weight:300;color:var(--muted)">(click to copy)</span></div>'+
+      '<div class="sig-emails">'+renderEmails(l.emails,null)+'</div>'+
+      '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:6px;"><a href="https://hunter.io/email-verifier" target="_blank" style="color:var(--blu);">Verify at Hunter.io &#x2197;</a></div>';
+  }
+  if(l.sourceUrl){
+    ov+='<div class="field-lbl">Signal Source</div>'+
+      '<div class="field-val"><a href="'+l.sourceUrl+'" target="_blank" style="color:var(--blu);">'+l.sourceType+' &#x2197;</a></div>';
+  }
+  ov+='<div class="field-lbl">Signal</div><div class="field-val">'+l.trigger+'</div>';
+  ov+='<div class="field-lbl">Stage</div>'+
+    '<select class="ctrl-inp" id="detailStage" style="margin-top:4px;">'+
+    CRM_STAGES.map(function(s){return'<option value="'+s+'"'+(s===stage?' selected':'')+'>'+STAGE_LABELS[s]+'</option>';}).join('')+'</select>';
+  setHtml('ms-overview',ov);
+
+  // Notes tab
+  var notesHtml='<div class="field-lbl">Add Note</div>'+
+    '<textarea class="note-inp" id="newNote" placeholder="Add a note about this lead..."></textarea>'+
+    '<button class="btn-acc" id="saveNoteBtn" style="margin-top:8px;padding:7px 16px;">Save Note</button>'+
+    '<div style="margin-top:14px;">';
+  (l.notes||[]).forEach(function(n){
+    notesHtml+='<div class="note-entry"><div class="note-txt">'+n.text+'</div><div class="note-dt">'+n.date+'</div></div>';
+  });
+  notesHtml+='</div>';
+  setHtml('ms-notes',notesHtml);
+
+  // Briefing tab
+  if(l.briefing){
+    var b=l.briefing;
+    setHtml('ms-briefing',
+      '<div class="field-lbl">Snapshot</div><div class="field-val">'+b.snapshot+'</div>'+
+      '<div class="field-lbl">Why Now</div><div class="field-val">'+b.whyNow+'</div>'+
+      '<div class="field-lbl">Pitch Angle</div><div class="field-val" style="color:var(--acc);">'+b.pitchAngle+'</div>'+
+      '<div class="field-lbl">First Move</div><div class="field-val">'+b.firstMove+'</div>'
+    );
+  }else{
+    setHtml('ms-briefing','<div class="empty" style="padding:30px;"><div class="empty-ico">&#x1F4CB;</div><div class="empty-h">No briefing yet</div><div class="empty-s">Go to signals, find this company, click Brief</div></div>');
+  }
+
   document.getElementById('crmModal').classList.add('open');
-  document.querySelectorAll('#crmModalBody .sig-email').forEach(function(el){el.addEventListener('click',function(){navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){var o=el.textContent;el.textContent='Copied!';setTimeout(function(){el.textContent=o;},1500);});});});
-  // Wire sequence done buttons
-  document.querySelectorAll('.seq-done-btn').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      var si=+btn.getAttribute('data-si');
-      if(!S.crm[stage][li].sequence)S.crm[stage][li].sequence=SEQUENCE_TEMPLATES.map(function(t){return {day:t.day,type:t.type,msg:t.msg,done:false};});
-      S.crm[stage][li].sequence[si].done=!S.crm[stage][li].sequence[si].done;
-      saveState();renderCRM();
-      var step=document.getElementById('seq-'+si);
-      if(step){step.classList.toggle('done');btn.textContent=S.crm[stage][li].sequence[si].done?'✓ Done — Undo':'Mark Done';}
+
+  // Wire tabs
+  document.querySelectorAll('#crmModal .mtab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      document.querySelectorAll('#crmModal .mtab').forEach(function(t){t.classList.remove('on');});
+      document.querySelectorAll('#crmModal .msec').forEach(function(s){s.classList.remove('on');});
+      tab.classList.add('on');
+      document.getElementById('ms-'+tab.getAttribute('data-mt')).classList.add('on');
     });
   });
-  document.getElementById('saveDetailBtn').addEventListener('click',function(){
-    var newStage=document.getElementById('stageSelect').value;
-    var noteText=document.getElementById('leadNotes').value.trim();
-    if(noteText){
-      if(!S.crm[stage][li].notes||!Array.isArray(S.crm[stage][li].notes))S.crm[stage][li].notes=[];
-      S.crm[stage][li].notes.unshift({date:new Date().toLocaleString(),text:noteText});
-    }
-    var gtUrl=document.getElementById('gmailThreadUrl');if(gtUrl)S.crm[stage][li].gmailThread=gtUrl.value;
-    if(newStage!==stage){var lead=S.crm[stage].splice(li,1)[0];S.crm[newStage].push(lead);}
-    saveState();renderCRM();updateCounts();
+
+  // Wire email copy in modal
+  document.querySelectorAll('#ms-overview .sig-email[data-email]').forEach(function(el){
+    el.addEventListener('click',function(){
+      navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){
+        var addr=el.querySelector('.em-addr');var old=addr.textContent;addr.textContent='Copied!';setTimeout(function(){addr.textContent=old;},1500);
+      });
+    });
+  });
+
+  // Wire save note
+  document.getElementById('saveNoteBtn').addEventListener('click',function(){
+    var txt=document.getElementById('newNote').value.trim();
+    if(!txt)return;
+    if(!S.crm[stage][li].notes)S.crm[stage][li].notes=[];
+    S.crm[stage][li].notes.unshift({date:new Date().toLocaleString(),text:txt});
+    saveState();
+    document.getElementById('newNote').value='';
+    openCRMDetail(stage,li); // re-render
+  });
+
+  // Wire stage change
+  document.getElementById('detailStage').addEventListener('change',function(){
+    var to=this.value;if(to===stage)return;
+    var lead=S.crm[stage].splice(li,1)[0];
+    S.crm[to].push(lead);saveState();renderCRM();updateCounts();
     document.getElementById('crmModal').classList.remove('open');
   });
-  document.getElementById('gmailDetailBtn').addEventListener('click',function(){window.open('https://mail.google.com/mail/u/0/#search/'+encodeURIComponent(l.company+' '+l.contact),'_blank');});
-  var regenSeqBtn=document.getElementById('regenSeqBtn');
-  if(regenSeqBtn){regenSeqBtn.addEventListener('click',function(){
-    regenSeqBtn.textContent='Generating...';regenSeqBtn.disabled=true;
-    fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,
-        system:'Write a 4-step outreach sequence for Burrows & Co. Digital Advisory. Day 1: LinkedIn connect (under 300 chars). Day 3: LinkedIn DM (under 150 words, references trigger). Day 7: value-add follow-up (new insight, no following up). Day 14: breakup message. Respond ONLY with JSON: {"sequence":[{"day":"Day 1","type":"LinkedIn Connect","msg":""},{"day":"Day 3","type":"LinkedIn DM","msg":""},{"day":"Day 7","type":"Value Add Follow-up","msg":""},{"day":"Day 14","type":"Breakup Message","msg":""}]}',
-        messages:[{role:'user',content:'Sequence for: '+l.company+', '+l.contact+' ('+l.title+'), trigger: '+l.trigger}]
-      })
-    }).then(function(r){return r.json();}).then(function(d){
-      var txt=d.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
-      var m=txt.match(/\{[\s\S]*\}/);
-      if(m){var parsed=JSON.parse(m[0]);
-        S.crm[stage][li].sequence=parsed.sequence.map(function(s){return {day:s.day,type:s.type,msg:s.msg,done:false};});}
-      saveState();openCRMDetail(stage,li);
-    }).catch(function(){regenSeqBtn.disabled=false;regenSeqBtn.textContent='\u21BA Regenerate Sequence';});
-  });}
 }
 
 document.getElementById('crmModalClose').addEventListener('click',function(){document.getElementById('crmModal').classList.remove('open');});
-document.getElementById('addLeadBtn').addEventListener('click',function(){document.getElementById('addLeadForm').style.display='block';});
-document.getElementById('cancelLeadBtn').addEventListener('click',function(){document.getElementById('addLeadForm').style.display='none';});
-document.getElementById('saveLeadBtn').addEventListener('click',async function(){
-  var co=document.getElementById('nl-company').value.trim();
-  if(!co)return;
-  var site=document.getElementById('nl-website').value.trim();
-  var contact=document.getElementById('nl-contact').value.trim();
-  var btn=document.getElementById('saveLeadBtn');
-  btn.textContent='Saving...';btn.disabled=true;
-  var fakeSig={
-    company:co,website:site,industry:document.getElementById('nl-industry').value.trim(),
-    location:document.getElementById('nl-location').value.trim(),size:'',
-    trigger:document.getElementById('nl-signal').value.trim()||'Manual lead entry',
-    triggerType:'exec_hire',isPEBacked:false,peFirm:'',
-    decisionMaker:contact,decisionMakerTitle:document.getElementById('nl-title').value.trim(),
-    decisionMakerLinkedIn:'',emailGuesses:guessEmails(contact,site),
-    sourceType:'Manual entry',sourceUrl:document.getElementById('nl-source').value.trim(),
-    sourceNote:'Added manually',icpScore:7,urgency:'new',
-    signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
-  };
-  addToCRM(fakeSig);
-  // Auto-generate briefing
-  try {
-    var resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
-        system:'BD analyst for Burrows & Co. Services: '+S.services.map(function(s){return s.name+' ('+s.range+')';}).join(', ')+'. Challenger Sale. Respond ONLY with JSON: {"snapshot":"","painPoints":["","",""],"whyNow":"","primaryService":"","secondaryService":"","entryPoint":"","pitchAngle":"","firstMove":"","nextMoves":["",""],"talkingPoints":["","",""],"valueGiveaway":"","competitiveAngle":""}',
-        messages:[{role:'user',content:'Briefing for manually added lead: '+JSON.stringify({company:co,industry:document.getElementById('nl-industry').value.trim(),trigger:document.getElementById('nl-signal').value.trim()||'Manual lead entry',decisionMaker:contact,decisionMakerTitle:document.getElementById('nl-title').value.trim()})}]
-      })
-    });
-    var d=await resp.json();
-    var txt=d.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
-    var m=txt.match(/\{[\s\S]*\}/);
-    if(m){
-      var briefing=JSON.parse(m[0]);
-      S.crm.watching.forEach(function(l){if(l.company===co)l.briefing=briefing;});
-      saveState();renderCRM();
-    }
-  } catch(e){console.log('auto-brief err:',e);}
-  ['nl-company','nl-website','nl-contact','nl-title','nl-industry','nl-location','nl-signal','nl-source'].forEach(function(id){document.getElementById(id).value='';});
-  btn.textContent='Save & Generate Briefing';btn.disabled=false;
-  document.getElementById('addLeadForm').style.display='none';
-});
+document.getElementById('crmModal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 
-// ── BRIEFING ─────────────────────────────────────────────────
+// ── ADD MANUAL LEAD ───────────────────────────────────────────────────────────
+document.getElementById('submitLeadBtn').addEventListener('click',async function(){
+  var co=document.getElementById('fl-co').value.trim();
+  if(!co){alert('Company name is required.');return;}
+  var btn=this;btn.textContent='Saving...';btn.disabled=true;
+  var sig={
+    company:co,website:document.getElementById('fl-we').value.trim(),
+    industry:document.getElementById('fl-ind').value.trim(),location:document.getElementById('fl-lo').value.trim(),size:'',
+    trigger:document.getElementById('fl-si').value.trim()||'Manual lead entry',triggerType:'exec_hire',
+    isPEBacked:false,peFirm:'',
+    decisionMaker:document.getElementById('fl-ct').value.trim(),
+    decisionMakerTitle:document.getElementById('fl-ti').value.trim(),
+    decisionMakerLinkedIn:document.getElementById('fl-li').value.trim(),
+    emailGuesses:[],sourceType:'Manual',sourceUrl:'',sourceNote:'Added manually',
+    icpScore:7,urgency:'new',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+  };
+  normalizeSignal(sig,0);
+  addToCRM(sig);
+  ['fl-co','fl-we','fl-ind','fl-lo','fl-ct','fl-ti','fl-li','fl-si'].forEach(function(id){document.getElementById(id).value='';});
+  btn.textContent='Add Lead + Generate Briefing';btn.disabled=false;
+  showPanel('crm');
+});
+document.getElementById('cancelLeadBtn').addEventListener('click',function(){showPanel('crm');});
+
+// ── BRIEFING ──────────────────────────────────────────────────────────────────
 async function selectSignal(i){
   S.selected=S.signals[i];
   showPanel('briefing');
@@ -974,7 +1036,7 @@ async function selectSignal(i){
     var resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,
-        system:'Senior BD analyst for Burrows & Co. Services: '+S.services.map(function(s){return s.name+' ('+s.range+')';}).join(', ')+'. Use Challenger Sale: teach them something new, reframe their problem, recommend entry point. Respond ONLY with JSON: {"snapshot":"","painPoints":["","",""],"whyNow":"","primaryService":"","secondaryService":"","entryPoint":"","pitchAngle":"","firstMove":"","nextMoves":["",""],"talkingPoints":["","",""],"valueGiveaway":"","competitiveAngle":"","additionalDMs":[{"name":"","title":""}]}',
+        system:'Senior BD analyst for Burrows & Co. Services: '+S.services.map(function(s){return s.name+' ('+s.range+')';}).join(', ')+'. Use Challenger Sale: teach something new, reframe their problem, recommend entry point. Respond ONLY with JSON: {"snapshot":"","painPoints":["","",""],"whyNow":"","primaryService":"","secondaryService":"","entryPoint":"","pitchAngle":"","firstMove":"","nextMoves":["",""],"talkingPoints":["","",""],"valueGiveaway":"","competitiveAngle":""}',
         messages:[{role:'user',content:'Briefing for: '+JSON.stringify({company:sig.company,website:sig.website,industry:sig.industry,trigger:sig.trigger,isPEBacked:sig.isPEBacked,peFirm:sig.peFirm,decisionMaker:sig.decisionMaker,decisionMakerTitle:sig.decisionMakerTitle,icpScore:sig.icpScore})}]
       })
     });
@@ -983,79 +1045,70 @@ async function selectSignal(i){
     var m=txt.match(/\{[\s\S]*\}/);
     S.briefing=m?JSON.parse(m[0]):null;
   }catch(e){S.briefing=null;}
-  if(!S.briefing)S.briefing={snapshot:sig.company+' represents a strong opportunity. The '+sig.trigger+' creates an immediate window.',painPoints:['Digital transformation urgency','Leadership gap during transition','Growth pressure without clear strategy'],whyNow:'The recent trigger creates a 60-90 day window. After that, internal priorities lock in.',primaryService:'Discovery & Strategy Sprint',secondaryService:'Core Leadership Retainer',entryPoint:'Executive Workshop — half-day alignment session.',pitchAngle:'Most companies in this situation build the team first then wonder why the strategy is not working.',firstMove:'LinkedIn outreach to '+sig.decisionMaker,nextMoves:['Follow up in 3 days with industry insight','Share relevant case study day 7'],talkingPoints:['Discovery Sprint delivers funded roadmap in 30-45 days','We embed alongside your team — not a deck and disappear firm','Entry is low risk: fixed scope, clear deliverable'],valueGiveaway:'Companies that engage external advisory in the first 60 days of a transition move 2x faster on their roadmap.',competitiveAngle:'Boutique enough to embed directly — you get Phil and Mindy, not a team of analysts.',additionalDMs:[]};
+
+  if(!S.briefing)S.briefing={snapshot:sig.company+' — '+sig.trigger,painPoints:['Digital transformation urgency','Leadership gap during transition','Growth pressure without clear strategy'],whyNow:'The recent trigger creates a 60-90 day window. After that, internal priorities lock in.',primaryService:'Discovery & Strategy Sprint',secondaryService:'Core Leadership Retainer',entryPoint:'Executive Workshop — half-day alignment session.',pitchAngle:'Most companies in this situation build the team first then wonder why the strategy is not working.',firstMove:'LinkedIn outreach to '+sig.decisionMaker,nextMoves:['Follow up in 3 days with industry insight','Share relevant case study day 7'],talkingPoints:['Discovery Sprint delivers funded roadmap in 30-45 days','We embed alongside your team — not a deck-and-disappear firm','Entry is low risk: fixed scope, clear deliverable'],valueGiveaway:'Companies that engage external advisory in the first 60 days of a transition move 2x faster on their roadmap.',competitiveAngle:'Boutique enough to embed directly — you get Phil and Mindy, not a team of analysts.'};
+
   var b=S.briefing;
   var svc=S.services.find(function(s){return s.name===b.primaryService;})||S.services[3];
   var svc2=S.services.find(function(s){return s.name===b.secondaryService;})||S.services[1];
+  var siteUrl=sig.website?(sig.website.match(/^https?:\/\//)?sig.website:'https://'+sig.website):'';
+  var liUrl=sig.decisionMakerLinkedIn&&sig.decisionMakerLinkedIn.indexOf('/in/')>-1?sig.decisionMakerLinkedIn:'https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent((sig.decisionMaker||'')+' '+(sig.company||''));
   var emails=sig.emailGuesses&&sig.emailGuesses.length?sig.emailGuesses:guessEmails(sig.decisionMaker,sig.website);
+
   setHtml('briefContainer',
-    '<div class="hero">'+
-    '<div class="hero-co">'+(sig.website?'<a href="https://'+sig.website.replace(/^https?:\/\//,'')+'" target="_blank" style="text-decoration:none;color:inherit;">'+sig.company+' ↗</a>':sig.company)+' <em>Briefing</em></div>'+
-    '<div class="hero-meta">'+sig.industry+' &middot; '+sig.location+' &middot; '+sig.size+(sig.isPEBacked?' &middot; PE: '+sig.peFirm:'')+'</div>'+
-    '<div class="hero-grid">'+
-    '<div class="hero-stat"><div class="stat-label">ICP Score</div><div class="stat-val ac">'+sig.icpScore+'/10</div></div>'+
-    '<div class="hero-stat"><div class="stat-label">Urgency</div><div class="stat-val">'+sig.urgency.toUpperCase()+'</div></div>'+
-    '<div class="hero-stat"><div class="stat-label">Primary Contact</div><div class="stat-val" style="font-size:13px;">'+(sig.decisionMakerLinkedIn?'<a href="'+sig.decisionMakerLinkedIn+'" target="_blank" style="color:var(--text);">'+sig.decisionMaker+' ↗</a>':sig.decisionMaker)+'</div></div>'+
-    '<div class="hero-stat"><div class="stat-label">Signal Date</div><div class="stat-val" style="font-size:13px;">'+sig.dateLabel+'</div></div>'+
+    '<div class="sc">'+
+      '<div class="sc-lbl">'+(siteUrl?'<a href="'+siteUrl+'" target="_blank" style="color:var(--acc);text-decoration:none;">'+sig.company+' &#x2197;</a>':sig.company)+' &mdash; Lead Briefing</div>'+
+      '<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:10px;">'+sig.industry+' &middot; '+sig.location+(sig.size?' &middot; '+sig.size:'')+(sig.isPEBacked?' &middot; PE: '+sig.peFirm:'')+'</div>'+
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:9px;margin-bottom:13px;">'+
+        '<div style="background:var(--surf2);border-radius:7px;padding:11px 13px;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">ICP Score</div><div style="font-size:14px;font-weight:500;color:var(--acc);">'+sig.icpScore+'/10</div></div>'+
+        '<div style="background:var(--surf2);border-radius:7px;padding:11px 13px;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Urgency</div><div style="font-size:14px;font-weight:500;">'+sig.urgency.toUpperCase()+'</div></div>'+
+        '<div style="background:var(--surf2);border-radius:7px;padding:11px 13px;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Contact</div><div style="font-size:12px;font-weight:500;"><a href="'+liUrl+'" target="_blank" style="color:var(--txt);">'+sig.decisionMaker+' &#x2197;</a></div></div>'+
+        '<div style="background:var(--surf2);border-radius:7px;padding:11px 13px;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Signal Date</div><div style="font-size:12px;font-weight:500;">'+sig.dateLabel+'</div></div>'+
+      '</div>'+
+      (emails.length?'<div style="margin-bottom:10px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Email Guesses — click to copy — <a href="https://hunter.io/email-verifier" target="_blank" style="color:var(--blu);">verify at Hunter.io</a></div><div class="sig-emails" id="briefEmails">'+renderEmails(emails,sig.decisionMakerLinkedIn)+'</div></div>':'')+
+      (sig.sourceUrl?'<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:8px;">Source: <a href="'+sig.sourceUrl+'" target="_blank" style="color:var(--blu);">'+sig.sourceType+' &#x2197;</a>'+(sig.sourceNote?' &mdash; '+sig.sourceNote:'')+'</div>':'')+
+      '<div style="font-size:13px;line-height:1.6;">'+b.snapshot+'</div>'+
     '</div>'+
-    (emails.length?'<div style="margin-bottom:8px;">'+
-    '<div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Email Guesses &mdash; <span style="color:var(--accent);">green = higher confidence</span> &mdash; click to copy &mdash; <a href="https://hunter.io/email-verifier" target="_blank" style="color:var(--blue);">verify at Hunter.io</a></div>'+
-    '<div class="sig-emails">'+renderEmailGuesses(emails,sig.decisionMakerLinkedIn)+'</div>'+
-    (sig.decisionMakerLinkedIn?'<div style="font-family:var(--mono);font-size:9px;margin-top:6px;"><a href="'+sig.decisionMakerLinkedIn+'" target="_blank" style="color:var(--blue);">🔗 Find real email on LinkedIn ↗</a></div>':
-    '<div style="font-family:var(--mono);font-size:9px;margin-top:6px;"><a href="https://linkedin.com/search/results/people/?keywords='+encodeURIComponent((sig.decisionMaker||'')+' '+sig.company)+'" target="_blank" style="color:var(--blue);">🔗 Search on LinkedIn ↗</a> &middot; <a href="https://hunter.io/email-verifier" target="_blank" style="color:var(--blue);">Verify at Hunter.io ↗</a></div>')+
-    '</div>':'')+
-    (sig.sourceUrl?'<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:8px;">Source: <a href="'+sig.sourceUrl+'" target="_blank" style="color:var(--blue);">'+sig.sourceType+' ↗</a>'+(sig.sourceNote?' &mdash; '+sig.sourceNote:'')+'</div>':'')+
-    '<div style="font-size:13px;line-height:1.6;">'+b.snapshot+'</div></div>'+
-    '<div class="sc"><div class="sc-label">Why Right Now</div><div class="sc-body">'+b.whyNow+'</div></div>'+
-    '<div class="sc"><div class="sc-label">Pain Points</div><div class="sc-body">'+(b.painPoints||[]).map(function(p){return '<div style="padding:6px 0;border-bottom:1px solid var(--border);">&rarr; '+p+'</div>';}).join('')+'</div></div>'+
-    '<div class="sc"><div class="sc-label">Pitch Angle</div><div class="sc-body" style="color:var(--accent);">'+b.pitchAngle+'</div></div>'+
-    (b.valueGiveaway?'<div class="sc" style="border-color:rgba(200,240,90,.2);"><div class="sc-label">Value Giveaway — Lead With This</div><div class="sc-body" style="font-style:italic;">'+b.valueGiveaway+'</div></div>':'')+
-    '<div class="sc"><div class="sc-label">Service Match</div>'+
-    '<div class="svc-match"><div><div class="svc-name">'+svc.name+'</div><div style="font-size:11px;color:var(--muted);">'+svc.fit+'</div></div><div style="display:flex;gap:8px;align-items:center;"><span class="svc-range">'+svc.range+'</span><span class="svc-badge">Primary</span></div></div>'+
-    '<div class="svc-match" style="opacity:.7;"><div><div class="svc-name">'+svc2.name+'</div></div><div><span class="svc-range">'+svc2.range+'</span></div></div></div>'+
-    '<div class="sc"><div class="sc-label">First 3 Moves</div><div class="sc-body">'+
-    '<div style="padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--accent);font-family:var(--mono);font-size:10px;margin-right:8px;">Move 1</span>'+b.firstMove+'</div>'+
-    (b.nextMoves||[]).map(function(m,i){return '<div style="padding:8px 0;border-bottom:1px solid var(--border);"><span style="color:var(--accent);font-family:var(--mono);font-size:10px;margin-right:8px;">Move '+(i+2)+'</span>'+m+'</div>';}).join('')+
+    '<div class="sc"><div class="sc-lbl">Why Right Now</div><div class="sc-body">'+b.whyNow+'</div></div>'+
+    '<div class="sc"><div class="sc-lbl">Pain Points</div><div class="sc-body">'+(b.painPoints||[]).map(function(p){return'<div class="row-item">&rarr; '+p+'</div>';}).join('')+'</div></div>'+
+    '<div class="sc"><div class="sc-lbl">Pitch Angle (Challenger)</div><div class="sc-body" style="color:var(--acc);">'+b.pitchAngle+'</div></div>'+
+    (b.valueGiveaway?'<div class="sc" style="border-color:rgba(200,240,90,.2);"><div class="sc-lbl">Value Giveaway &mdash; Lead With This</div><div class="sc-body" style="font-style:italic;">'+b.valueGiveaway+'</div></div>':'')+
+    '<div class="sc"><div class="sc-lbl">Service Match</div>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:var(--surf2);border-radius:6px;margin-bottom:5px;">'+
+        '<div><div style="font-size:13px;font-weight:500;">'+svc.name+'</div><div style="font-size:11px;color:var(--muted);">'+svc.fit+'</div></div>'+
+        '<div style="display:flex;gap:8px;align-items:center;"><span style="font-family:var(--mono);font-size:11px;color:var(--acc);">'+svc.range+'</span><span style="font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;background:rgba(200,240,90,.1);color:var(--acc);">Primary</span></div>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 11px;background:var(--surf2);border-radius:6px;opacity:.7;">'+
+        '<div><div style="font-size:13px;font-weight:500;">'+svc2.name+'</div></div>'+
+        '<span style="font-family:var(--mono);font-size:11px;color:var(--acc);">'+svc2.range+'</span>'+
+      '</div>'+
+    '</div>'+
+    '<div class="sc"><div class="sc-lbl">First 3 Moves</div><div class="sc-body">'+
+      '<div class="row-item"><span style="color:var(--acc);font-family:var(--mono);font-size:10px;margin-right:8px;">Move 1</span>'+b.firstMove+'</div>'+
+      (b.nextMoves||[]).map(function(m,i){return'<div class="row-item"><span style="color:var(--acc);font-family:var(--mono);font-size:10px;margin-right:8px;">Move '+(i+2)+'</span>'+m+'</div>';}).join('')+
     '</div></div>'+
-    '<div class="action-row"><button class="abtn primary" id="genOutBtn">&rarr; Generate Outreach</button><button class="abtn" id="addCRMBtn">+ Add to CRM</button><button class="abtn" id="briefBackBtn">&larr; Signals</button></div>'
+    '<div class="action-row">'+
+      '<button class="abtn primary" id="genOutBtn">&rarr; Generate Outreach</button>'+
+      '<button class="abtn" id="addCRMBtn">+ Add to CRM</button>'+
+      '<button class="abtn" id="briefBackBtn">&larr; Signals</button>'+
+    '</div>'
   );
-  document.querySelectorAll('.sig-email').forEach(function(el){el.addEventListener('click',function(){navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){var o=el.textContent;el.textContent='Copied!';setTimeout(function(){el.textContent=o;},1500);});});});
-  
-// Wire regen buttons
-var rgnw=document.getElementById('regenWhyNow');
-if(rgnw)rgnw.addEventListener('click',function(){
-  var el=document.getElementById('bodyWhyNow');if(!el)return;
-  rgnw.textContent='...';rgnw.disabled=true;el.style.opacity='.4';
-  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:120,
-      system:'Rewrite the "Why Right Now" section for a Burrows & Co. lead briefing. Be specific and sharp. Return plain text only, no JSON.',
-      messages:[{role:'user',content:'Company: '+sig.company+'. Trigger: '+sig.trigger+'. Original: '+b.whyNow+'. Rewrite it — different angle, more urgent.'}]
-    })
-  }).then(function(r){return r.json();}).then(function(d){
-    var txt=d.content&&d.content[0]&&d.content[0].text||b.whyNow;
-    b.whyNow=txt;el.textContent=txt;el.style.opacity='1';rgnw.textContent='\u21BA Tweak';rgnw.disabled=false;
-  }).catch(function(){el.style.opacity='1';rgnw.textContent='\u21BA Tweak';rgnw.disabled=false;});
-});
-var rgp=document.getElementById('regenPitch');
-if(rgp)rgp.addEventListener('click',function(){
-  var el=document.getElementById('bodyPitch');if(!el)return;
-  rgp.textContent='...';rgp.disabled=true;el.style.opacity='.4';
-  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:120,
-      system:'Rewrite the Challenger pitch angle for a Burrows & Co. briefing. One sentence, sharp reframe. Return plain text only.',
-      messages:[{role:'user',content:'Company: '+sig.company+'. Trigger: '+sig.trigger+'. Original: '+b.pitchAngle+'. Different angle.'}]
-    })
-  }).then(function(r){return r.json();}).then(function(d){
-    var txt=d.content&&d.content[0]&&d.content[0].text||b.pitchAngle;
-    b.pitchAngle=txt;el.textContent=txt;el.style.opacity='1';rgp.textContent='\u21BA Tweak';rgp.disabled=false;
-  }).catch(function(){el.style.opacity='1';rgp.textContent='\u21BA Tweak';rgp.disabled=false;});
-});
-document.getElementById('genOutBtn').addEventListener('click',genOutreach);
+
+  // Wire email copy in brief
+  document.querySelectorAll('#briefEmails .sig-email[data-email]').forEach(function(el){
+    el.addEventListener('click',function(){
+      navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){
+        var addr=el.querySelector('.em-addr');var old=addr.textContent;addr.textContent='Copied!';setTimeout(function(){addr.textContent=old;},1500);
+      });
+    });
+  });
+
+  document.getElementById('genOutBtn').addEventListener('click',genOutreach);
   document.getElementById('addCRMBtn').addEventListener('click',function(){addToCRM(sig);});
   document.getElementById('briefBackBtn').addEventListener('click',function(){showPanel('signals');});
 }
 
-// ── OUTREACH ─────────────────────────────────────────────────
+// ── OUTREACH ──────────────────────────────────────────────────────────────────
 async function genOutreach(){
   showPanel('outreach');loading('outContainer');
   var sig=S.selected;var b=S.briefing;
@@ -1073,35 +1126,59 @@ async function genOutreach(){
     var m=txt.match(/\{[\s\S]*\}/);
     out=m?JSON.parse(m[0]):null;
   }catch(e){out=null;}
+
   var fname=sig.decisionMaker.split(' ')[0];
   if(!out)out={
-    linkedin_connect:'Saw the '+sig.sourceType+' announcement about '+sig.company+' &mdash; '+sig.trigger.slice(0,60)+'... Worth connecting?',
-    linkedin_dm:'Hi '+fname+',\n\nNoticed the '+sig.sourceType.toLowerCase()+' coverage of '+sig.company+' &mdash; specifically the '+sig.trigger.slice(0,80)+'.\n\nCompanies navigating this transition typically move 2x faster with external perspective in the first 60 days.\n\nAt Burrows & Co. we embed alongside leadership teams at exactly this moment. Not a deck and disappear firm.\n\nWorth 20 minutes?\n\n&mdash; Phil Burrows',
-    cold_email_subject:sig.company+' &mdash; saw the '+sig.sourceType.toLowerCase()+' coverage',
-    cold_email:'Hi '+fname+',\n\nSaw the '+sig.sourceType.toLowerCase()+' on '+sig.company+' &mdash; '+sig.trigger+'.\n\nThis is the exact moment when external perspective pays for itself fast.\n\nBurrows & Co. embeds alongside commercial and digital leaders at inflection points like this. Discovery Sprint (30-45 days, fixed scope) typically surfaces 3-5 high-impact growth levers and a funded roadmap.\n\n20-minute call to see if there is a fit?\n\nPhil Burrows\nBurrows & Co. Digital Advisory',
+    linkedin_connect:'Saw the '+sig.sourceType.toLowerCase()+' about '+sig.company+' — '+sig.trigger.slice(0,60)+'... Worth connecting?',
+    linkedin_dm:'Hi '+fname+',\n\nNoticed the '+sig.sourceType.toLowerCase()+' coverage of '+sig.company+' — specifically '+sig.trigger.slice(0,80)+'.\n\nCompanies navigating this move 2x faster with external perspective in the first 60 days.\n\nAt Burrows & Co. we embed alongside leadership at exactly this moment. Not a deck-and-disappear firm.\n\nWorth 20 minutes?\n\n— Phil Burrows',
+    cold_email_subject:sig.company+' — saw the '+sig.sourceType.toLowerCase()+' coverage',
+    cold_email:'Hi '+fname+',\n\nSaw the '+sig.sourceType.toLowerCase()+' on '+sig.company+' — '+sig.trigger+'.\n\nThis is the exact moment when external perspective pays for itself fast.\n\nBurrows & Co. embeds alongside commercial and digital leaders at inflection points like this. Discovery Sprint (30-45 days, fixed scope) typically surfaces 3-5 high-impact growth levers and a funded roadmap.\n\n20-minute call to see if there is a fit?\n\nPhil Burrows\nBurrows & Co. Digital Advisory',
     warm_intro:'Would you intro me to '+sig.decisionMaker+' at '+sig.company+'? Saw the '+sig.sourceType.toLowerCase()+' and think there is a real fit. Can send a blurb to forward.',
-    follow_up_day3:'Hi '+fname+',\n\nOne data point: companies that bring in external advisory in the first 60 days of a transition like '+sig.company+' is navigating typically move 2x faster on execution.\n\nStill worth a conversation?\n\n&mdash; Phil'
+    follow_up_day3:'Hi '+fname+',\n\nOne data point: companies that bring in external advisory in the first 60 days of a transition like '+sig.company+' is navigating typically move 2x faster on execution.\n\nStill worth a conversation?\n\n— Phil'
   };
-  var types=[{key:'linkedin_connect',label:'LinkedIn Connect',hint:'Under 300 chars'},{key:'linkedin_dm',label:'LinkedIn DM',hint:'Under 150 words'},{key:'cold_email',label:'Cold Email',hint:'Subject: '+(out.cold_email_subject||'')},{key:'warm_intro',label:'Warm Intro',hint:'Forward to mutual contact'},{key:'follow_up_day3',label:'Day 3 Follow-up',hint:'Adds value, no following up language'}];
+
+  var types=[
+    {key:'linkedin_connect',label:'LinkedIn Connect',hint:'Under 300 chars'},
+    {key:'linkedin_dm',label:'LinkedIn DM',hint:'Under 150 words'},
+    {key:'cold_email',label:'Cold Email',hint:'Subject: '+(out.cold_email_subject||'')},
+    {key:'warm_intro',label:'Warm Intro',hint:'Forward to mutual contact'},
+    {key:'follow_up_day3',label:'Day 3 Follow-up',hint:'Adds value, no "following up" language'}
+  ];
+
   setHtml('outContainer',
-    '<div style="margin-bottom:16px;"><div style="font-family:var(--serif);font-size:20px;font-weight:300;">'+sig.company+' <em style="color:var(--accent);">Outreach</em></div>'+
-    '<div style="font-family:var(--mono);font-size:10px;color:var(--muted);">For '+sig.decisionMaker+' &middot; '+sig.decisionMakerTitle+'</div>'+
-    (sig.sourceUrl?'<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;">Source: <a href="'+sig.sourceUrl+'" target="_blank" style="color:var(--blue);">'+sig.sourceType+' ↗</a></div>':'')+
+    '<div style="margin-bottom:16px;">'+
+      '<div style="font-family:var(--serif);font-size:20px;font-weight:300;">'+sig.company+' <em style="color:var(--acc);">Outreach</em></div>'+
+      '<div style="font-family:var(--mono);font-size:10px;color:var(--muted);">For '+sig.decisionMaker+' &middot; '+sig.decisionMakerTitle+'</div>'+
+      (sig.sourceUrl?'<div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;">Source: <a href="'+sig.sourceUrl+'" target="_blank" style="color:var(--blu);">'+sig.sourceType+' &#x2197;</a></div>':'')+
     '</div>'+
-    '<div class="out-tabs">'+types.map(function(t,i){return '<div class="out-tab'+(i===0?' on':'')+'" data-key="'+t.key+'">'+t.label+'</div>';}).join('')+'</div>'+
-    types.map(function(t,i){return '<div id="out-'+t.key+'" class="out-box" style="'+(i===0?'':'display:none;')+'">'+
-      '<div class="out-hdr"><div><div class="out-title">'+t.label+'</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">'+t.hint+'</div></div>'+
-      '<button class="copy-btn" data-copy="'+t.key+'">Copy</button></div>'+
-      '<div class="out-content" id="oc-'+t.key+'">'+(out[t.key]||'')+'</div></div>';}).join('')+
+    '<div class="out-tabs">'+types.map(function(t,i){return'<div class="otab'+(i===0?' on':'')+'" data-key="'+t.key+'">'+t.label+'</div>';}).join('')+'</div>'+
+    types.map(function(t,i){
+      return'<div id="out-'+t.key+'" class="out-box" style="'+(i===0?'':'display:none;')+'">'+
+        '<div class="out-hdr"><div><div class="out-title">'+t.label+'</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">'+t.hint+'</div></div>'+
+        '<button class="copy-btn" data-copy="'+t.key+'">Copy</button></div>'+
+        '<div class="out-body" id="oc-'+t.key+'">'+((out[t.key]||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'))+'</div></div>';
+    }).join('')+
     '<div class="action-row"><button class="abtn" id="outBackBtn">&larr; Briefing</button><button class="abtn" id="outSigsBtn">&larr; Signals</button></div>'
   );
-  document.querySelectorAll('.out-tab').forEach(function(tab){tab.addEventListener('click',function(){document.querySelectorAll('.out-tab').forEach(function(t){t.classList.remove('on');});document.querySelectorAll('.out-box').forEach(function(b){b.style.display='none';});tab.classList.add('on');document.getElementById('out-'+tab.getAttribute('data-key')).style.display='block';});});
-  document.querySelectorAll('[data-copy]').forEach(function(btn){btn.addEventListener('click',function(){var txt=document.getElementById('oc-'+btn.getAttribute('data-copy')).innerText;navigator.clipboard.writeText(txt).then(function(){btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy';},1500);});});});
+
+  document.querySelectorAll('.otab').forEach(function(tab){
+    tab.addEventListener('click',function(){
+      document.querySelectorAll('.otab').forEach(function(t){t.classList.remove('on');});
+      document.querySelectorAll('.out-box').forEach(function(b){b.style.display='none';});
+      tab.classList.add('on');document.getElementById('out-'+tab.getAttribute('data-key')).style.display='block';
+    });
+  });
+  document.querySelectorAll('[data-copy]').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var txt=document.getElementById('oc-'+btn.getAttribute('data-copy')).innerText;
+      navigator.clipboard.writeText(txt).then(function(){btn.textContent='Copied!';setTimeout(function(){btn.textContent='Copy';},1500);});
+    });
+  });
   document.getElementById('outBackBtn').addEventListener('click',function(){showPanel('briefing');});
   document.getElementById('outSigsBtn').addEventListener('click',function(){showPanel('signals');});
 }
 
-// ── EVENTS ───────────────────────────────────────────────────
+// ── EVENTS ────────────────────────────────────────────────────────────────────
 function loadEvents(){
   var events=[
     {name:'Gartner Marketing Symposium',date:'June 2026',location:'San Diego, CA',audience:'CMOs, VP Marketing, digital leaders',recommendation:'speak',why:'Your buyers attend in force.',angle:'How growth-stage companies close the digital infrastructure gap while scaling'},
@@ -1113,63 +1190,45 @@ function loadEvents(){
     {name:'INBOUND',date:'September 2026',location:'Boston, MA',audience:'Marketing, sales, growth leaders',recommendation:'attend',why:'High volume of VP Marketing and CMO profiles across industries.',angle:''},
     {name:'Healthcare Digital Marketing Summit',date:'Q2 2026',location:'Nashville, TN',audience:'Healthcare marketing and digital leaders',recommendation:'speak',why:'Growing vertical. Establishes advisory credibility.',angle:'Transforming the patient digital journey at scale'}
   ];
-  setHtml('evContainer','<div class="events-grid">'+events.map(function(e){
-    return '<div class="ev-card"><div class="ev-top"><div><div class="ev-name">'+e.name+'</div><div class="ev-date">'+e.date+' &middot; '+e.location+'</div></div><div class="ev-badge '+e.recommendation+'">'+e.recommendation+'</div></div>'+
-    '<div class="ev-desc">'+e.audience+'</div>'+
-    '<div class="ev-why"><strong>Why Burrows & Co.:</strong> '+e.why+(e.angle?'<br><strong>Speaking angle:</strong> '+e.angle:'')+'</div></div>';
+  setHtml('evContainer','<div class="ev-grid">'+events.map(function(e){
+    return'<div class="ev-card">'+
+      '<div class="ev-top"><div><div class="ev-n">'+e.name+'</div><div class="ev-d">'+e.date+' &middot; '+e.location+'</div></div>'+
+      '<div class="ev-badge '+e.recommendation+'">'+e.recommendation+'</div></div>'+
+      '<div class="ev-aud">'+e.audience+'</div>'+
+      '<div class="ev-why"><strong>Why Burrows &amp; Co.:</strong> '+e.why+(e.angle?'<br><strong>Speaking angle:</strong> '+e.angle:'')+'</div>'+
+    '</div>';
   }).join('')+'</div>');
 }
 
-// ── COMMAND BAR ──────────────────────────────────────────────
-document.getElementById('cmdAskBtn').addEventListener('click',runCmd);
-document.getElementById('cmdInput').addEventListener('keydown',function(e){if(e.key==='Enter')runCmd();if(e.key==='Escape'){document.getElementById('cmdResp').classList.remove('open');document.getElementById('cmdInput').value='';}});
-
-async function runCmd(){
-  var inp=document.getElementById('cmdInput');var input=inp.value.trim();if(!input)return;
-  var resp=document.getElementById('cmdResp');resp.innerHTML='<span style="color:var(--muted);">Thinking...</span>';resp.classList.add('open');
-  var lower=input.toLowerCase();
-  var navMap={signals:'signals',signal:'signals',feed:'signals',watchlist:'watchlist',watch:'watchlist',crm:'crm',pipeline:'crm',briefing:'briefing',brief:'briefing',outreach:'outreach',events:'events',conferences:'events',playbook:'playbook',settings:'settings',icp:'settings'};
-  for(var k in navMap){if(lower.includes('go to '+k)||lower.includes('show '+k)||lower===k){showPanel(navMap[k]);resp.innerHTML='<span class="cmd-tag nav">NAV</span>Navigated to '+navMap[k]+'.';inp.value='';return;}}
-  if(lower.includes('pull')||lower.includes('refresh')||lower.includes('scan')){resp.innerHTML='<span class="cmd-tag ans">PULLING</span>Pulling signals...';pullSignals();inp.value='';return;}
-  if(lower.includes('add lead')||lower.includes('manual lead')){showPanel('crm');document.getElementById('addLeadForm').style.display='block';resp.innerHTML='<span class="cmd-tag ans">CRM</span>Add Lead form is open in the CRM panel.';inp.value='';return;}
-  var codeWords=['add a','create a','build','new tab','new view','new feature','change the','update the'];
-  if(codeWords.some(function(w){return lower.includes(w);})){
-    var prompt=encodeURIComponent('Growth Engine update: '+input+'. Context: burowsandco.github.io/growth-engine. Repo: github.com/Burowsandco/growth-engine');
-    resp.innerHTML='<span class="cmd-tag code">BUILD</span>Code change needed.<div class="cmd-acts"><button class="cmd-act p" id="openClaudeBtn">&#x2192; Open Claude to build this</button></div>';
-    document.getElementById('openClaudeBtn').addEventListener('click',function(){window.open('https://claude.ai/new?q='+prompt,'_blank');});
-    return;
-  }
-  try{
-    var r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:'Growth Engine assistant for Burrows & Co. Digital Advisory. Answer in plain English under 60 words.',messages:[{role:'user',content:input}]})});
-    var d=await r.json();var ans=d.content&&d.content[0]&&d.content[0].text||'No response.';
-    resp.innerHTML='<span class="cmd-tag ans">ANSWER</span>'+ans+'<div class="cmd-acts"><button class="cmd-act" id="cmdClose2">Dismiss</button></div>';
-    document.getElementById('cmdClose2').addEventListener('click',function(){resp.classList.remove('open');inp.value='';});
-  }catch(e){
-    var q=encodeURIComponent(input);
-    resp.innerHTML='<span class="cmd-tag code">ROUTE</span>Routing to Claude.<div class="cmd-acts"><button class="cmd-act p" id="routeBtn">&#x2192; Open Claude</button></div>';
-    document.getElementById('routeBtn').addEventListener('click',function(){window.open('https://claude.ai/new?q='+q,'_blank');});
-  }
-}
-
-// ── SETTINGS ─────────────────────────────────────────────────
+// ── SETTINGS ──────────────────────────────────────────────────────────────────
 function renderSettings(){
-  var tt=document.getElementById('titleTags');if(tt)tt.innerHTML=S.icp.titles.map(function(t,i){return '<div class="tag on" data-ti="'+i+'">'+t+' &times;</div>';}).join('');
+  var tt=document.getElementById('titleTags');
+  if(tt)tt.innerHTML=S.icp.titles.map(function(t,i){return'<div class="tag" data-ti="'+i+'">'+t+' &times;</div>';}).join('');
   document.querySelectorAll('[data-ti]').forEach(function(el){el.addEventListener('click',function(){S.icp.titles.splice(+el.getAttribute('data-ti'),1);renderSettings();});});
-  var it=document.getElementById('indTags');if(it)it.innerHTML=S.icp.industries.length?S.icp.industries.map(function(t,i){return '<div class="tag on" data-ii="'+i+'">'+t+' &times;</div>';}).join(''):'<div class="tag" style="opacity:.5;cursor:default;">All industries</div>';
+
+  var it=document.getElementById('indTags');
+  if(it)it.innerHTML=S.icp.industries.length?S.icp.industries.map(function(t,i){return'<div class="tag" data-ii="'+i+'">'+t+' &times;</div>';}).join(''):'<div class="tag" style="opacity:.5;cursor:default;">All industries</div>';
   document.querySelectorAll('[data-ii]').forEach(function(el){el.addEventListener('click',function(){S.icp.industries.splice(+el.getAttribute('data-ii'),1);renderSettings();});});
+
   var sl={exec_hire:'Executive Hires',hiring_surge:'Hiring Surge',bad_quarter:'Bad Quarter / Miss',funding:'Funding Rounds',expansion:'Market Expansion',restructure:'Restructuring',acquisition:'Acquisitions',new_product:'New Product Launch'};
-  var st=document.getElementById('sigToggles');if(st)st.innerHTML=Object.entries(S.icp.signals).map(function(e){return '<div class="toggle-row"><div class="toggle-label">'+sl[e[0]]+'</div><div class="toggle'+(e[1]?' on':'')+'" data-sig="'+e[0]+'"></div></div>';}).join('');
+  var st=document.getElementById('sigToggles');
+  if(st)st.innerHTML=Object.entries(S.icp.signals).map(function(e){return'<div class="tog-row"><div class="tog-lbl">'+sl[e[0]]+'</div><div class="tog'+(e[1]?' on':'')+'" data-sig="'+e[0]+'"></div></div>';}).join('');
   document.querySelectorAll('[data-sig]').forEach(function(el){el.addEventListener('click',function(){S.icp.signals[el.getAttribute('data-sig')]=!S.icp.signals[el.getAttribute('data-sig')];el.classList.toggle('on');});});
+
   var ag=['NJ/NYC Metro','Texas (Dallas/Austin)','Remote-First','US-Wide','West Coast'];
-  var gt=document.getElementById('geoToggles');if(gt)gt.innerHTML=ag.map(function(g){return '<div class="toggle-row"><div class="toggle-label">'+g+'</div><div class="toggle'+(S.icp.geos.includes(g)?' on':'')+'" data-geo="'+g+'"></div></div>';}).join('');
+  var gt=document.getElementById('geoToggles');
+  if(gt)gt.innerHTML=ag.map(function(g){return'<div class="tog-row"><div class="tog-lbl">'+g+'</div><div class="tog'+(S.icp.geos.includes(g)?' on':'')+'" data-geo="'+g+'"></div></div>';}).join('');
   document.querySelectorAll('[data-geo]').forEach(function(el){el.addEventListener('click',function(){var g=el.getAttribute('data-geo');var idx=S.icp.geos.indexOf(g);if(idx>-1)S.icp.geos.splice(idx,1);else S.icp.geos.push(g);el.classList.toggle('on');});});
+
   var kw=document.getElementById('keywords');if(kw)kw.value=S.icp.keywords;
 }
+
 document.getElementById('titleInput').addEventListener('keydown',function(e){if(e.key!=='Enter')return;var v=this.value.trim();if(!v)return;S.icp.titles.push(v);this.value='';renderSettings();});
 document.getElementById('indInput').addEventListener('keydown',function(e){if(e.key!=='Enter')return;var v=this.value.trim();if(!v)return;S.icp.industries.push(v);this.value='';renderSettings();});
 document.getElementById('minR').addEventListener('input',function(){document.getElementById('minV').textContent=this.value;S.icp.minEmp=+this.value;});
 document.getElementById('maxR').addEventListener('input',function(){document.getElementById('maxV').textContent=this.value;S.icp.maxEmp=+this.value;});
 document.getElementById('saveSettingsBtn').addEventListener('click',function(){S.icp.keywords=document.getElementById('keywords').value;var btn=this;btn.textContent='Saved \u2713';setTimeout(function(){btn.textContent='Save Settings';},1500);});
+
 </script>
 </body>
 </html>
