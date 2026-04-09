@@ -633,8 +633,9 @@ Respond ONLY with valid JSON:
     });
     var data=await resp.json();
     var txt=data.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
-    var m=txt.match(/\{[\s\S]*\}/);
-    if(!m)throw new Error('no json');
+    var m=null;var _si=txt.lastIndexOf('{"signals"');if(_si>-1){try{JSON.parse(txt.slice(_si));m=[txt.slice(_si)];}catch(_e){}}if(!m)m=txt.match(/\{[\s\S]*\}/);
+    // Handle Claude thinking text before JSON - find last {"signals" block
+if(!m&&txt.indexOf('signals')>-1)m=[txt.slice(txt.lastIndexOf('{'))];if(!m)throw new Error('no json');
     var parsed=JSON.parse(m[0]).signals||[];
     var now=Date.now();
     // Prepend new signals to top, skip duplicates
