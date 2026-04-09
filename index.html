@@ -636,6 +636,7 @@ Respond ONLY with valid JSON:
     });
     var data=await resp.json();
     if(!data.content){throw new Error('API error: '+(data.error?data.error.message:JSON.stringify(data).slice(0,100)));}
+if(!data||!data.content||!Array.isArray(data.content)){throw new Error('API err: '+(data&&data.error?data.error.message:JSON.stringify(data).slice(0,150)));}
 var txt=data.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
     var m=null;var _si=txt.lastIndexOf('{"signals"');if(_si>-1){try{m=[txt.slice(_si)];JSON.parse(m[0]);}catch(_e){m=null;}}if(!m)m=txt.match(/\{[\s\S]*\}/);
     if(!m)throw new Error('no json');
