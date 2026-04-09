@@ -717,13 +717,17 @@ function renderSignals(){
           ' &mdash; <a href="https://linkedin.com/search/results/people/?keywords='+encodeURIComponent((s.decisionMaker||'')+' '+(s.company||''))+'" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--blue);">Find on LinkedIn ↗</a></div>'+
           '<div class="sig-dm-title">'+s.decisionMakerTitle+'</div>'+
           (emails&&emails.length?'<div class="sig-emails" style="margin-top:5px;">'+renderEmailGuesses(emails,s.decisionMakerLinkedIn)+'</div>':'')+
-      '<div class="sig-dm"><div class="sig-dm-name">'+s.decisionMaker+'</div><div class="sig-dm-title">'+s.decisionMakerTitle+'</div>'+
-      (emails.length?'<div class="sig-emails">'+renderEmailGuesses(emails,s.decisionMakerLinkedIn)+'</div>':'')+
       '</div>'+
-      '<div class="sig-footer"><div class="sig-tags"><span class="sig-tag">📅 '+s.dateLabel+'</span></div>'+
-      '<div class="sig-actions"><button class="sig-btn brief watch-brief" data-i="'+idx+'">Brief →</button><button class="sig-btn crm-add watch-crm" data-i="'+idx+'">+ CRM</button><button class="sig-btn watch on unwatch" data-co="'+s.company+'">Unwatch</button></div></div>'+
+      '<div class="sig-footer"><div class="sig-tags"><span class="sig-tag">'+s.size+'</span><span class="sig-tag">📅 '+s.dateLabel+'</span></div>'+
+      '<div class="sig-actions">'+
+        '<button class="sig-btn watch'+(isWatched?' on':'') +'" data-co="'+s.company+'">'+(isWatched?'★':'☆')+'</button>'+
+        '<button class="sig-btn brief" data-i="'+idx+'">Brief →</button>'+
+        '<button class="sig-btn crm-add" data-i="'+idx+'">+ CRM</button>'+
+        '<button class="sig-btn" data-co="'+s.company+'" style="color:var(--red);border-color:rgba(240,90,90,.2);">✕</button>'+
+      '</div></div>'+
     '</div>';
-  }).join('')+'</div>');
+  }).join('')+'</div>';
+  setHtml('sigContainer',html);
   document.querySelectorAll('.sig-email').forEach(function(el){el.addEventListener('click',function(){navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){var old=el.textContent;el.textContent='Copied!';setTimeout(function(){el.textContent=old;},1500);});});});
   document.querySelectorAll('.watch-brief').forEach(function(btn){btn.addEventListener('click',function(){selectSignal(+btn.getAttribute('data-i'));});});
   document.querySelectorAll('.watch-crm').forEach(function(btn){btn.addEventListener('click',function(){var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});});
@@ -800,9 +804,7 @@ function openCRMDetail(stage,li){
   document.getElementById('crmModalBody').innerHTML=
     '<div style="margin-bottom:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Contact</div>'+
     '<div style="font-size:14px;font-weight:500;">'+l.contact+'</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">'+l.title+'</div></div>'+
-    (l.emails&&l.emails.length?'<div class="sig-emails">'+renderEmailGuesses(l.emails, null)+'</div>';
-    }).join('')+
-    '<div style="font-family:var(--mono);font-size:9px;margin-top:6px;"><a href="https://hunter.io/email-verifier" target="_blank" style="color:var(--blue);">Verify at Hunter.io ↗</a></div></div>':'')+
+    (l.emails&&l.emails.length?'<div class="sig-emails">'+renderEmailGuesses(l.emails, null)+'<div style="font-family:var(--mono);font-size:9px;margin-top:6px;"><a href="https://hunter.io/email-verifier" target="_blank" style="color:var(--blue);">Verify at Hunter.io ↗</a></div></div>':'')+ 
     '<div style="margin-bottom:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Signal</div>'+
     '<div style="font-size:13px;line-height:1.5;">'+l.trigger+'</div>'+
     (l.sourceUrl?'<a href="'+l.sourceUrl+'" target="_blank" style="font-family:var(--mono);font-size:10px;color:var(--blue);">View source ↗</a>':'')+
@@ -1373,13 +1375,17 @@ function renderSignals(){
           ' &mdash; <a href="https://linkedin.com/search/results/people/?keywords='+encodeURIComponent((s.decisionMaker||'')+' '+(s.company||''))+'" target="_blank" style="font-family:var(--mono);font-size:9px;color:var(--blue);">Find on LinkedIn ↗</a></div>'+
           '<div class="sig-dm-title">'+s.decisionMakerTitle+'</div>'+
           (emails&&emails.length?'<div class="sig-emails" style="margin-top:5px;">'+renderEmailGuesses(emails,s.decisionMakerLinkedIn)+'</div>':'')+
-      '<div class="sig-dm"><div class="sig-dm-name">'+s.decisionMaker+'</div><div class="sig-dm-title">'+s.decisionMakerTitle+'</div>'+
-      (emails.length?'<div class="sig-emails">'+renderEmailGuesses(emails,s.decisionMakerLinkedIn)+'</div>':'')+
       '</div>'+
-      '<div class="sig-footer"><div class="sig-tags"><span class="sig-tag">📅 '+s.dateLabel+'</span></div>'+
-      '<div class="sig-actions"><button class="sig-btn brief watch-brief" data-i="'+idx+'">Brief →</button><button class="sig-btn crm-add watch-crm" data-i="'+idx+'">+ CRM</button><button class="sig-btn watch on unwatch" data-co="'+s.company+'">Unwatch</button></div></div>'+
+      '<div class="sig-footer"><div class="sig-tags"><span class="sig-tag">'+s.size+'</span><span class="sig-tag">📅 '+s.dateLabel+'</span></div>'+
+      '<div class="sig-actions">'+
+        '<button class="sig-btn watch'+(isWatched?' on':'') +'" data-co="'+s.company+'">'+(isWatched?'★':'☆')+'</button>'+
+        '<button class="sig-btn brief" data-i="'+idx+'">Brief →</button>'+
+        '<button class="sig-btn crm-add" data-i="'+idx+'">+ CRM</button>'+
+        '<button class="sig-btn" data-co="'+s.company+'" style="color:var(--red);border-color:rgba(240,90,90,.2);">✕</button>'+
+      '</div></div>'+
     '</div>';
-  }).join('')+'</div>');
+  }).join('')+'</div>';
+  setHtml('sigContainer',html);
   document.querySelectorAll('.sig-email').forEach(function(el){el.addEventListener('click',function(){navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){var old=el.textContent;el.textContent='Copied!';setTimeout(function(){el.textContent=old;},1500);});});});
   document.querySelectorAll('.watch-brief').forEach(function(btn){btn.addEventListener('click',function(){selectSignal(+btn.getAttribute('data-i'));});});
   document.querySelectorAll('.watch-crm').forEach(function(btn){btn.addEventListener('click',function(){var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});});
@@ -1456,9 +1462,7 @@ function openCRMDetail(stage,li){
   document.getElementById('crmModalBody').innerHTML=
     '<div style="margin-bottom:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Contact</div>'+
     '<div style="font-size:14px;font-weight:500;">'+l.contact+'</div><div style="font-family:var(--mono);font-size:10px;color:var(--muted);">'+l.title+'</div></div>'+
-    (l.emails&&l.emails.length?'<div class="sig-emails">'+renderEmailGuesses(l.emails, null)+'</div>';
-    }).join('')+
-    '<div style="font-family:var(--mono);font-size:9px;margin-top:6px;"><a href="https://hunter.io/email-verifier" target="_blank" style="color:var(--blue);">Verify at Hunter.io ↗</a></div></div>':'')+
+    (l.emails&&l.emails.length?'<div class="sig-emails">'+renderEmailGuesses(l.emails, null)+'<div style="font-family:var(--mono);font-size:9px;margin-top:6px;"><a href="https://hunter.io/email-verifier" target="_blank" style="color:var(--blue);">Verify at Hunter.io ↗</a></div></div>':'')+ 
     '<div style="margin-bottom:12px;"><div style="font-family:var(--mono);font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Signal</div>'+
     '<div style="font-size:13px;line-height:1.5;">'+l.trigger+'</div>'+
     (l.sourceUrl?'<a href="'+l.sourceUrl+'" target="_blank" style="font-family:var(--mono);font-size:10px;color:var(--blue);">View source ↗</a>':'')+
