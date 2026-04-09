@@ -1,430 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Burrows & Co. — Growth Engine</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script>
-firebase.initializeApp({
-  apiKey:"AIzaSyAgSLxhOP1-2XFA-7GUEpDz9duDBkxB8iQ",
-  authDomain:"burrows-cfo.firebaseapp.com",
-  projectId:"burrows-cfo",
-  appId:"1:466879182304:web:a4a703af3a72cd55106785"
-});
-</script>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --bg:#0e0f0d;--surface:#161714;--surface2:#1c1e1a;--border:rgba(255,255,255,0.07);
-  --text:#e8e6df;--muted:#7a7870;--accent:#c8f05a;--green:#5af0b4;
-  --red:#f05a5a;--amber:#f0b45a;--blue:#5ab4f0;--purple:#b45af0;
-  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--serif:'Fraunces',serif;
-}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
-#authGate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
-.auth-logo{font-family:var(--serif);font-size:32px;font-weight:300;}.auth-logo em{font-style:italic;color:var(--accent);}
-.auth-sub{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;}
-#signInBtn{margin-top:12px;padding:14px 36px;background:var(--accent);border:none;border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:500;color:#0e0f0d;cursor:pointer;}
-#authMsg{font-family:var(--mono);font-size:10px;color:var(--red);margin-top:4px;min-height:16px;}
-#app{display:none;flex-direction:column;min-height:100vh;}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 32px;border-bottom:1px solid var(--border);background:rgba(14,15,13,0.95);position:sticky;top:0;z-index:100;}
-.logo-name{font-family:var(--serif);font-size:18px;font-weight:300;}.logo-name em{font-style:italic;color:var(--accent);}
-.logo-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;}
-.topbar-right{display:flex;align-items:center;gap:10px;}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px rgba(200,240,90,.5);}
-.sync-lbl{font-family:var(--mono);font-size:10px;color:var(--muted);}
-.tbtn{padding:7px 16px;border:none;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;transition:opacity .15s;}
-.tbtn:hover{opacity:.85;}
-.tbtn-accent{background:var(--accent);color:#0e0f0d;}
-.tbtn-ghost{background:transparent;border:1px solid rgba(255,255,255,.12);color:var(--muted);}
-.cmd-bar{padding:10px 32px 12px;background:#0e0f0d;border-bottom:2px solid var(--accent);}
-.cmd-label{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:7px;}
-.cmd-row{display:flex;align-items:center;gap:10px;background:rgba(200,240,90,0.05);border:1.5px solid var(--accent);border-radius:8px;padding:9px 14px;width:100%;}
-.cmd-inp{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--mono);font-size:12px;}
-.cmd-inp::placeholder{color:var(--muted);}
-.cmd-ask{padding:7px 18px;background:var(--accent);border:none;border-radius:6px;color:#0e0f0d;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;flex-shrink:0;}
-.cmd-resp{margin-top:10px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:7px;font-family:var(--mono);font-size:12px;color:var(--text);line-height:1.7;display:none;}
-.cmd-resp.open{display:block;}
-.cmd-tag{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;margin-right:8px;font-weight:500;}
-.cmd-tag.ans{background:rgba(200,240,90,.15);color:var(--accent);}
-.cmd-tag.nav{background:rgba(90,180,240,.15);color:var(--blue);}
-.cmd-tag.code{background:rgba(180,90,240,.15);color:var(--purple);}
-.cmd-acts{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap;}
-.cmd-act{padding:5px 12px;border-radius:4px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text);}
-.cmd-act.p{background:rgba(200,240,90,.12);border-color:rgba(200,240,90,.3);color:var(--accent);}
-.tabs{display:flex;gap:2px;padding:0 32px;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto;}
-.tab{padding:12px 18px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;}
-.tab:hover{color:var(--text);}
-.tab.on{color:var(--accent);border-bottom-color:var(--accent);}
-.tab .badge{display:inline-block;margin-left:6px;padding:1px 6px;background:rgba(200,240,90,.15);color:var(--accent);border-radius:10px;font-size:9px;}
-.main{flex:1;overflow-y:auto;}
-.panel{display:none;padding:24px 32px;}
-.panel.on{display:block;}
-.signals-toolbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;}
-.signals-title{font-family:var(--serif);font-size:22px;font-weight:300;}.signals-title em{font-style:italic;color:var(--accent);}
-.signals-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;}
-.signals-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.ctrl-select{background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text);font-family:var(--mono);font-size:10px;padding:5px 10px;cursor:pointer;outline:none;}
-.filter-btn{padding:5px 12px;border-radius:5px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--muted);}
-.filter-btn.on{background:rgba(200,240,90,.12);border-color:rgba(200,240,90,.3);color:var(--accent);}
-.signals-grid{display:grid;gap:10px;}
-.sig-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;transition:all .15s;}
-.sig-card:hover{border-color:rgba(200,240,90,.2);background:var(--surface2);}
-.sig-card.hot{border-left:3px solid var(--red);}
-.sig-card.warm{border-left:3px solid var(--amber);}
-.sig-card.new{border-left:3px solid var(--blue);}
-.sig-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
-.sig-co-wrap{flex:1;}
-.sig-co{font-family:var(--serif);font-size:15px;font-weight:600;}
-.sig-co a{color:var(--text);text-decoration:none;}
-.sig-co a:hover{color:var(--accent);}
-.sig-website{font-family:var(--mono);font-size:9px;color:var(--blue);margin-top:2px;}
-.sig-website a{color:var(--blue);text-decoration:none;}
-.sig-website a:hover{text-decoration:underline;}
-.sig-ind{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
-.sig-right{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
-.score{padding:3px 10px;border-radius:20px;font-family:var(--mono);font-size:11px;font-weight:500;}
-.score.hi{background:rgba(90,240,180,.15);color:var(--green);}
-.score.mid{background:rgba(240,180,90,.15);color:var(--amber);}
-.score.lo{background:rgba(255,255,255,.08);color:var(--muted);}
-.urg{padding:2px 8px;border-radius:10px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;}
-.urg.hot{background:rgba(240,90,90,.15);color:var(--red);}
-.urg.warm{background:rgba(240,180,90,.15);color:var(--amber);}
-.urg.new{background:rgba(90,180,240,.15);color:var(--blue);}
-.sig-trigger{font-size:13px;line-height:1.5;margin-bottom:8px;}
-.sig-trigger strong{color:var(--accent);}
-.sig-source{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:8px;}
-.sig-source a{color:var(--blue);text-decoration:none;}
-.sig-source a:hover{text-decoration:underline;}
-.sig-pe{font-family:var(--mono);font-size:9px;color:var(--purple);margin-bottom:6px;}
-.sig-dm{background:var(--surface2);border-radius:6px;padding:8px 12px;margin-bottom:8px;}
-.sig-dm-name{font-size:12px;font-weight:500;}
-.sig-dm-title{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:1px;}
-.sig-emails{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px;}
-.sig-email{font-family:var(--mono);font-size:9px;padding:2px 7px;background:rgba(200,240,90,.08);border:1px solid rgba(200,240,90,.15);border-radius:3px;color:var(--accent);cursor:pointer;}
-.sig-email:hover{background:rgba(200,240,90,.15);}
-.sig-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:4px;}
-.sig-tags{display:flex;gap:5px;flex-wrap:wrap;}
-.sig-tag{padding:2px 8px;background:rgba(255,255,255,.05);border-radius:4px;font-family:var(--mono);font-size:9px;color:var(--muted);}
-.sig-actions{display:flex;gap:6px;}
-.sig-btn{padding:3px 10px;border-radius:4px;font-family:var(--mono);font-size:9px;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);transition:all .15s;}
-.sig-btn:hover{color:var(--text);}
-.sig-btn.watch.on{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.3);color:var(--accent);}
-.sig-btn.brief{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.2);color:var(--accent);}
-.sig-btn.crm-add{background:rgba(90,180,240,.1);border-color:rgba(90,180,240,.2);color:var(--blue);}
-.showing-label{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:12px;}
-/* BRIEFING */
-.sc{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:12px;}
-.sc-label{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px;}
-.sc-body{font-size:13px;color:var(--text);line-height:1.7;}
-.hero{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:16px;}
-.hero-co{font-family:var(--serif);font-size:26px;font-weight:300;margin-bottom:4px;}
-.hero-co em{font-style:italic;color:var(--accent);}
-.hero-meta{font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:16px;}
-.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
-.hero-stat{background:var(--surface2);border-radius:8px;padding:14px 16px;}
-.stat-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
-.stat-val{font-size:15px;font-weight:500;}.stat-val.ac{color:var(--accent);}
-.svc-match{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface2);border-radius:7px;margin-bottom:8px;}
-.svc-name{font-size:13px;font-weight:500;}
-.svc-range{font-family:var(--mono);font-size:11px;color:var(--accent);}
-.svc-badge{font-family:var(--mono);font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(200,240,90,.12);color:var(--accent);}
-/* OUTREACH */
-.out-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
-.out-tab{padding:7px 14px;border-radius:6px;font-family:var(--mono);font-size:10px;cursor:pointer;border:1px solid var(--border);color:var(--muted);}
-.out-tab.on{background:rgba(200,240,90,.1);border-color:rgba(200,240,90,.3);color:var(--accent);}
-.out-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
-.out-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.out-title{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
-.copy-btn{padding:5px 12px;background:rgba(200,240,90,.1);border:1px solid rgba(200,240,90,.2);border-radius:4px;font-family:var(--mono);font-size:10px;color:var(--accent);cursor:pointer;}
-.out-content{padding:18px;font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;min-height:120px;}
-/* CRM PIPELINE */
-.crm-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
-.crm-stages{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:20px;}
-.stage-col{min-width:240px;flex-shrink:0;}
-.stage-header{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:8px 12px;border-radius:6px 6px 0 0;display:flex;align-items:center;justify-content:space-between;}
-.stage-header.watching{background:rgba(90,180,240,.15);color:var(--blue);}
-.stage-header.contacted{background:rgba(240,180,90,.15);color:var(--amber);}
-.stage-header.responded{background:rgba(90,240,180,.15);color:var(--green);}
-.stage-header.meeting{background:rgba(200,240,90,.15);color:var(--accent);}
-.stage-header.proposal{background:rgba(180,90,240,.15);color:var(--purple);}
-.stage-header.closed{background:rgba(90,240,180,.25);color:var(--green);}
-.stage-body{background:var(--surface2);border-radius:0 0 6px 6px;padding:8px;min-height:120px;}
-.crm-card{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .15s;}
-.crm-card:hover{border-color:rgba(200,240,90,.2);}
-.crm-co{font-size:13px;font-weight:500;margin-bottom:3px;}
-.crm-dm{font-family:var(--mono);font-size:9px;color:var(--muted);}
-.crm-date{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px;}
-.crm-note{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;}
-.crm-actions{display:flex;gap:4px;margin-top:6px;}
-.crm-btn{padding:2px 8px;border-radius:3px;font-family:var(--mono);font-size:9px;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);}
-.crm-btn:hover{color:var(--text);}
-.crm-btn.gmail{color:var(--blue);border-color:rgba(90,180,240,.2);}
-.add-lead-form{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-.form-input{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-family:var(--mono);font-size:11px;outline:none;width:100%;}
-.form-input:focus{border-color:var(--accent);}
-.form-label{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
-/* EVENTS */
-.events-grid{display:grid;gap:12px;}
-.ev-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
-.ev-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
-.ev-name{font-family:var(--serif);font-size:15px;font-weight:600;}
-.ev-date{font-family:var(--mono);font-size:10px;color:var(--accent);margin-top:2px;}
-.ev-badge{padding:3px 10px;border-radius:10px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;flex-shrink:0;}
-.ev-badge.attend{background:rgba(90,240,180,.15);color:var(--green);}
-.ev-badge.speak{background:rgba(200,240,90,.15);color:var(--accent);}
-.ev-badge.sponsor{background:rgba(180,90,240,.15);color:var(--purple);}
-.ev-desc{font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:8px;}
-.ev-why{font-size:12px;color:var(--text);line-height:1.5;}
-.ev-why strong{color:var(--accent);}
-/* SETTINGS */
-.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.settings-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;}
-.settings-card.full{grid-column:1/-1;}
-.settings-title{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px;}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);}
-.toggle-row:last-child{border-bottom:none;}
-.toggle-label{font-size:13px;}
-.toggle{width:36px;height:20px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;}
-.toggle.on{background:var(--accent);}
-.toggle::after{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:var(--bg);top:2px;left:2px;transition:left .2s;}
-.toggle.on::after{left:18px;background:#0e0f0d;}
-.tag-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
-.tag{padding:4px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-family:var(--mono);font-size:10px;color:var(--text);cursor:pointer;}
-.tag.on{background:rgba(200,240,90,.12);border-color:rgba(200,240,90,.3);color:var(--accent);}
-.tag-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-family:var(--mono);font-size:11px;outline:none;}
-.tag-input:focus{border-color:var(--accent);}
-.save-btn{margin-top:12px;padding:8px 18px;background:var(--accent);border:none;border-radius:6px;color:#0e0f0d;font-family:var(--mono);font-size:11px;font-weight:500;cursor:pointer;width:100%;}
-input[type=range]{width:100%;accent-color:var(--accent);}
-.range-label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:8px;}
-.action-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
-.abtn{padding:9px 18px;border-radius:7px;font-family:var(--mono);font-size:11px;cursor:pointer;border:1px solid var(--border);background:var(--surface2);color:var(--text);}
-.abtn.primary{background:var(--accent);color:#0e0f0d;border-color:var(--accent);}
-.back{font-family:var(--mono);font-size:11px;color:var(--muted);cursor:pointer;margin-bottom:20px;display:inline-block;}
-.back:hover{color:var(--accent);}
-.empty-state{padding:80px 40px;text-align:center;}
-.empty-icon{font-size:32px;margin-bottom:12px;}
-.empty-title{font-family:var(--serif);font-size:18px;font-weight:300;margin-bottom:8px;}
-.empty-sub{font-family:var(--mono);font-size:11px;color:var(--muted);}
-.loading-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px;gap:16px;}
-.loading-spinner{width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.loading-text{font-family:var(--mono);font-size:11px;color:var(--muted);}
-.sc-regen{padding:3px 10px;border-radius:4px;font-family:var(--mono);font-size:9px;cursor:pointer;border:1px solid rgba(200,240,90,.2);background:rgba(200,240,90,.06);color:var(--accent);font-weight:500;}
-.sc-regen:hover{background:rgba(200,240,90,.12);}
-.note-entry{background:var(--surface2);border-radius:6px;padding:10px 12px;margin-bottom:8px;}
-.note-date{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:4px;}
-.seq-step{background:var(--surface2);border-radius:7px;padding:12px 14px;margin-bottom:8px;border:1px solid var(--border);}
-.seq-step.done{opacity:.5;}
-.seq-day{font-family:var(--mono);font-size:9px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;}
-.seq-type{font-family:var(--mono);font-size:9px;color:var(--muted);}
-.seq-msg{font-size:12px;line-height:1.5;color:var(--text);margin-top:4px;}
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;width:100%;max-width:520px;max-height:80vh;overflow-y:auto;}
-.modal-title{font-family:var(--serif);font-size:20px;font-weight:300;margin-bottom:16px;}
-.modal-close{float:right;background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;}
-</style>
-</head>
-<body>
 
-<div id="authGate">
-  <div class="auth-logo">Burrows &amp; Co. &mdash; <em>Growth Engine</em></div>
-  <div class="auth-sub">Private &middot; Sign in required</div>
-  <button id="signInBtn">Sign in with Google</button>
-  <div id="authMsg"></div>
-</div>
+var URGENCY_RANK={hot:0,warm:1,new:2};
+var SEQUENCE_TEMPLATES=[
+  {day:'Day 1',type:'LinkedIn Connect',msg:'Send connection request referencing the specific trigger. Keep under 300 chars. Example: "Saw the [source] on [company] — [trigger snippet]... worth connecting?"'},
+  {day:'Day 3',type:'LinkedIn DM or Cold Email',msg:'Send personalized DM or cold email. Reference the exact source. Give value before asking. One ask only: "Worth 20 minutes?"'},
+  {day:'Day 7',type:'Follow-up — Value Add',msg:'Share one relevant insight, benchmark, or case study. Do NOT say "following up." Add something new they can use regardless of hiring you.'},
+  {day:'Day 14',type:'Breakup Message',msg:'Short, direct: "Last note — if timing is off, happy to reconnect when it makes sense. Best of luck with the [trigger]." Leaves door open.'}
+];
+var S={
+  signals:[],
+  watchlist:[],
+  dismissed:[],
+  crm:{watching:[],contacted:[],responded:[],meeting:[],proposal:[],closed:[]},
+  selected:null,
+  briefing:null,
+  activeFilter:'all',
+  services:[
+    {name:'Light Advisory Retainer',range:'$8k-$12k/mo',fit:'Executive advisory, AI decision framing'},
+    {name:'Core Leadership Retainer',range:'$20k-$30k/mo',fit:'Transformation leadership, roadmap ownership'},
+    {name:'Deep Embed Retainer',range:'$35k-$55k/mo',fit:'AI commercialization, enterprise change'},
+    {name:'Discovery & Strategy Sprint',range:'$15k-$20k fixed',fit:'Assessment, roadmap, investment case'},
+    {name:'Executive Workshop / Offsite',range:'$18k-$30k/session',fit:'Alignment, decision acceleration, AI strategy'},
+    {name:'Project-Based Acceleration',range:'$10k-$100k+',fit:'Defined delivery, partner execution'}
+  ],
+  icp:{
+    titles:['VP Digital','VP Growth','CMO','Chief Digital Officer','Chief Growth Officer','VP Marketing','VP Customer Experience','Head of Digital','SVP Marketing','CEO'],
+    industries:[],
+    geos:['NJ/NYC Metro','Texas (Dallas/Austin)','Remote-First'],
+    signals:{exec_hire:true,hiring_surge:true,bad_quarter:true,funding:true,expansion:true,restructure:true,acquisition:true,new_product:true},
+    minEmp:100,maxEmp:10000,keywords:'digital transformation, growth strategy, AI adoption'
+  }
+};
 
-<div id="app">
-  <div class="topbar">
-    <div>
-      <div class="logo-name">Burrows &amp; Co. &mdash; <em>Growth Engine</em></div>
-      <div class="logo-sub">Revenue Intelligence &middot; Signal-Powered &middot; 2026</div>
-    </div>
-    <div class="topbar-right">
-      <div class="sync-dot"></div>
-      <div class="sync-lbl" id="userLbl">Signed in</div>
-      <button class="tbtn tbtn-accent" id="pullBtn">&#x27F3; Pull Signals</button>
-      <button class="tbtn tbtn-ghost" id="signOutBtn">Sign out</button>
-    </div>
-  </div>
-
-  <div class="cmd-bar">
-    <div class="cmd-label">&#x2318; Command &mdash; ask for insights &middot; pull signals &middot; navigate &middot; add leads &middot; request new features</div>
-    <div class="cmd-row">
-      <span style="font-size:14px;color:var(--accent);flex-shrink:0;">&#x2318;</span>
-      <input id="cmdInput" class="cmd-inp" placeholder='Ask anything &middot; "Find PE-backed healthcare companies in NJ hiring a CMO" &middot; "Add lead: Acme Corp, Jane Smith" &middot; "Build me a new view"'>
-      <button id="cmdAskBtn" class="cmd-ask">Ask</button>
-    </div>
-    <div id="cmdResp" class="cmd-resp"></div>
-  </div>
-
-  <div class="tabs">
-    <div class="tab on" data-panel="signals">Signal Feed <span class="badge" id="sigCount">0</span></div>
-    <div class="tab" data-panel="watchlist">Watchlist <span class="badge" id="watchCount">0</span></div>
-    <div class="tab" data-panel="crm">CRM Pipeline <span class="badge" id="crmCount">0</span></div>
-    <div class="tab" data-panel="briefing" id="briefingTab">Lead Briefing</div>
-    <div class="tab" data-panel="outreach" id="outreachTab">Outreach</div>
-    <div class="tab" data-panel="events">Events</div>
-    <div class="tab" data-panel="playbook">&#x1F4D6; Playbook</div>
-    <div class="tab" data-panel="settings">&#x2699; ICP Settings</div>
-  </div>
-
-  <div class="main">
-
-    <!-- SIGNALS -->
-    <div class="panel on" id="panel-signals">
-      <div class="signals-toolbar">
-        <div>
-          <div class="signals-title">Live <em>Signal Feed</em></div>
-          <div class="signals-meta" id="sigMeta">Pull signals to see live intelligence. New signals are added to the top.</div>
-        </div>
-        <div class="signals-controls">
-          <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">Pull</span>
-          <select id="sigLimit" class="ctrl-select">
-            <option value="10">10 signals</option>
-            <option value="25">25 signals</option>
-            <option value="50">50 signals</option>
-            <option value="100">100 signals</option>
-          </select>
-          <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">Sort</span>
-          <select id="sigSort" class="ctrl-select">
-            <option value="date">Newest first</option>
-            <option value="score">ICP Score</option>
-            <option value="urgency">Urgency</option>
-          </select>
-          <button class="filter-btn on" id="filterAll">All</button>
-          <button class="filter-btn" id="filterHot">&#x1F525; Hot</button>
-          <button class="filter-btn" id="filterWarm">&#x26A1; Warm</button>
-          <button class="tbtn tbtn-ghost" id="clearSignalsBtn" style="font-size:10px;padding:5px 10px;">Clear all</button>
-        </div>
-      </div>
-      <div id="sigContainer"><div class="empty-state"><div class="empty-icon">&#x26A1;</div><div class="empty-title">Ready to pull signals</div><div class="empty-sub">Click "Pull Signals" to scan your target market. New signals are added to the top each time.</div></div></div>
-    </div>
-
-    <!-- WATCHLIST -->
-    <div class="panel" id="panel-watchlist">
-      <div class="signals-toolbar"><div><div class="signals-title">&#x2605; <em>Watchlist</em></div><div class="signals-meta">Companies you are tracking</div></div></div>
-      <div id="watchContainer"><div class="empty-state"><div class="empty-icon">&#x2605;</div><div class="empty-title">No companies watched yet</div><div class="empty-sub">Click Watch on any signal card to add it here</div></div></div>
-    </div>
-
-    <!-- CRM PIPELINE -->
-    <div class="panel" id="panel-crm">
-      <div class="crm-toolbar">
-        <div><div class="signals-title">CRM <em>Pipeline</em></div><div class="signals-meta">Manage prospects from signal to close</div></div>
-        <button class="tbtn tbtn-accent" id="addLeadBtn">+ Add Lead</button>
-      </div>
-
-      <!-- Add Lead Form (hidden by default) -->
-      <div class="add-lead-form" id="addLeadForm" style="display:none;">
-        <div style="font-family:var(--serif);font-size:16px;font-weight:300;margin-bottom:14px;">Add Lead Manually</div>
-        <div class="form-grid">
-          <div><div class="form-label">Company Name</div><input class="form-input" id="nl-company" placeholder="Acme Corp"></div>
-          <div><div class="form-label">Website</div><input class="form-input" id="nl-website" placeholder="acmecorp.com"></div>
-          <div><div class="form-label">Contact Name</div><input class="form-input" id="nl-contact" placeholder="Jane Smith"></div>
-          <div><div class="form-label">Contact Title</div><input class="form-input" id="nl-title" placeholder="VP Digital"></div>
-          <div><div class="form-label">Industry</div><input class="form-input" id="nl-industry" placeholder="Healthcare"></div>
-          <div><div class="form-label">Location</div><input class="form-input" id="nl-location" placeholder="Austin, TX"></div>
-        </div>
-        <div style="margin-bottom:10px;"><div class="form-label">Signal / Why reach out</div><input class="form-input" id="nl-signal" placeholder="Saw their LinkedIn post about DTC expansion..."></div>
-        <div style="margin-bottom:10px;"><div class="form-label">Source URL (LinkedIn post, article, etc.)</div><input class="form-input" id="nl-source" placeholder="https://..."></div>
-        <div style="display:flex;gap:8px;"><button class="tbtn tbtn-accent" id="saveLeadBtn">Save &amp; Generate Briefing</button><button class="tbtn tbtn-ghost" id="cancelLeadBtn">Cancel</button></div>
-      </div>
-
-      <div class="crm-stages" id="crmStages"></div>
-    </div>
-
-    <!-- BRIEFING -->
-    <div class="panel" id="panel-briefing">
-      <div class="back" id="backToSig">&#8592; Back to signals</div>
-      <div id="briefContainer"><div class="empty-state"><div class="empty-icon">&#x1F4CB;</div><div class="empty-title">Select a signal first</div></div></div>
-    </div>
-
-    <!-- OUTREACH -->
-    <div class="panel" id="panel-outreach">
-      <div class="back" id="backToBrief">&#8592; Back to briefing</div>
-      <div id="outContainer"><div class="empty-state"><div class="empty-icon">&#x2709;</div><div class="empty-title">Generate a briefing first</div></div></div>
-    </div>
-
-    <!-- EVENTS -->
-    <div class="panel" id="panel-events">
-      <div class="signals-toolbar"><div><div class="signals-title">Events &amp; <em>Conferences</em></div><div class="signals-meta">Where your buyers are</div></div><button class="tbtn tbtn-ghost" id="refreshEventsBtn">&#x27F3; Refresh</button></div>
-      <div id="evContainer"><div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading...</div></div></div>
-    </div>
-
-    <!-- PLAYBOOK -->
-    <div class="panel" id="panel-playbook">
-      <div class="signals-toolbar"><div><div class="signals-title">Prospecting <em>Playbook</em></div><div class="signals-meta">Best practices from Clay, Apollo, and top B2B sales frameworks</div></div></div>
-      <div class="sc"><div class="sc-label">Signal Sources — Where to Find Real Triggers</div><div class="sc-body">
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">LinkedIn</strong> &mdash; Job postings (hiring surge), executive announcements (new role), company posts (product launches, expansions). Most reliable for exec hire signals.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Crunchbase / PitchBook</strong> &mdash; Funding rounds, acquisitions, PE ownership, investor details. Best for funding and M&A signals.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Google News / PR Newswire</strong> &mdash; Earnings misses, press releases, expansion announcements. Best for bad quarter and new product signals.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Glassdoor / Indeed / LinkedIn Jobs</strong> &mdash; Volume and types of roles posted. 5+ digital/marketing roles in 30 days = hiring surge signal.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">D&amp;B Hoovers / ZoomInfo</strong> &mdash; Company firmographics, revenue, employee count, tech stack, decision maker contact info.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">SEC EDGAR</strong> &mdash; Public company filings, 10-K/10-Q for revenue misses, restructuring, major strategic changes.</div>
-        <div style="padding:8px 0;"><strong style="color:var(--accent);">G2 / Capterra</strong> &mdash; Tech stack signals. A company switching CRM or marketing platforms signals a transformation moment.</div>
-      </div></div>
-      <div class="sc"><div class="sc-label">Email Finding — Best Practice Approach</div><div class="sc-body">
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);">The engine generates 3 format guesses based on common corporate patterns. Use Apollo, Hunter.io, or Clearbit to verify before sending. Verification is free for small volumes.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Format 1:</strong> firstname@company.com (most common, ~40% of companies)</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Format 2:</strong> first.last@company.com (~30% of companies)</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Format 3:</strong> flast@company.com (~20% of companies)</div>
-        <div style="padding:8px 0;">Click any email guess to copy it. Verify at hunter.io/email-verifier before sending to avoid bounces.</div>
-      </div></div>
-      <div class="sc"><div class="sc-label">Clay / Apollo Best Practices Applied Here</div><div class="sc-body">
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Trigger-first waterfall (Clay method)</strong> &mdash; Identify the trigger first, then find the person, then write the message. Never start with a list of names and work backwards.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Multi-source enrichment (Apollo method)</strong> &mdash; Every signal is cross-referenced: company website + LinkedIn + news + funding data. A signal only surfaces if it can be validated from at least one public source.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Intent + timing = urgency score</strong> &mdash; ICP score reflects fit. Urgency (Hot/Warm/New) reflects timing. Hot = act this week. The combination drives your prioritization.</div>
-        <div style="padding:8px 0;"><strong style="color:var(--accent);">Personalization at scale</strong> &mdash; Every outreach message references the specific trigger. Never a generic template. The source URL tells you exactly what to reference in your message.</div>
-      </div></div>
-      <div class="sc"><div class="sc-label">The Core Framework</div><div class="sc-body">
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Trigger-Based Only</strong> &mdash; No trigger = no outreach. The trigger is your reason to exist in their inbox.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">The 90-Day Window</strong> &mdash; New executives have 90 days to prove themselves. Act within 1 week of the announcement.</div>
-        <div style="padding:8px 0;border-bottom:1px solid var(--border);"><strong style="color:var(--accent);">Pattern Interrupt</strong> &mdash; Never start with "I hope this finds you well." Reference the specific trigger in your first sentence.</div>
-        <div style="padding:8px 0;"><strong style="color:var(--accent);">Entry Point First</strong> &mdash; Discovery Sprint or Executive Workshop before any retainer conversation. Prove value first.</div>
-      </div></div>
-    </div>
-
-    <!-- SETTINGS -->
-    <div class="panel" id="panel-settings">
-      <div class="signals-toolbar"><div><div class="signals-title">ICP &amp; <em>Settings</em></div><div class="signals-meta">Tune your targeting</div></div></div>
-      <div class="settings-grid">
-        <div class="settings-card"><div class="settings-title">Target Titles</div><div class="tag-list" id="titleTags"></div><input class="tag-input" id="titleInput" placeholder="Add title and press Enter..."></div>
-        <div class="settings-card"><div class="settings-title">Target Industries</div><div class="tag-list" id="indTags"></div><input class="tag-input" id="indInput" placeholder="Add industry (blank = all)..."></div>
-        <div class="settings-card"><div class="settings-title">Signal Triggers</div><div id="sigToggles"></div></div>
-        <div class="settings-card">
-          <div class="settings-title">Geography</div><div id="geoToggles"></div>
-          <div style="margin-top:16px;"><div class="settings-title">Company Size</div>
-            <div style="padding:8px 0;"><div class="range-label"><span>Min employees</span><span id="minV">100</span></div><input type="range" id="minR" min="50" max="5000" step="50" value="100"></div>
-            <div style="padding:8px 0;"><div class="range-label"><span>Max employees</span><span id="maxV">10000</span></div><input type="range" id="maxR" min="500" max="50000" step="500" value="10000"></div>
-          </div>
-        </div>
-        <div class="settings-card full"><div class="settings-title">Custom Signal Keywords</div>
-          <textarea class="tag-input" id="keywords" rows="3" style="resize:vertical;" placeholder="e.g. digital transformation, AI adoption, ecommerce relaunch..."></textarea>
-          <button class="save-btn" id="saveSettingsBtn">Save Settings</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- CRM Detail Modal -->
-<div class="modal-overlay" id="crmModal">
-  <div class="modal">
-    <button class="modal-close" id="crmModalClose">&times;</button>
-    <div class="modal-title" id="crmModalTitle">Lead Detail</div>
-    <div id="crmModalBody"></div>
-  </div>
-</div>
-
-<script src="app.js?v=1"></script>
-</body>
-</html>
+// ── HELPERS ──────────────────────────────────────────────────
 function setHtml(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;}
 function showPanel(id){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('on');});
@@ -608,7 +215,7 @@ Respond ONLY with valid JSON:
     // Prepend new signals to top, skip duplicates
     var newSigs=parsed.filter(function(s){return existingCos.indexOf(s.company)<0;}).map(function(s,i){
       if(!s.signalDate)s.signalDate=(s.signalDate&&s.signalDate>1577836800000)?s.signalDate:Date.now()-(i*1000);// Use real API date if valid, else today
-      s.dateLabel=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      s.dateLabel=new Date(s.signalDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
       // Normalize email guesses to object format with confidence
       if(!s.emailGuesses||!s.emailGuesses.length){
         s.emailGuesses=guessEmails(s.decisionMaker,s.website);
@@ -1080,6 +687,3 @@ document.getElementById('indInput').addEventListener('keydown',function(e){if(e.
 document.getElementById('minR').addEventListener('input',function(){document.getElementById('minV').textContent=this.value;S.icp.minEmp=+this.value;});
 document.getElementById('maxR').addEventListener('input',function(){document.getElementById('maxV').textContent=this.value;S.icp.maxEmp=+this.value;});
 document.getElementById('saveSettingsBtn').addEventListener('click',function(){S.icp.keywords=document.getElementById('keywords').value;var btn=this;btn.textContent='Saved \u2713';setTimeout(function(){btn.textContent='Save Settings';},1500);});
-</script>
-</body>
-</html>
