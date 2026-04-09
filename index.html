@@ -631,6 +631,16 @@ function getSorted(){
 
 // ── PULL SIGNALS ─────────────────────────────────────────────
 async function pullSignals(){
+  // Daily pull limit — max 1 manual pull per day (cron handles the rest)
+  var today = new Date().toDateString();
+  var lastManual = localStorage.getItem('ge_manual_pull_date');
+  if (lastManual === today) {
+    var meta = document.getElementById('sigMeta');
+    if (meta) meta.innerHTML = '<span style="color:var(--acc)">✓ Already pulled today — next auto-pull at 7am tomorrow. <span style="cursor:pointer;text-decoration:underline;color:var(--muted)" onclick="localStorage.removeItem('ge_manual_pull_date');document.getElementById('pullBtn').click()">Pull again anyway</span></span>';
+    return;
+  }
+  localStorage.setItem('ge_manual_pull_date', today);
+
   // 1 pull per day limit
   var today=new Date().toDateString();
   var lastPull=localStorage.getItem('ge_last_pull_date');
