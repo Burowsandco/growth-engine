@@ -518,6 +518,7 @@ function onSignedIn(user){
   document.getElementById('authGate').style.display='none';
   document.getElementById('app').style.display='flex';
   document.getElementById('userLbl').textContent=user.displayName||user.email;
+  var lp=localStorage.getItem('ge_last_pull');var lpEl=document.getElementById('lastPullDate');if(lpEl&&lp){lpEl.textContent=lp===new Date().toDateString()?'Pulled today ✓':'Last pull: '+lp;}
   loadState();
   renderSignals();
   renderWatchlist();
@@ -624,7 +625,7 @@ Respond ONLY with valid JSON:
   try{
     var resp=await fetch('https://ge-proxy.philburrows.workers.dev',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:6000,
         tools:[{type:'web_search_20250305',name:'web_search'}],
         system:sys,
         tools:[{type:'web_search_20250305',name:'web_search'}],messages:[{role:'user',content:'Search for '+limit+' real verifiable B2B signals for Burrows & Co. using LinkedIn, Crunchbase, news sources, and business journals. Each signal must have a real source URL.'}]
@@ -657,6 +658,9 @@ Respond ONLY with valid JSON:
     document.getElementById('sigMeta').textContent='Last pull: '+new Date().toLocaleTimeString()+' · '+pulled+' new signals added · '+S.signals.length+' total · Click any card to generate briefing';
   }catch(e){console.log('pull err:',e);loadFallbackSignals();}
   btn.disabled=false;btn.textContent='⟳ Pull Signals';
+  // Track last pull date
+  localStorage.setItem('ge_last_pull', new Date().toDateString());
+  var lastPull=document.getElementById('lastPullDate');if(lastPull)lastPull.textContent='Last pulled: '+new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
   updateCounts();
 }
 
