@@ -532,6 +532,29 @@ function onSignedIn(user){
   }
   renderSignals();
   renderWatchlist();
+
+  // ── AUTO-PULL SCHEDULER ───────────────────────────────────────────
+  // Runs once at 7am daily. Checks every minute if it's time to pull.
+  (function scheduleAutoPull() {
+    function checkAndPull() {
+      var now = new Date();
+      var h = now.getHours(), m = now.getMinutes();
+      var today = now.toDateString();
+      var lastAuto = localStorage.getItem('ge_auto_pull_date');
+      // Fire at 7:00am (h===7, m===0) if not already done today
+      if (h === 7 && m === 0 && lastAuto !== today) {
+        localStorage.setItem('ge_auto_pull_date', today);
+        console.log('Auto-pull: 7am trigger firing');
+        var pullBtn = document.getElementById('pullBtn');
+        if (pullBtn && !pullBtn.disabled) pullBtn.click();
+      }
+    }
+    // Check immediately on load (in case page loads at 7am)
+    checkAndPull();
+    // Then check every 60 seconds
+    setInterval(checkAndPull, 60000);
+  })();
+  // ── END AUTO-PULL SCHEDULER ───────────────────────────────────────
   renderCRM();
   loadEvents();
   renderSettings();
