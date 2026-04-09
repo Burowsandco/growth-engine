@@ -483,17 +483,21 @@ function guessEmails(name, website) {
 }
 
 function renderEmailGuesses(guesses, linkedInUrl) {
-  var clr = {High: 'var(--green)', Medium: 'var(--amber)', Low: 'var(--muted)'};
   var html = '';
   if (guesses && guesses.length) {
-    html += guesses.map(function(g) {
-      return '<span class="sig-email" data-email="' + g.email + '" title="' + g.note + '">' +
-        '<span style="color:' + clr[g.label] + ';font-size:8px;margin-right:3px;font-weight:600;">' + g.pct + '%</span>' +
-        g.email + '</span>';
-    }).join('');
+    guesses.forEach(function(g) {
+      var email = typeof g === 'string' ? g : (g && g.email ? g.email : null);
+      if (!email || email === 'undefined' || email === 'null') return;
+      var conf = g.confidence || (g.pct >= 50 ? 'high' : g.pct >= 20 ? 'medium' : 'low');
+      var clr = conf === 'high' ? 'var(--grn)' : conf === 'medium' ? 'var(--amb)' : 'var(--muted)';
+      var pct = g.pct ? g.pct + '%' : (conf === 'high' ? '~62%' : conf === 'medium' ? '~18%' : '~14%');
+      html += '<span class="sig-email" data-email="' + email + '">' +
+        '<span style="color:' + clr + ';font-size:8px;margin-right:4px;font-weight:600;">' + pct + '</span>' +
+        email + '</span>';
+    });
   }
-  if (linkedInUrl) {
-    html += '<a href="' + linkedInUrl + '" target="_blank" class="sig-email" style="color:var(--blue);text-decoration:none;">LinkedIn ↗</a>';
+  if (linkedInUrl && linkedInUrl.indexOf('search?q=') === -1) {
+    html += '<a href="' + linkedInUrl + '" target="_blank" class="sig-email" style="color:var(--blu);text-decoration:none;">LinkedIn ↗</a>';
   }
   return html;
 }
@@ -645,8 +649,11 @@ Respond ONLY with valid JSON:
         s.emailGuesses=guessEmails(s.decisionMaker,s.website);
       } else {
         s.emailGuesses=s.emailGuesses.map(function(e){
-          return typeof e==='string'?{email:e,confidence:'low',label:'Format guess'}:e;
-        });
+          if(typeof e==='string'&&e&&e!=='undefined') return {email:e,confidence:'low',label:'Format guess'};
+          if(e&&e.email&&e.email!=='undefined'&&e.email!=='null') return e;
+          return null;
+        }).filter(Boolean);
+        if(!s.emailGuesses.length) s.emailGuesses=guessEmails(s.decisionMaker,s.website);
       }
       return s;
     });
