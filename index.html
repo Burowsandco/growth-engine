@@ -731,15 +731,17 @@ function renderSignals(){
         '<button class="sig-btn watch'+(isWatched?' on':'') +'" data-co="'+s.company+'">'+(isWatched?'★':'☆')+'</button>'+
         '<button class="sig-btn brief" data-i="'+idx+'">Brief →</button>'+
         '<button class="sig-btn crm-add" data-i="'+idx+'">+ CRM</button>'+
-        '<button class="sig-btn" data-co="'+s.company+'" style="color:var(--red);border-color:rgba(240,90,90,.2);">✕</button>'+
+        '<button class="sig-btn dismiss" data-co="'+s.company+'" style="color:var(--red);border-color:rgba(240,90,90,.2);">✕</button>'+
       '</div></div>'+
     '</div>';
   }).join('')+'</div>';
   setHtml('sigContainer',html);
   document.querySelectorAll('.sig-email').forEach(function(el){el.addEventListener('click',function(){navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){var old=el.textContent;el.textContent='Copied!';setTimeout(function(){el.textContent=old;},1500);});});});
-  document.querySelectorAll('.watch-brief').forEach(function(btn){btn.addEventListener('click',function(){selectSignal(+btn.getAttribute('data-i'));});});
-  document.querySelectorAll('.watch-crm').forEach(function(btn){btn.addEventListener('click',function(){var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});});
-  document.querySelectorAll('.unwatch').forEach(function(btn){btn.addEventListener('click',function(){S.watchlist.splice(S.watchlist.indexOf(btn.getAttribute('data-co')),1);saveState();renderSignals();renderWatchlist();});});
+  document.querySelectorAll('.sig-btn.brief').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();selectSignal(+btn.getAttribute('data-i'));});});
+  document.querySelectorAll('.sig-btn.crm-add').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});});
+  document.querySelectorAll('.sig-btn.dismiss').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();S.dismissed.push(btn.getAttribute('data-co'));saveState();renderSignals();updateCounts();});});
+  document.querySelectorAll('.sig-btn.watch').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();var co=btn.getAttribute('data-co');var wi=S.watchlist.indexOf(co);if(wi>-1)S.watchlist.splice(wi,1);else S.watchlist.push(co);saveState();renderSignals();renderWatchlist();});});
+  document.querySelectorAll('.unwatch').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();S.watchlist.splice(S.watchlist.indexOf(btn.getAttribute('data-co')),1);saveState();renderSignals();renderWatchlist();});});
 }
 
 // ── Watchlist ─────────────────────────────────────────────────────────────
