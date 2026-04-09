@@ -523,6 +523,13 @@ function onSignedIn(user){
   document.getElementById('app').style.display='flex';
   document.getElementById('userLbl').textContent=user.displayName||user.email;
   loadState();
+  // Update pull button if already pulled today
+  var _today=new Date().toDateString();
+  var _lp=localStorage.getItem('ge_last_pull_date');
+  if(_lp===_today){
+    var _pb=document.getElementById('pullBtn');
+    if(_pb){_pb.textContent='✓ Pulled Today';_pb.style.opacity='0.6';}
+  }
   renderSignals();
   renderWatchlist();
   renderCRM();
@@ -575,6 +582,13 @@ function getSorted(){
 
 // ── PULL SIGNALS ─────────────────────────────────────────────
 async function pullSignals(){
+  // 1 pull per day limit
+  var today=new Date().toDateString();
+  var lastPull=localStorage.getItem('ge_last_pull_date');
+  if(lastPull===today){
+    document.getElementById('sigMeta').innerHTML='<span style="color:var(--amber)">&#x23F3; Already pulled today. Come back tomorrow for fresh signals.</span>';
+    return;
+  }
   var btn=document.getElementById('pullBtn');
   btn.disabled=true;btn.textContent='Scanning...';
   var limit=parseInt(document.getElementById('sigLimit').value)||10;
@@ -663,6 +677,7 @@ var txt=data.content.filter(function(c){return c.type==='text';}).map(function(c
     renderSignals();
     saveState();
     var pulled=newSigs.length;
+    localStorage.setItem('ge_last_pull_date',new Date().toDateString());
     document.getElementById('sigMeta').textContent='Last pull: '+new Date().toLocaleTimeString()+' · '+pulled+' new signals added · '+S.signals.length+' total · Click any card to generate briefing';
   }catch(e){console.log('pull err:',e);loadFallbackSignals();}
   btn.disabled=false;btn.textContent='⟳ Pull Signals';
