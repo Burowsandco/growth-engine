@@ -628,14 +628,15 @@ Respond ONLY with valid JSON:
   try{
     var resp=await fetch('https://ge-proxy.philburrows.workers.dev',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,
         tools:[{type:'web_search_20250305',name:'web_search'}],
         system:sys,
         messages:[{role:'user',content:'Search for '+limit+' real verifiable B2B signals for Burrows & Co. using LinkedIn, Crunchbase, news sources, and business journals. Each signal must have a real source URL.'}]
       })
     });
     var data=await resp.json();
-    var txt=data.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
+    if(!data.content){throw new Error('API error: '+(data.error?data.error.message:JSON.stringify(data).slice(0,100)));}
+var txt=data.content.filter(function(c){return c.type==='text';}).map(function(c){return c.text;}).join('');
     var m=null;var _si=txt.lastIndexOf('{"signals"');if(_si>-1){try{m=[txt.slice(_si)];JSON.parse(m[0]);}catch(_e){m=null;}}if(!m)m=txt.match(/\{[\s\S]*\}/);
     if(!m)throw new Error('no json');
     var parsed=JSON.parse(m[0]).signals||[];
