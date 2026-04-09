@@ -453,7 +453,7 @@ var S={
     signals:{exec_hire:true,hiring_surge:true,bad_quarter:true,funding:true,expansion:true,restructure:true,acquisition:true,new_product:true},
     minEmp:100,maxEmp:10000,keywords:'digital transformation, growth strategy, AI adoption'
   }
-}*/;
+};
 
 // ── HELPERS ──────────────────────────────────────────────────
 function setHtml(id,html){var el=document.getElementById(id);if(el)el.innerHTML=html;}
@@ -506,23 +506,13 @@ document.getElementById('signInBtn').addEventListener('click',function(){
   btn.textContent='Opening Google...';
   var provider=new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({hd:'burrowsadvisory.com'});
-  // Try popup first, fall back to redirect if blocked
   firebase.auth().signInWithPopup(provider)
     .then(function(r){
       if(!r.user.email.endsWith('@burrowsadvisory.com')){firebase.auth().signOut();btn.textContent='Sign in with Google';document.getElementById('authMsg').textContent='Restricted to @burrowsadvisory.com';return;}
       onSignedIn(r.user);
     })
-    .catch(function(e){
-      if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request'){
-        // Popup blocked - use redirect instead
-        firebase.auth().signInWithRedirect(provider);
-      } else {
-        btn.textContent='Sign in with Google';document.getElementById('authMsg').textContent='Error: '+e.code;
-      }
-    });
+    .catch(function(e){btn.textContent='Sign in with Google';document.getElementById('authMsg').textContent=e.code==='auth/popup-blocked'?'Allow popups then try again.':'Error: '+e.code;});
 });
-// Handle redirect result first
-firebase.auth().getRedirectResult().then(function(r){if(r&&r.user&&r.user.email.endsWith('@burrowsadvisory.com'))onSignedIn(r.user);else if(r&&r.user){firebase.auth().signOut();}}).catch(function(e){console.log('redirect err:',e);});
 firebase.auth().onAuthStateChanged(function(user){if(user&&user.email&&user.email.endsWith('@burrowsadvisory.com'))onSignedIn(user);});
 function onSignedIn(user){
   document.getElementById('authGate').style.display='none';
@@ -670,7 +660,7 @@ Respond ONLY with valid JSON:
   updateCounts();
 }
 
-function loadFallbackSignals(){document.getElementById('sigMeta').innerHTML='<span style="color:var(--red)">&#x26A0; Search failed. Try again.</span>';updateCounts();return;/*
+function loadFallbackSignals(){document.getElementById('sigMeta').innerHTML='<span style="color:var(--red)">Search failed. Try again.</span>';updateCounts();return;if(false){
   var now=Date.now();
   var newSigs=[
     {company:'Momentum Health Partners',website:'momentumhealth.com',industry:'Healthcare / Wellness',location:'Austin, TX',size:'800 employees',isPEBacked:false,peFirm:'',trigger:'New Chief Digital Officer Sarah Chen hired from Amazon AWS — LinkedIn announcement Apr 6 2026',triggerType:'exec_hire',why:'New CDO from tech background drives external advisory in first 90 days',urgency:'hot',icpScore:9,decisionMaker:'Sarah Chen',decisionMakerTitle:'Chief Digital Officer',decisionMakerLinkedIn:'https://linkedin.com/in/search?q=sarah+chen+momentum+health',emailGuesses:['schen@momentumhealth.com','sarah.chen@momentumhealth.com','schenmh@momentumhealth.com'],sourceType:'LinkedIn',sourceUrl:'https://www.linkedin.com/feed/',sourceNote:'Executive announcement post by Sarah Chen on LinkedIn',signalDate:Date.now(),dateLabel:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})},
@@ -689,9 +679,8 @@ function loadFallbackSignals(){document.getElementById('sigMeta').innerHTML='<sp
   S.signals=filtered.concat(S.signals);
   renderSignals();
   saveState();
-  document.getElementById('sigMeta').textContent='Sample signals loaded (real companies may vary) · Pull Signals for live web-searched intelligence';
   updateCounts();
-}
+}}
 
 // ── RENDER SIGNALS ───────────────────────────────────────────
 function renderSignals(){
@@ -1167,4 +1156,4 @@ document.getElementById('maxR').addEventListener('input',function(){document.get
 document.getElementById('saveSettingsBtn').addEventListener('click',function(){S.icp.keywords=document.getElementById('keywords').value;var btn=this;btn.textContent='Saved \u2713';setTimeout(function(){btn.textContent='Save Settings';},1500);});
 </script>
 </body>
-</html>
+  </html>
