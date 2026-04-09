@@ -506,13 +506,23 @@ document.getElementById('signInBtn').addEventListener('click',function(){
   btn.textContent='Opening Google...';
   var provider=new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({hd:'burrowsadvisory.com'});
+  // Try popup first, fall back to redirect if blocked
   firebase.auth().signInWithPopup(provider)
     .then(function(r){
       if(!r.user.email.endsWith('@burrowsadvisory.com')){firebase.auth().signOut();btn.textContent='Sign in with Google';document.getElementById('authMsg').textContent='Restricted to @burrowsadvisory.com';return;}
       onSignedIn(r.user);
     })
-    .catch(function(e){btn.textContent='Sign in with Google';document.getElementById('authMsg').textContent=e.code==='auth/popup-blocked'?'Allow popups then try again.':'Error: '+e.code;});
+    .catch(function(e){
+      if(e.code==='auth/popup-blocked'||e.code==='auth/popup-closed-by-user'||e.code==='auth/cancelled-popup-request'){
+        // Popup blocked - use redirect instead
+        firebase.auth().signInWithRedirect(provider);
+      } else {
+        btn.textContent='Sign in with Google';document.getElementById('authMsg').textContent='Error: '+e.code;
+      }
+    });
 });
+// Handle redirect result first
+firebase.auth().getRedirectResult().then(function(r){if(r&&r.user&&r.user.email.endsWith('@burrowsadvisory.com'))onSignedIn(r.user);else if(r&&r.user){firebase.auth().signOut();}}).catch(function(e){console.log('redirect err:',e);});
 firebase.auth().onAuthStateChanged(function(user){if(user&&user.email&&user.email.endsWith('@burrowsadvisory.com'))onSignedIn(user);});
 function onSignedIn(user){
   document.getElementById('authGate').style.display='none';
