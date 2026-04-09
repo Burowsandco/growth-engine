@@ -160,6 +160,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 .crm-date{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:4px;}
 .crm-note{font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;}
 .crm-actions{display:flex;gap:4px;margin-top:6px;}
+.crm-stage-sel{background:var(--surf2);border:1px solid var(--bdr);border-radius:5px;padding:3px 6px;color:var(--txt);font-family:var(--mono);font-size:9px;cursor:pointer;outline:none;flex:1;}
+.crm-stage-sel:focus{border-color:var(--acc);}
 .crm-btn{padding:2px 8px;border-radius:3px;font-family:var(--mono);font-size:9px;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);}
 .crm-btn:hover{color:var(--text);}
 .crm-btn.gmail{color:var(--blue);border-color:rgba(90,180,240,.2);}
@@ -728,7 +730,17 @@ function renderSignals(){
     '</div>';
   }).join('')+'</div>';
   setHtml('sigContainer',html);
+  // Wire email copy
   document.querySelectorAll('.sig-email').forEach(function(el){el.addEventListener('click',function(){navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){var old=el.textContent;el.textContent='Copied!';setTimeout(function(){el.textContent=old;},1500);});});});
+  // Wire Brief buttons
+  document.querySelectorAll('.sig-btn.brief').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();selectSignal(+btn.getAttribute('data-i'));});});
+  // Wire + CRM buttons
+  document.querySelectorAll('.sig-btn.crm-add').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});});
+  // Wire star/watch buttons
+  document.querySelectorAll('.sig-btn.watch').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();var co=btn.getAttribute('data-co');var idx=S.watchlist.indexOf(co);if(idx>-1)S.watchlist.splice(idx,1);else S.watchlist.push(co);saveState();renderSignals();renderWatchlist();});});
+  // Wire dismiss buttons
+  document.querySelectorAll('.sig-btn[data-co]').forEach(function(btn){if(!btn.classList.contains('watch')&&!btn.classList.contains('brief')&&!btn.classList.contains('crm-add')){btn.addEventListener('click',function(e){e.stopPropagation();S.dismissed.push(btn.getAttribute('data-co'));saveState();renderSignals();updateCounts();});}});
+  // Wire watchlist brief/crm
   document.querySelectorAll('.watch-brief').forEach(function(btn){btn.addEventListener('click',function(){selectSignal(+btn.getAttribute('data-i'));});});
   document.querySelectorAll('.watch-crm').forEach(function(btn){btn.addEventListener('click',function(){var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});});
   document.querySelectorAll('.unwatch').forEach(function(btn){btn.addEventListener('click',function(){S.watchlist.splice(S.watchlist.indexOf(btn.getAttribute('data-co')),1);saveState();renderSignals();renderWatchlist();});});
@@ -811,18 +823,21 @@ function renderCRM(){
             '<div class="crm-date">Added '+l.addedDate+'</div>'+
             (l.notes?'<div class="crm-note">'+l.notes+'</div>':'')+
             '<div class="crm-actions">'+
-              CRM_STAGES.filter(function(s){return s!==stage;}).slice(0,2).map(function(ns){return '<button class="crm-btn move-btn" data-stage="'+stage+'" data-li="'+li+'" data-to="'+ns+'">→ '+STAGE_LABELS[ns].split(' ')[0]+'</button>';}).join('')+
-              '<button class="crm-btn detail-btn" data-stage="'+stage+'" data-li="'+li+'">Detail</button>'+
-              (l.contact?'<button class="crm-btn gmail" data-email="'+encodeURIComponent(l.contact+' '+l.company)+'" >Gmail</button>':'')+
+              '<select class="crm-stage-sel" data-stage="'+stage+'" data-li="'+li+'">'+
+              CRM_STAGES.map(function(ns){return '<option value="'+ns+'"'+(ns===stage?' selected':'')+'>'+STAGE_LABELS[ns]+'</option>';}).join('')+
+              '</select>'+
+              '<button class="crm-btn detail-btn" data-stage="'+stage+'" data-li="'+li+'">Notes</button>'+
+              (l.contact?'<button class="crm-btn gmail" data-email="'+encodeURIComponent(l.contact+' '+l.company)+'">Gmail</button>':'')+
             '</div>'+
           '</div>';
         }).join(''):'<div style="padding:12px;font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;">No leads here</div>')+
       '</div></div>';
   }).join('');
   setHtml('crmStages',html);
-  document.querySelectorAll('.move-btn').forEach(function(btn){
-    btn.addEventListener('click',function(e){e.stopPropagation();
-      var stage=btn.getAttribute('data-stage'),li=+btn.getAttribute('data-li'),to=btn.getAttribute('data-to');
+  document.querySelectorAll('.crm-stage-sel').forEach(function(sel){
+    sel.addEventListener('change',function(e){e.stopPropagation();
+      var stage=sel.getAttribute('data-stage'),li=+sel.getAttribute('data-li'),to=sel.value;
+      if(to===stage)return;
       var lead=S.crm[stage].splice(li,1)[0];
       S.crm[to].push(lead);saveState();renderCRM();updateCounts();
     });
