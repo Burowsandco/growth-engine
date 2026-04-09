@@ -533,6 +533,32 @@ function onSignedIn(user){
   renderSignals();
   renderWatchlist();
 
+  // ── KV SIGNAL LOADER ──────────────────────────────────────────────
+  // Fetches signals pre-pulled by the 7am cron worker from Cloudflare KV
+  async function loadKVSignals() {
+    try {
+      var r = await fetch('https://ge-cron.philburrows.workers.dev');
+      if (!r.ok) return;
+      var data = await r.json();
+      if (!data.signals || !data.signals.length) return;
+      // Merge: add KV signals that aren't already in S.signals (dedup by company)
+      var existing = new Set(S.signals.map(function(s){ return s.company; }));
+      var newSigs = data.signals.filter(function(s){ return !existing.has(s.company) && !S.dismissed.includes(s.company); });
+      if (newSigs.length) {
+        S.signals = newSigs.concat(S.signals);
+        saveState();
+        renderSignals();
+        updateCounts();
+        var meta = document.getElementById('sigMeta');
+        if (meta) meta.innerHTML = '<span style="color:var(--grn)">⏰ Auto-pulled ' + newSigs.length + ' signals at 7am</span>';
+      }
+    } catch(e) {
+      console.log('KV load skipped:', e.message);
+    }
+  }
+  // ── END KV SIGNAL LOADER ──────────────────────────────────────────
+  loadKVSignals();
+
   // ── AUTO-PULL SCHEDULER ───────────────────────────────────────────
   // Runs once at 7am daily. Checks every minute if it's time to pull.
   (function scheduleAutoPull() {
