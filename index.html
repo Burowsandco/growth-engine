@@ -737,6 +737,7 @@ function renderSignals(){
   }).join('')+'</div>';
   setHtml('sigContainer',html);
   document.querySelectorAll('.sig-email').forEach(function(el){el.addEventListener('click',function(){navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){var old=el.textContent;el.textContent='Copied!';setTimeout(function(){el.textContent=old;},1500);});});});
+  document.querySelectorAll('.sig-card').forEach(function(card){card.addEventListener('click',function(e){if(e.target.closest('button')||e.target.closest('a'))return;var i=card.getAttribute('data-i');if(i!==null)selectSignal(+i);});});
   document.querySelectorAll('.sig-btn.brief').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();selectSignal(+btn.getAttribute('data-i'));});});
   document.querySelectorAll('.sig-btn.crm-add').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});});
   document.querySelectorAll('.sig-btn.dismiss').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();S.dismissed.push(btn.getAttribute('data-co'));saveState();renderSignals();updateCounts();});});
