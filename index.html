@@ -523,64 +523,28 @@ function onSignedIn(user){
   document.getElementById('app').style.display='flex';
   document.getElementById('userLbl').textContent=user.displayName||user.email;
   loadState();
-  // Update pull button if already pulled today
-  var _today=new Date().toDateString();
-  var _lp=localStorage.getItem('ge_last_pull_date');
-  if(_lp===_today){
-    var _pb=document.getElementById('pullBtn');
-    if(_pb){_pb.textContent='✓ Pulled Today';_pb.style.opacity='0.6';}
-  }
   renderSignals();
   renderWatchlist();
 
-  // ── KV SIGNAL LOADER ──────────────────────────────────────────────
-  // Fetches signals pre-pulled by the 7am cron worker from Cloudflare KV
+  // ── KV SIGNAL LOADER (7am cron results) ──────────────────────────
   async function loadKVSignals() {
     try {
       var r = await fetch('https://ge-cron.philburrows.workers.dev');
       if (!r.ok) return;
       var data = await r.json();
       if (!data.signals || !data.signals.length) return;
-      // Merge: add KV signals that aren't already in S.signals (dedup by company)
       var existing = new Set(S.signals.map(function(s){ return s.company; }));
-      var newSigs = data.signals.filter(function(s){ return !existing.has(s.company) && !S.dismissed.includes(s.company); });
-      if (newSigs.length) {
-        S.signals = newSigs.concat(S.signals);
-        saveState();
-        renderSignals();
-        updateCounts();
-        var meta = document.getElementById('sigMeta');
-        if (meta) meta.innerHTML = '<span style="color:var(--grn)">⏰ Auto-pulled ' + newSigs.length + ' signals at 7am</span>';
+      var fresh = data.signals.filter(function(s){ return !existing.has(s.company) && !S.dismissed.includes(s.company); });
+      if (fresh.length) {
+        S.signals = fresh.concat(S.signals);
+        saveState(); renderSignals(); updateCounts();
+        var m = document.getElementById('sigMeta');
+        if (m) m.innerHTML = '<span style="color:var(--grn)">⏰ Auto-pulled ' + fresh.length + ' signals at 7am</span>';
       }
-    } catch(e) {
-      console.log('KV load skipped:', e.message);
-    }
+    } catch(e) { console.log('KV load skipped:', e.message); }
   }
-  // ── END KV SIGNAL LOADER ──────────────────────────────────────────
   loadKVSignals();
-
-  // ── AUTO-PULL SCHEDULER ───────────────────────────────────────────
-  // Runs once at 7am daily. Checks every minute if it's time to pull.
-  (function scheduleAutoPull() {
-    function checkAndPull() {
-      var now = new Date();
-      var h = now.getHours(), m = now.getMinutes();
-      var today = now.toDateString();
-      var lastAuto = localStorage.getItem('ge_auto_pull_date');
-      // Fire at 7:00am (h===7, m===0) if not already done today
-      if (h === 7 && m === 0 && lastAuto !== today) {
-        localStorage.setItem('ge_auto_pull_date', today);
-        console.log('Auto-pull: 7am trigger firing');
-        var pullBtn = document.getElementById('pullBtn');
-        if (pullBtn && !pullBtn.disabled) pullBtn.click();
-      }
-    }
-    // Check immediately on load (in case page loads at 7am)
-    checkAndPull();
-    // Then check every 60 seconds
-    setInterval(checkAndPull, 60000);
-  })();
-  // ── END AUTO-PULL SCHEDULER ───────────────────────────────────────
+  // ── END KV LOADER ────────────────────────────────────────────────
   renderCRM();
   loadEvents();
   renderSettings();
@@ -631,23 +595,14 @@ function getSorted(){
 
 // ── PULL SIGNALS ─────────────────────────────────────────────
 async function pullSignals(){
-  // Daily pull limit — max 1 manual pull per day (cron handles the rest)
-  var today = new Date().toDateString();
-  var lastManual = localStorage.getItem('ge_manual_pull_date');
-  if (lastManual === today) {
-    var meta = document.getElementById('sigMeta');
-    if (meta) meta.innerHTML = '<span style="color:var(--acc)">✓ Already pulled today — next auto-pull at 7am tomorrow. <span style="cursor:pointer;text-decoration:underline;color:var(--muted)" onclick="localStorage.removeItem('ge_manual_pull_date');document.getElementById('pullBtn').click()">Pull again anyway</span></span>';
+  var _today = new Date().toDateString();
+  if (localStorage.getItem('ge_manual_pull_date') === _today) {
+    var m = document.getElementById('sigMeta');
+    if (m) m.innerHTML = '<span style="color:var(--acc)">✓ Already pulled today. <span style="cursor:pointer;text-decoration:underline;color:var(--muted)" onclick="localStorage.removeItem('ge_manual_pull_date');pullSignals()">Pull again anyway</span></span>';
     return;
   }
-  localStorage.setItem('ge_manual_pull_date', today);
+  localStorage.setItem('ge_manual_pull_date', _today);
 
-  // 1 pull per day limit
-  var today=new Date().toDateString();
-  var lastPull=localStorage.getItem('ge_last_pull_date');
-  if(lastPull===today){
-    document.getElementById('sigMeta').innerHTML='<span style="color:var(--amber)">&#x23F3; Already pulled today. Come back tomorrow for fresh signals.</span>';
-    return;
-  }
   var btn=document.getElementById('pullBtn');
   btn.disabled=true;btn.textContent='Scanning...';
   var limit=parseInt(document.getElementById('sigLimit').value)||10;
@@ -736,7 +691,6 @@ var txt=data.content.filter(function(c){return c.type==='text';}).map(function(c
     renderSignals();
     saveState();
     var pulled=newSigs.length;
-    localStorage.setItem('ge_last_pull_date',new Date().toDateString());
     document.getElementById('sigMeta').textContent='Last pull: '+new Date().toLocaleTimeString()+' · '+pulled+' new signals added · '+S.signals.length+' total · Click any card to generate briefing';
   }catch(e){console.log('pull err:',e);loadFallbackSignals();}
   btn.disabled=false;btn.textContent='⟳ Pull Signals';
@@ -805,18 +759,15 @@ function renderSignals(){
         '<button class="sig-btn watch'+(isWatched?' on':'') +'" data-co="'+s.company+'">'+(isWatched?'★':'☆')+'</button>'+
         '<button class="sig-btn brief" data-i="'+idx+'">Brief →</button>'+
         '<button class="sig-btn crm-add" data-i="'+idx+'">+ CRM</button>'+
-        '<button class="sig-btn dismiss" data-co="'+s.company+'" style="color:var(--red);border-color:rgba(240,90,90,.2);">✕</button>'+
+        '<button class="sig-btn" data-co="'+s.company+'" style="color:var(--red);border-color:rgba(240,90,90,.2);">✕</button>'+
       '</div></div>'+
     '</div>';
   }).join('')+'</div>';
   setHtml('sigContainer',html);
   document.querySelectorAll('.sig-email').forEach(function(el){el.addEventListener('click',function(){navigator.clipboard.writeText(el.getAttribute('data-email')).then(function(){var old=el.textContent;el.textContent='Copied!';setTimeout(function(){el.textContent=old;},1500);});});});
-  document.querySelectorAll('.sig-card').forEach(function(card){card.addEventListener('click',function(e){if(e.target.closest('button')||e.target.closest('a'))return;var i=card.getAttribute('data-i');if(i!==null)selectSignal(+i);});});
-  document.querySelectorAll('.sig-btn.brief').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();selectSignal(+btn.getAttribute('data-i'));});});
-  document.querySelectorAll('.sig-btn.crm-add').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});});
-  document.querySelectorAll('.sig-btn.dismiss').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();S.dismissed.push(btn.getAttribute('data-co'));saveState();renderSignals();updateCounts();});});
-  document.querySelectorAll('.sig-btn.watch').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();var co=btn.getAttribute('data-co');var wi=S.watchlist.indexOf(co);if(wi>-1)S.watchlist.splice(wi,1);else S.watchlist.push(co);saveState();renderSignals();renderWatchlist();});});
-  document.querySelectorAll('.unwatch').forEach(function(btn){btn.addEventListener('click',function(e){e.stopPropagation();S.watchlist.splice(S.watchlist.indexOf(btn.getAttribute('data-co')),1);saveState();renderSignals();renderWatchlist();});});
+  document.querySelectorAll('.watch-brief').forEach(function(btn){btn.addEventListener('click',function(){selectSignal(+btn.getAttribute('data-i'));});});
+  document.querySelectorAll('.watch-crm').forEach(function(btn){btn.addEventListener('click',function(){var sig=S.signals[+btn.getAttribute('data-i')];if(sig)addToCRM(sig);});});
+  document.querySelectorAll('.unwatch').forEach(function(btn){btn.addEventListener('click',function(){S.watchlist.splice(S.watchlist.indexOf(btn.getAttribute('data-co')),1);saveState();renderSignals();renderWatchlist();});});
 }
 
 // ── Watchlist ─────────────────────────────────────────────────────────────
