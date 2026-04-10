@@ -525,26 +525,7 @@ function onSignedIn(user){
   loadState();
   renderSignals();
   renderWatchlist();
-
-  // ── KV SIGNAL LOADER (7am cron results) ──────────────────────────
-  async function loadKVSignals() {
-    try {
-      var r = await fetch('https://ge-cron.philburrows.workers.dev');
-      if (!r.ok) return;
-      var data = await r.json();
-      if (!data.signals || !data.signals.length) return;
-      var existing = new Set(S.signals.map(function(s){ return s.company; }));
-      var fresh = data.signals.filter(function(s){ return !existing.has(s.company) && !S.dismissed.includes(s.company); });
-      if (fresh.length) {
-        S.signals = fresh.concat(S.signals);
-        saveState(); renderSignals(); updateCounts();
-        var m = document.getElementById('sigMeta');
-        if (m) m.innerHTML = '<span style="color:var(--grn)">⏰ Auto-pulled ' + fresh.length + ' signals at 7am</span>';
-      }
-    } catch(e) { console.log('KV load skipped:', e.message); }
-  }
-  loadKVSignals();
-  // ── END KV LOADER ────────────────────────────────────────────────
+  fetch('https://ge-cron.philburrows.workers.dev').then(function(r){return r.ok?r.json():null;}).then(function(d){if(!d||!d.signals||!d.signals.length)return;var ex=new Set((S.signals||[]).map(function(s){return s.company;}));var fr=d.signals.filter(function(s){return !ex.has(s.company);});if(!fr.length)return;S.signals=fr.concat(S.signals||[]);saveState();renderSignals();updateCounts();}).catch(function(e){});
   renderCRM();
   loadEvents();
   renderSettings();
@@ -595,14 +576,6 @@ function getSorted(){
 
 // ── PULL SIGNALS ─────────────────────────────────────────────
 async function pullSignals(){
-  var _today = new Date().toDateString();
-  if (localStorage.getItem('ge_manual_pull_date') === _today) {
-    var m = document.getElementById('sigMeta');
-    if (m) m.innerHTML = '<span style="color:var(--acc)">✓ Already pulled today. <span style="cursor:pointer;text-decoration:underline;color:var(--muted)" onclick="localStorage.removeItem('ge_manual_pull_date');pullSignals()">Pull again anyway</span></span>';
-    return;
-  }
-  localStorage.setItem('ge_manual_pull_date', _today);
-
   var btn=document.getElementById('pullBtn');
   btn.disabled=true;btn.textContent='Scanning...';
   var limit=parseInt(document.getElementById('sigLimit').value)||10;
